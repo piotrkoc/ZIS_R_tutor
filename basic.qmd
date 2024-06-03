@@ -1,0 +1,58 @@
+---
+title: "Basic Analysis for Scale Archiving"
+
+author: 
+  - name: Julian Urban
+  - name: Piotr Koc
+  - name: David Grüning
+   
+date: 2024-07-01
+date-format: "DD.MM.YYYY"
+format:
+  html:
+    code-overflow: wrap
+    code-copy: true
+    toc: true
+    theme: cosmo
+    html-math-method: katex
+license: "CC BY-NC 4.0"
+citation: 
+    type: "document"
+    title: |
+        Basic Analysis for Scale Archiving
+    author:
+       - name: Julian Urban
+       - name: Piotr Koc
+       - name: David Grüning
+    issued: 2024
+    container-title: ZIS R-tutorials
+    publisher: GESIS – Leibniz Institute for the Social Sciences 
+    URL: https://zis.gesis.org/infotexte/GuidelineMaterials.html
+    
+---
+
+## Introduction
+
+The following tutorial presents the basic analysis required for an instrument to be archived in the Open Repository for Measurement Instruments. As an example, we use a scale with continuous indicators, so not all parts of the analysis are appropriate for instruments with categorical indicators. We point this out whenever relevant. The treatment of categorical indicators is covered in a separate tutorial. 
+
+## Data Preparation & Descriptive Analysis
+First, load the required packages:
+```{r, message=FALSE}
+  library(lavaan)
+  library(psych)
+```
+
+In this tutorial, we will use the `HolzingerSwineford1939` data set, which you can access 
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).

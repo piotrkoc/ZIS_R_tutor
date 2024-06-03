@@ -1,0 +1,18 @@
+.quarto-title.column-body {
+  display: flex; /* Use flexbox for layout */
+  align-items: center; /* Center items vertically */
+  justify-content: space-between; /* Space out logo and title */
+  background-color: white; /* White background */
+  padding: 10px; /* Adjust padding as needed */
+  box-sizing: border-box; /* Include padding in the element's total width and height */
+}
+
+.quarto-title.column-body img {
+  max-height: 50px; /* Adjust as needed */
+  margin-right: 20px; /* Space between the logo and the title */
+}
+
+.quarto-title.column-body .title-text {
+  flex-grow: 1; /* Allow the title to take the remaining space */
+  text-align: right; /* Align the title to the right */
+}
