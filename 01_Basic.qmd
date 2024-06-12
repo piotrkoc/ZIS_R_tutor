@@ -23,9 +23,9 @@ format:
     toc-location: left
     theme: cosmo
     html-math-method: katex
-    css: styles.css
+    css: technical/styles.css
     template-partials:
-       - title-block.html
+       - technical/title-block.html
     
 license: "CC BY-NC 4.0"
 citation: 
