@@ -7,10 +7,11 @@ bibliography: basic.bib
 author:
   - name: Julian Urban
     affiliation: "GESIS – Leibniz Institute for the Social Sciences"
-  - name: Piotr Koc
-    affiliation: ""
   - name: David Grüning
     affiliation: ""
+  - name: Piotr Koc
+    affiliation: ""
+
    
 date: 2024-07-01
 date-format: "DD.MM.YYYY"
@@ -107,14 +108,13 @@ smmry <- smmry %>%
                 ~ sprintf("%.2f", .)))
 
 # Rename columns
-colnames(smmry) <- c("variable", "average", "standard deviation", "skewness", "kurtosis", "% missing data")
+colnames(smmry) <- c("Variable", "Mean", "Standard Deviation", "Skewness", "Kurtosis", "% Missing Data")
 smmry
 ```
 
 ## Item Analysis
 ### Dimensionality Assessment
-#### Exploratory Factor Analysis 
-First, we build a look-up table where items are assigned to different subscales.
+First, we build a look-up table where items are assigned to different subscales. We will use the table for the subsequent analyses in this section. 
 
 ```{r}
 # Build lookup table for required items
@@ -123,26 +123,36 @@ lookup_table <- data.frame(item = paste("x", c(1:9), sep = ""),
                                             each = 3))
                            )
 ```
-Then we estimate 
+#### Exploratory Factor Analysis 
+To decide how many latent dimension to extract, we will first use parallel analysis (for the factor solution, not principle components) and exploratory factor analysis. We run parallel analysis using the following syntax: 
 
 ```{r}
 #| message: false
-#===============================================================================
-# STEP 3.1: Exploratory factor analyses
-#-------------------------------------------------------------------------------
-# Method to explore dimensionality: efa
-# extraction method: minimal residuals (minres, also known as ordinary least square)
-# rotation method: oblimin (oblique rotation)
-
+#| label: fig-figpar
+set.seed(8576456)
 # Conduct parallel analysis display screeplot
 parallel_analyses_efa <- psych::fa.parallel(Data[ , unlist(lookup_table$item)],
-                                            fa = "fa",
+                                            fa = "fa", # Method to explore dimensionality: efa
                                             fm = "minres", nfactors = 1, SMC = F,
-                                            n.iter = 20, # quant = .95,
-                                            cor = "cor")
-# Display eigen values
-parallel_analyses_efa$fa.values
+                                            n.iter = 30, # quant = .95,
+                                            cor = "cor")                            
+```
+::: {.column-margin}
+For categorical data, you would need to change the `cor =` argument in the `fa.parallel()` function to `"poly"` and use polychoric correlations.  
+:::
 
+The idea behind parallel analysis in exploratory factor analysis (EFA) involves comparing the eigenvalues from your actual data to those from randomly generated data to determine the number of factors to retain. The random datasets match your actual dataset in terms of sample size and number of variables. Eigenvalues are calculated for both the real data and the random data. This process is repeated multiple times to generate a distribution of eigenvalues for the random data. 
+
+The key step is then to compare the eigenvalues from your actual data with the mean (or sometimes the 95th percentile) of the eigenvalues from the random datasets. You retain those factors where the actual eigenvalue exceeds the corresponding eigenvalue from the random data. In our case,  @fig-figpar with a scree plot suggests that we should extract three factors. 
+
+::: {.callout-important appearance="simple"}
+## Be careful
+Quite often researchers use the Kaiser-1 rule to decide the number of latent factors to extract. That is, they check how many eigenvalues are greater than 1. This method has been shown not be robust and result in extracting too many latent dimensions [see, @russell_search_2002; @van_der_eijk_risky_2015]. Hence, you should probably refrain from using it. 
+:::
+
+Knowing how many factors to extract, we will estimate now an EFA model with three factors using the oblique rotation and minimal residuals (a.k.a. ordinary least squares) as the extraction method^[If you are interested in the details of exploratory factor analysis, you might want to check the book by @fabrigar_exploratory_2012]. 
+
+```{r}
 # Estimate exploratory factor analyses
 efa <- psych::fa(Data[ , unlist(lookup_table$item)],
                  fm = "pa",
@@ -151,11 +161,17 @@ efa <- psych::fa(Data[ , unlist(lookup_table$item)],
                  scores = "regression", oblique.scores = F,
                  SMC = TRUE,
                  cor = "cor")
-efa
 
+```
+The output of the `fa()` function is very detailed, potentially overwhelming, so we won't be showing it in the whole. Instead we will focus on the key elements, starting with the matrix of factor loadings. 
+```{r}
 # matrix of factor loadings
 round(efa[["loadings"]], digits = 2)
+```
+By looking at the matrix we can see that items `x1-x3` have high loadings on the factor `PA3`, items `x4-x6`  have 
 
+
+```{r}
 # factor intercorrelation
 round(efa[["Phi"]], digits = 2)
 
