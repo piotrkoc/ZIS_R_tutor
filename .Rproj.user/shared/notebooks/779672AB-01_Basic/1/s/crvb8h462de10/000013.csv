@@ -1,0 +1,5 @@
+"0","# Build lookup table for required items"
+"0","lookup_table <- data.frame(item = paste(""x"", c(1:9), sep = """"),"
+"0","                           subscale = c(rep(c(""visual"", ""textual"", ""speed""),"
+"0","                                            each = 3))"
+"0","                           )"
