@@ -340,7 +340,7 @@ In this section, we will take a closer look at the indicators themselves and the
 psych::describe(Data[ , unlist(lookup_table$item)])[, c("mean", "sd", "skew", "kurtosis", "n")]
 ```
 
-Then, we calculate the reliability coefficients. To assess reliability, scholars usually compute Cronbach’s α. However, this coefficient is not appropriate when the indicators are congeneric. If the factor loadings vary substantially, we should compute McDonald’s ω~h~  [@zinbarg_cronbachs_2005]. Still, we will compute both coeffcients for the sake of demonstration. Still, we will compute both coefficients for the sake of demonstration. For Cronbach’s α, we will compute the median and 95% credible interval. 
+Then, we calculate the reliability coefficients. To assess reliability, scholars usually compute Cronbach’s α. However, this coefficient is not appropriate when the indicators are congeneric. If the factor loadings vary substantially, we should compute McDonald’s ω~h~  [@zinbarg_cronbachs_2005]. Still, we will compute both coefficients for the sake of demonstration. For Cronbach’s α, we will compute the median and 95% credible interval. 
 
 ```{r}
 #| message: false
