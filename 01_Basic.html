@@ -169,7 +169,7 @@ div.csl-indent {
          <div>
       <div class="quarto-title-meta-heading">Modified</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">28.06.2024</p>
+        <p class="date">01.07.2024</p>
       </div>
     </div>
       </div>
@@ -186,43 +186,38 @@ div.csl-indent {
 <p>In this tutorial, we will use the <code>HolzingerSwineford1939</code> data set, which contains mental ability test scores of seventh- and eighth-grade children from two different schools (Pasteur and Grant-White).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lavaan)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(semTools)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'semTools' was built under R version 4.4.1</code></pre>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(semTools)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(psych)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Hmisc)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Loading the data</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>Data <span class="ot">&lt;-</span> lavaan<span class="sc">::</span>HolzingerSwineford1939</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(psych)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Hmisc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'Hmisc' was built under R version 4.4.1</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Loading the data</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>Data <span class="ot">&lt;-</span> lavaan<span class="sc">::</span>HolzingerSwineford1939</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>First, let’s compute the descriptives for the nominal variables — the counts. You can compute the counts using the <code>table()</code> function.</p>
+<p>First, let’s compute the descriptives for the nominal variables — the counts. We can compute the counts using the <code>table()</code> function.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Count for a single variable</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(Data<span class="sc">$</span>sex,</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">useNA =</span> <span class="st">"always"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Count for a single variable</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(Data<span class="sc">$</span>sex,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">useNA =</span> <span class="st">"always"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
    1    2 &lt;NA&gt; 
  146  155    0 </code></pre>
 </div>
 </div>
+<p>If we have multiple variables, we can use a loop that iterates over the elements of the <code>nominal_variables</code> vector and produces as many tables with counts as there are variables in that vector.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define nominal variables</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>nominal_variables <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"sex"</span>, <span class="st">"school"</span>, <span class="st">"grade"</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Count for multiple variables</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>nominal_sample_statistics <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (variable <span class="cf">in</span> nominal_variables) {</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  frequency_table <span class="ot">&lt;-</span> <span class="fu">table</span>(Data[, variable],</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>                           <span class="at">useNA =</span> <span class="st">"always"</span>)</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  nominal_sample_statistics[[variable]] <span class="ot">&lt;-</span> frequency_table</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>nominal_sample_statistics</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define nominal variables</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>nominal_variables <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"sex"</span>, <span class="st">"school"</span>, <span class="st">"grade"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Count for multiple variables</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>nominal_sample_statistics <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (variable <span class="cf">in</span> nominal_variables) {</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  frequency_table <span class="ot">&lt;-</span> <span class="fu">table</span>(Data[, variable],</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>                           <span class="at">useNA =</span> <span class="st">"always"</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  nominal_sample_statistics[[variable]] <span class="ot">&lt;-</span> frequency_table</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>nominal_sample_statistics</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$sex
 
@@ -240,64 +235,63 @@ $grade
  157  143    1 </code></pre>
 </div>
 </div>
-<p>If you have multiple variables, you can use a loop that iterates over the elements of the <code>nominal_variables</code> vector and produces as many tables with counts as there are variables in that vector.</p>
-<p>For continuous variables, we compute the mean, standard deviation, skewness, kurtosis, and the percentage of missing data.</p>
+<p>For continuous variables, we compute the mean, standard deviation, skewness, kurtosis, and the percentage of missing data using the base R functions and <code>skew()</code> and <code>kurtosi()</code> functions from the <code>psych</code> package.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute aggregated age variable of year and months</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>Data<span class="sc">$</span>age <span class="ot">&lt;-</span> (Data<span class="sc">$</span>ageyr <span class="sc">*</span> <span class="dv">12</span> <span class="sc">+</span> Data<span class="sc">$</span>agemo) <span class="sc">/</span> <span class="dv">12</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate mean, sd, skew, kurtosis, and percentage missing</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>avrg_ <span class="ot">&lt;-</span> <span class="fu">mean</span>(Data<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>sd_ <span class="ot">&lt;-</span> <span class="fu">sd</span>(Data<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>skw_ <span class="ot">&lt;-</span>psych<span class="sc">::</span><span class="fu">skew</span>(Data<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>krtss_<span class="ot">&lt;-</span> psych<span class="sc">::</span><span class="fu">kurtosi</span>(Data<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>mis_ <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(Data<span class="sc">$</span>age)) <span class="sc">/</span> <span class="fu">nrow</span>(Data)</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>smmry <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">var =</span> <span class="st">"age"</span>,</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">avrg_ =</span> avrg_,</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">sd_ =</span> sd_,</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">skw_ =</span> skw_,</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">krtss_ =</span> krtss_,</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">mis_ =</span> mis_</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Format the numeric columns to 2 decimal places using sprintf</span></span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>smmry <span class="ot">&lt;-</span> smmry <span class="sc">%&gt;%</span></span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(avrg_, sd_, skw_, krtss_), </span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>                <span class="sc">~</span> <span class="fu">sprintf</span>(<span class="st">"%.2f"</span>, .)))</span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Rename columns</span></span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(smmry) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Variable"</span>, <span class="st">"Mean"</span>, <span class="st">"Standard Deviation"</span>, <span class="st">"Skewness"</span>, <span class="st">"Kurtosis"</span>, <span class="st">"% Missing Data"</span>)</span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>smmry</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute aggregated age variable of year and months</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>Data<span class="sc">$</span>age <span class="ot">&lt;-</span> (Data<span class="sc">$</span>ageyr <span class="sc">*</span> <span class="dv">12</span> <span class="sc">+</span> Data<span class="sc">$</span>agemo) <span class="sc">/</span> <span class="dv">12</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate mean, sd, skew, kurtosis, and percentage missing</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>avrg_ <span class="ot">&lt;-</span> <span class="fu">mean</span>(Data<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>sd_ <span class="ot">&lt;-</span> <span class="fu">sd</span>(Data<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>skw_ <span class="ot">&lt;-</span>psych<span class="sc">::</span><span class="fu">skew</span>(Data<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>krtss_<span class="ot">&lt;-</span> psych<span class="sc">::</span><span class="fu">kurtosi</span>(Data<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>mis_ <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(Data<span class="sc">$</span>age)) <span class="sc">/</span> <span class="fu">nrow</span>(Data)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>smmry <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">var =</span> <span class="st">"age"</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">avrg_ =</span> avrg_,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">sd_ =</span> sd_,</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">skw_ =</span> skw_,</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">krtss_ =</span> krtss_,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">mis_ =</span> mis_</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Format the numeric columns to 2 decimal places using sprintf</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>smmry <span class="ot">&lt;-</span> smmry <span class="sc">%&gt;%</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(avrg_, sd_, skw_, krtss_), </span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>                <span class="sc">~</span> <span class="fu">sprintf</span>(<span class="st">"%.2f"</span>, .)))</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Rename columns</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(smmry) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Variable"</span>, <span class="st">"Mean"</span>, <span class="st">"Standard Deviation"</span>, <span class="st">"Skewness"</span>, <span class="st">"Kurtosis"</span>, <span class="st">"% Missing Data"</span>)</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>smmry</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  Variable  Mean Standard Deviation Skewness Kurtosis % Missing Data
 1      age 13.44               1.02     0.70     0.10              0</code></pre>
 </div>
 </div>
-<p>Alternatively, we could use the <code>describe()</code> function from the <code>psych</code> package, which can be particularly useful with multiple continuous variables. The only caveat of that function is that it will not produce the percentage of missing observation per variable automatically, which we could easily circumvent by running <code>colSums(is.na())/n</code>, where <code>n</code> is the total number of observations.</p>
+<p>Alternatively, we could use the <code>describe()</code> function from the <code>psych</code> package, which can be particularly useful with multiple continuous variables. The only caveat of that function is that it will not produce the percentage of missing observations per variable automatically, which we could easily circumvent by running <code>colSums(is.na(data))/n</code>, where <code>n</code> is the total number of observations.</p>
 </section>
 <section id="dimensionality-assessment-factorial-validity" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="dimensionality-assessment-factorial-validity">Dimensionality Assessment &amp; Factorial Validity</h2>
-<p>First, we build a look-up table where items are assigned to different subscales. We will use the table for the subsequent analyses in this section.</p>
+<p>First, we build a look-up table where items are assigned to different subscales. We will use the table for the subsequent analyses in this document.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build lookup table for required items</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>lookup_table <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">item =</span> <span class="fu">paste</span>(<span class="st">"x"</span>, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>), <span class="at">sep =</span> <span class="st">""</span>),</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">subscale =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"visual"</span>, <span class="st">"textual"</span>, <span class="st">"speed"</span>),</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">each =</span> <span class="dv">3</span>))</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                           )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build lookup table for required items</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>lookup_table <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">item =</span> <span class="fu">paste</span>(<span class="st">"x"</span>, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>), <span class="at">sep =</span> <span class="st">""</span>),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">subscale =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"visual"</span>, <span class="st">"textual"</span>, <span class="st">"speed"</span>),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">each =</span> <span class="dv">3</span>))</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                           )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="exploratory-factor-analysis" class="level3 page-columns page-full">
 <h3 class="anchored" data-anchor-id="exploratory-factor-analysis">Exploratory Factor Analysis</h3>
 <p>To decide how many latent dimension to extract, we will first use parallel analysis (for the factor solution, not principle components) and exploratory factor analysis. We run parallel analysis using the following syntax:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">8576456</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Conduct parallel analysis display screeplot</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>parallel_analyses_efa <span class="ot">&lt;-</span> psych<span class="sc">::</span><span class="fu">fa.parallel</span>(Data[ , <span class="fu">unlist</span>(lookup_table<span class="sc">$</span>item)],</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">fa =</span> <span class="st">"fa"</span>, <span class="co"># Method to explore dimensionality: efa</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">fm =</span> <span class="st">"minres"</span>, <span class="at">nfactors =</span> <span class="dv">1</span>, <span class="at">SMC =</span> F,</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">n.iter =</span> <span class="dv">30</span>, <span class="co"># quant = .95,</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">cor =</span> <span class="st">"cor"</span>)                            </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">8576456</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Conduct parallel analysis display screeplot</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>parallel_analyses_efa <span class="ot">&lt;-</span> psych<span class="sc">::</span><span class="fu">fa.parallel</span>(Data[ , <span class="fu">unlist</span>(lookup_table<span class="sc">$</span>item)],</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">fa =</span> <span class="st">"fa"</span>, <span class="co"># Method to explore dimensionality: efa</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">fm =</span> <span class="st">"minres"</span>, <span class="at">nfactors =</span> <span class="dv">1</span>, <span class="at">SMC =</span> F,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">n.iter =</span> <span class="dv">30</span>, <span class="co"># quant = .95,</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">cor =</span> <span class="st">"cor"</span>)                            </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Parallel analysis suggests that the number of factors =  3  and the number of components =  NA </code></pre>
 </div>
@@ -316,9 +310,9 @@ Figure&nbsp;1
 </div>
 
 <div class="no-row-height column-margin column-container"><div class="">
-<p>For categorical data, you would need to change the <code>cor =</code> argument in the <code>fa.parallel()</code> function to <code>"poly"</code> and use polychoric correlations.</p>
-</div></div><p>The idea behind parallel analysis in exploratory factor analysis (EFA) involves comparing the eigenvalues from your actual data to those from randomly generated data to determine the number of factors to retain. The random datasets match your actual dataset in terms of sample size and number of variables. Eigenvalues are calculated for both the real data and the random data. This process is repeated multiple times to generate a distribution of eigenvalues for the random data.</p>
-<p>The key step is then to compare the eigenvalues from your actual data with the mean (or sometimes the 95th percentile) of the eigenvalues from the random datasets. You retain those factors where the actual eigenvalue exceeds the corresponding eigenvalue from the random data. In our case, <a href="#fig-figpar" class="quarto-xref">Figure&nbsp;1</a> with a scree plot suggests that we should extract three factors.</p>
+<p>For categorical data, we would need to change the <code>cor =</code> argument in the <code>fa.parallel()</code> function to <code>"poly"</code> and use polychoric correlations.</p>
+</div></div><p>The idea behind parallel analysis in exploratory factor analysis (EFA) involves comparing the eigenvalues from our actual data to those from randomly generated data to determine the number of factors to retain. The random datasets match our actual dataset in terms of sample size and the number of variables. Eigenvalues are calculated for both the real data and the random data. This process is repeated multiple times to generate a distribution of eigenvalues for the random data.</p>
+<p>The key step is then to compare the eigenvalues from our actual data with the mean (or sometimes the 95th percentile) of the eigenvalues from the random datasets. We retain those factors where the actual eigenvalue exceeds the corresponding eigenvalue from the random data. In our case, <a href="#fig-figpar" class="quarto-xref">Figure&nbsp;1</a> with a scree plot suggests that we should extract three factors.</p>
 <div class="callout callout-style-simple callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -329,24 +323,23 @@ Be careful
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Quite often researchers use the Kaiser-1 rule to decide the number of latent factors to extract. That is, they check how many eigenvalues are greater than 1. This method has been shown not be robust and result in extracting too many latent dimensions <span class="citation" data-cites="russell_search_2002 van_der_eijk_risky_2015">(see, <a href="#ref-russell_search_2002" role="doc-biblioref">Russell 2002</a>; <a href="#ref-van_der_eijk_risky_2015" role="doc-biblioref">Van Der Eijk and Rose 2015</a>)</span>. Hence, you should probably refrain from using it.</p>
+<p>Quite often, researchers use the Kaiser-1 rule to decide on the number of latent factors to extract. That is, they check how many eigenvalues are greater than 1. This method has been shown to not be robust and can result in extracting too many latent dimensions <span class="citation" data-cites="russell_search_2002 van_der_eijk_risky_2015">(see, <a href="#ref-russell_search_2002" role="doc-biblioref">Russell 2002</a>; <a href="#ref-van_der_eijk_risky_2015" role="doc-biblioref">Van Der Eijk and Rose 2015</a>)</span>. Hence, you should probably refrain from using it.</p>
 </div>
 </div>
 <p>Knowing how many factors to extract, we will estimate now an EFA model with three factors using the oblique rotation and minimal residuals (a.k.a. ordinary least squares) as the extraction method<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate exploratory factor analyses</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>efa <span class="ot">&lt;-</span> psych<span class="sc">::</span><span class="fu">fa</span>(Data[ , <span class="fu">unlist</span>(lookup_table<span class="sc">$</span>item)],</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fm =</span> <span class="st">"pa"</span>,</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">nfactors =</span> <span class="dv">3</span>,</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">rotate =</span> <span class="st">"oblimin"</span>,</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">scores =</span> <span class="st">"regression"</span>, <span class="at">oblique.scores =</span> F,</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">SMC =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">cor =</span> <span class="st">"cor"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required namespace: GPArotation</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># matrix of factor loadings</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(efa[[<span class="st">"loadings"</span>]], <span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate exploratory factor analyses</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>efa <span class="ot">&lt;-</span> psych<span class="sc">::</span><span class="fu">fa</span>(Data[ , <span class="fu">unlist</span>(lookup_table<span class="sc">$</span>item)],</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fm =</span> <span class="st">"pa"</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">nfactors =</span> <span class="dv">3</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">rotate =</span> <span class="st">"oblimin"</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">scores =</span> <span class="st">"regression"</span>, <span class="at">oblique.scores =</span> F,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">SMC =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">cor =</span> <span class="st">"cor"</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co"># matrix of factor loadings</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(efa[[<span class="st">"loadings"</span>]], <span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Loadings:
@@ -367,8 +360,8 @@ Proportion Var 0.247 0.142 0.137
 Cumulative Var 0.247 0.388 0.526</code></pre>
 </div>
 </div>
-<p>The output of the <code>fa()</code> function is very detailed, potentially overwhelming, so we won’t be showing it in the whole. Instead we will focus on the matrix of factor loadings.</p>
-<p>By looking at the matrix we can see that items <code>x1-x3</code> have high loadings on the factor <code>PA3</code>, items <code>x4-x6</code> on the factor <code>PA1</code> and <code>x7-x9</code> on <code>PA2</code>. We will use this insight to specify our confirmatory model.</p>
+<p>The output of the <code>fa()</code> function is very detailed and potentially overwhelming, so we are not showing it in its entirety. Instead we focus on the matrix of factor loadings.</p>
+<p>By looking at the matrix, we can see that items <code>x1-x3</code> have high loadings on the factor <code>PA3</code>, items <code>x4-x6</code> on the factor <code>PA1</code>, and items <code>x7-x9</code> on <code>PA2</code>. We will use this insight to specify our confirmatory model.</p>
 </section>
 <section id="confirmatory-factor-analysis-cfa" class="level3 page-columns page-full">
 <h3 class="anchored" data-anchor-id="confirmatory-factor-analysis-cfa">Confirmatory Factor Analysis (CFA)</h3>
@@ -378,72 +371,74 @@ Cumulative Var 0.247 0.388 0.526</code></pre>
 <li>Three-dimensional congeneric model;</li>
 <li>Three-dimensional tau-equivalent model.</li>
 </ol>
-<p>While it often makes sense to compare models 1 and 2 becasue model 1 is what we usually think of as a more parsimonious model (having fewer latent factors), it might be not clear why we would estimate models 2 and 3, and what does the terms “congeneric” and “tau-equivalent” even mean. In the congeneric model, we assume that the indicators measure the same construct but not necessairly to the same degree. With the tau-equivalent model, we assume that the indiactor measure the construct to the same degree and we do so by fixing unstandardized factor loadings to 1.0. If the fit of the latter is not substantially worse than the former, we can conclude that the indicators are tau-equivalent <span class="citation" data-cites="kline_principles_2016">(<a href="#ref-kline_principles_2016" role="doc-biblioref">Kline 2016</a>)</span>. One of the big advantages of the tau-equivalent model is that it allows for a greater comparability of scores across independent studies that use the same items as the scores do not depend on the study-specifc factor loadings <span class="citation" data-cites="widaman_thinking_2023">(<a href="#ref-widaman_thinking_2023" role="doc-biblioref">Widaman and Revelle 2023</a>)</span>. Also the correlation between the sum scores and the the true, or factor, scores is then high.</p>
-<p>To estimate the three models with first define the model syntax. Then we choose specify the estimator (Robust Maximum Likelihood), and we set the option <code>std.lv = TRUE</code> to impose the identification constraints on the model - mean of the latent variable equal to 0 and the variance to 1.</p>
+<p>While it often makes sense to compare models 1 and 2 because model 1 is typically considered more parsimonious (having fewer latent factors), it might not be clear why we would estimate models 2 and 3, and what the terms “congeneric” and “tau-equivalent” even mean.</p>
+<p>In the congeneric model, we assume that the indicators measure the same construct but not necessarily to the same degree. With the tau-equivalent model, we assume that the indicators measure the construct to the same degree, and we enforce this by fixing unstandardized factor loadings to 1.0. If the fit of the latter is not substantially worse than the former, we can conclude that the indicators are tau-equivalent <span class="citation" data-cites="kline_principles_2016">(<a href="#ref-kline_principles_2016" role="doc-biblioref">Kline 2016</a>)</span>.</p>
+<p>One of the significant advantages of the tau-equivalent model is that it allows for greater comparability of scores across independent studies using the same items, as the scores do not depend on study-specific factor loadings <span class="citation" data-cites="widaman_thinking_2023">(<a href="#ref-widaman_thinking_2023" role="doc-biblioref">Widaman and Revelle 2023</a>)</span>. Additionally, the correlation between the sum scores and the true (or factor) scores is then high.</p>
+<p>To estimate the three models, we first define the model syntax. Then we specify the estimator as Robust Maximum Likelihood (MLR) and set the option <code>std.lv = TRUE</code> to impose the identification constraints on the model, i.e., the mean of the latent variable is equal to 0 and the variance is equal to 1.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define models</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>one_factor_model <span class="ot">&lt;-</span> <span class="st">'</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="st">g_factor =~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="st">'</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>three_factor_model <span class="ot">&lt;-</span> <span class="st">'</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="st">visual =~ x1 + x2 + x3</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="st">textual =~ x4 + x5 + x6</span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="st">speed =~ x7 + x8 + x9</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="st">'</span></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>three_factor_tau_model <span class="ot">&lt;-</span> <span class="st">'</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="st">visual =~ a*x1 + a*x2 + a*x3</span></span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="st">textual =~ b*x4 + b*x5 + b*x6</span></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="st">speed =~ c*x7 + c*x8 + c*x9</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="st">'</span></span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate cfa</span></span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a><span class="co"># One factor model</span></span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>one_factor_cfa <span class="ot">&lt;-</span> lavaan<span class="sc">::</span><span class="fu">cfa</span>(<span class="at">model =</span> one_factor_model,</span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>                              <span class="at">data =</span> Data,</span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>                              <span class="at">estimator =</span> <span class="st">'mlr'</span>,</span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>                              <span class="at">std.lv =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Three factor model</span></span>
-<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>three_factor_cfa <span class="ot">&lt;-</span> lavaan<span class="sc">::</span><span class="fu">cfa</span>(<span class="at">model =</span> three_factor_model,</span>
-<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>                                <span class="at">data =</span> Data,</span>
-<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>                                <span class="at">estimator =</span> <span class="st">'mlr'</span>,</span>
-<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>                                <span class="at">std.lv =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Three factor model model with essential tau equivalence</span></span>
-<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>three_factor_tau_cfa <span class="ot">&lt;-</span> lavaan<span class="sc">::</span><span class="fu">cfa</span>(<span class="at">model =</span> three_factor_tau_model,</span>
-<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">data =</span> Data,</span>
-<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">estimator =</span> <span class="st">'mlr'</span>,</span>
-<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">std.lv =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define models</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>one_factor_model <span class="ot">&lt;-</span> <span class="st">'</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="st">g_factor =~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="st">'</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>three_factor_model <span class="ot">&lt;-</span> <span class="st">'</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="st">visual =~ x1 + x2 + x3</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="st">textual =~ x4 + x5 + x6</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="st">speed =~ x7 + x8 + x9</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="st">'</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>three_factor_tau_model <span class="ot">&lt;-</span> <span class="st">'</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="st">visual =~ a*x1 + a*x2 + a*x3</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="st">textual =~ b*x4 + b*x5 + b*x6</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="st">speed =~ c*x7 + c*x8 + c*x9</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="st">'</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate cfa</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a><span class="co"># One factor model</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>one_factor_cfa <span class="ot">&lt;-</span> lavaan<span class="sc">::</span><span class="fu">cfa</span>(<span class="at">model =</span> one_factor_model,</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>                              <span class="at">data =</span> Data,</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>                              <span class="at">estimator =</span> <span class="st">'mlr'</span>,</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>                              <span class="at">std.lv =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Three factor model</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>three_factor_cfa <span class="ot">&lt;-</span> lavaan<span class="sc">::</span><span class="fu">cfa</span>(<span class="at">model =</span> three_factor_model,</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>                                <span class="at">data =</span> Data,</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>                                <span class="at">estimator =</span> <span class="st">'mlr'</span>,</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>                                <span class="at">std.lv =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Three factor model model with essential tau equivalence</span></span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>three_factor_tau_cfa <span class="ot">&lt;-</span> lavaan<span class="sc">::</span><span class="fu">cfa</span>(<span class="at">model =</span> three_factor_tau_model,</span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">data =</span> Data,</span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">estimator =</span> <span class="st">'mlr'</span>,</span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">std.lv =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 <div class="no-row-height column-margin column-container"><div class="">
-<p>For categorical data, we would change the <code>cfa()</code> call and we would specify, which variables should by treated as categorical by using the <code>ordered</code> argument. <code>lavaan</code> then automatically would switch to an appropriate estimator — diagonally weighted least squares.</p>
+<p>For categorical data, we would change the <code>cfa()</code> call and specify which variables should be treated as categorical by using the <code>ordered</code> argument. <code>lavaan</code> would then automatically switch to an appropriate estimator — diagonally weighted least squares.</p>
 </div></div><p>Once the models are estimated and no warning messages are shown, we can inspect the global fit of the models.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># model fit</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Define fit measures of interest</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co"># use robust versions</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>fit_measures <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"chisq.scaled"</span>, <span class="st">"df"</span>, <span class="st">"pvalue.scaled"</span>,</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"cfi.robust"</span>, <span class="st">"rmsea.robust"</span>, <span class="st">"srmr"</span>,</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"aic"</span>, <span class="st">"bic"</span>, <span class="st">"bic2"</span>)</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract model fit</span></span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(lavaan<span class="sc">::</span><span class="fu">fitMeasures</span>(one_factor_cfa, <span class="at">fit.measures =</span> fit_measures), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># model fit</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Define fit measures of interest</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># use robust versions</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>fit_measures <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"chisq.scaled"</span>, <span class="st">"df"</span>, <span class="st">"pvalue.scaled"</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"cfi.robust"</span>, <span class="st">"rmsea.robust"</span>, <span class="st">"srmr"</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"aic"</span>, <span class="st">"bic"</span>, <span class="st">"bic2"</span>)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract model fit</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(lavaan<span class="sc">::</span><span class="fu">fitMeasures</span>(one_factor_cfa, <span class="at">fit.measures =</span> fit_measures), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> chisq.scaled            df pvalue.scaled    cfi.robust  rmsea.robust 
       315.833        27.000         0.000         0.676         0.187 
          srmr           aic           bic          bic2 
         0.143      7738.448      7805.176      7748.091 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(lavaan<span class="sc">::</span><span class="fu">fitMeasures</span>(three_factor_cfa, <span class="at">fit.measures =</span> fit_measures), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(lavaan<span class="sc">::</span><span class="fu">fitMeasures</span>(three_factor_cfa, <span class="at">fit.measures =</span> fit_measures), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> chisq.scaled            df pvalue.scaled    cfi.robust  rmsea.robust 
        87.132        24.000         0.000         0.930         0.092 
          srmr           aic           bic          bic2 
         0.065      7517.490      7595.339      7528.739 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(lavaan<span class="sc">::</span><span class="fu">fitMeasures</span>(three_factor_tau_cfa, <span class="at">fit.measures =</span> fit_measures), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(lavaan<span class="sc">::</span><span class="fu">fitMeasures</span>(three_factor_tau_cfa, <span class="at">fit.measures =</span> fit_measures), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> chisq.scaled            df pvalue.scaled    cfi.robust  rmsea.robust 
       103.426        30.000         0.000         0.913         0.092 
@@ -451,8 +446,8 @@ Cumulative Var 0.247 0.388 0.526</code></pre>
         0.084      7527.595      7583.202      7535.630 </code></pre>
 </div>
 </div>
-<p>First, we inspect the scaled chi-square and the corresponding p-values. They suggest that our models fail the exact-fit test and that they do not fit the data well.</p>
-<p>We also check the approximate fit indices, i.e., the robust versions of the Comparative Fit Index (CFI) and the Root Mean Square Error of Approximation (RMSEA), and the Standardized Root Mean Square Residual (SRMR). There are different cut-off values proposed in the literature for those indices <span class="citation" data-cites="hu_cutoff_1999 byrne_structural_1994">(e.g., <a href="#ref-hu_cutoff_1999" role="doc-biblioref">Hu and Bentler 1999</a>; <a href="#ref-byrne_structural_1994" role="doc-biblioref">Byrne 1994</a>)</span>. We will assume that CFI values smaller than .950, RMSEA greater than .08, and SRMR greater than .10 suggest a poor fit. In the case of all of our models, the indices suggest unsatisfactory fit, with the three-factor model with varying loadings as the best-fitting.</p>
+<p>First, we inspect the scaled chi-square and the corresponding p-values. They suggest that our models fail the exact-fit test and do not fit the data well.</p>
+<p>We also check the approximate fit indices, i.e., the robust versions of the Comparative Fit Index (CFI), the Root Mean Square Error of Approximation (RMSEA), and the Standardized Root Mean Square Residual (SRMR). Different cut-off values are proposed in the literature for these indices <span class="citation" data-cites="hu_cutoff_1999 byrne_structural_1994">(e.g., <a href="#ref-hu_cutoff_1999" role="doc-biblioref">Hu and Bentler 1999</a>; <a href="#ref-byrne_structural_1994" role="doc-biblioref">Byrne 1994</a>)</span>. We will assume that CFI values smaller than .950, RMSEA values greater than .08, and SRMR values greater than .10 suggest a poor fit. In the case of all our models, the indices suggest an unsatisfactory fit, with the three-factor model with varying loadings being the best-fitting.</p>
 <div class="callout callout-style-simple callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -463,12 +458,12 @@ Be careful
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Even though in this tutorial we follow the common practice of using fixed cut-off values for evaluating the model fit, this is not recommended by the current literature as the universally used cut-off values are based on simulation studies with a limited set of conditions which can substantially deviate from the ones that the researcher is facing <span class="citation" data-cites="groskurth_why_2023 mcneish_dynamic_2023">(see, <a href="#ref-groskurth_why_2023" role="doc-biblioref">Groskurth, Bluemke, and Lechner 2023</a>; <a href="#ref-mcneish_dynamic_2023" role="doc-biblioref">McNeish and Wolf 2023</a>)</span>. Ideally, researchers should derive the cut-offs using simulation-based techniques, which can done using for example the Shiny app developed by <span class="citation" data-cites="mcneish_dynamic_2023">McNeish and Wolf (<a href="#ref-mcneish_dynamic_2023" role="doc-biblioref">2023</a>)</span> - https://dynamicfit.app/connect/</p>
+<p>Even though in this tutorial we follow the common practice of using fixed cut-off values for evaluating model fit, this approach is not recommended by current literature. The universally used cut-off values are based on simulation studies with a limited set of conditions, which can substantially deviate from the ones researchers face <span class="citation" data-cites="groskurth_why_2023 mcneish_dynamic_2023">(see, <a href="#ref-groskurth_why_2023" role="doc-biblioref">Groskurth, Bluemke, and Lechner 2023</a>; <a href="#ref-mcneish_dynamic_2023" role="doc-biblioref">McNeish and Wolf 2023</a>)</span>. Ideally, researchers should derive the cut-offs using simulation-based techniques. This can be done using, for example, the Shiny app developed by <span class="citation" data-cites="mcneish_dynamic_2023">McNeish and Wolf (<a href="#ref-mcneish_dynamic_2023" role="doc-biblioref">2023</a>)</span> - https://dynamicfit.app/connect/.</p>
 </div>
 </div>
-<p>We can use a statistical test to compare those models, i.e.&nbsp;the scaled chi-squared difference test. We exclude the one-factor model from the comparison since its fit is much worse than either of the three-dimensional models. To conduct the test, we use the <code>anova()</code> function.</p>
+<p>We can use a statistical test to compare these models, specifically the scaled chi-squared difference test. We exclude the one-factor model from the comparison since its fit is much worse than either of the three-dimensional models. To conduct the test, we use the <code>anova()</code> function.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(three_factor_cfa, three_factor_tau_cfa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(three_factor_cfa, three_factor_tau_cfa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Scaled Chi-Squared Difference Test (method = "satorra.bentler.2001")
@@ -485,12 +480,12 @@ three_factor_tau_cfa 30 7527.6 7583.2 107.411     17.317       6   0.008185 **
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 </div>
-<p>The test confirms the conclusions from the comparison of fit indices — model with varying factor loadings fits the data the best.</p>
-<p>To identify the problems with the best-fitting model, we will evaluate local model fit. Specifically, we will inspect the matrix of correlation residuals and we will look for residuals whose absolute value is greater than .10 as they can be suggestive of model misfit<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
+<p>The test confirms the conclusions from the comparison of fit indices — the model with varying factor loadings fits the data the best.</p>
+<p>To identify the problems with the best-fitting model, we will evaluate the local model fit. Specifically, we will inspect the matrix of correlation residuals and look for residuals whose absolute value is greater than .10, as they can be suggestive of model misfit.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate local model fit</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract residual correlaton matrix</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>lavaan<span class="sc">::</span><span class="fu">lavResiduals</span>(three_factor_cfa)<span class="sc">$</span>cov</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate local model fit</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract residual correlaton matrix</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>lavaan<span class="sc">::</span><span class="fu">lavResiduals</span>(three_factor_cfa)<span class="sc">$</span>cov</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       x1     x2     x3     x4     x5     x6     x7     x8     x9
 x1  0.000                                                        
@@ -504,40 +499,41 @@ x8 -0.039 -0.052 -0.012 -0.067 -0.036 -0.022  0.075  0.000
 x9  0.149  0.073  0.147  0.048  0.067  0.056 -0.038 -0.032  0.000</code></pre>
 </div>
 </div>
-<p>The inspection of the residuals reveals that there are five residuals greater than .10, which suggest the violation of conditional independence assumption between those pairs of indicators:</p>
+<p>The inspection of the residuals reveals that there are five residuals greater than .10, which suggests the violation of the conditional independence assumption between those pairs of indicators:</p>
 <ul>
 <li><code>x1</code> with <code>x7</code> and <code>x9</code>;</li>
 <li><code>x2</code> with <code>x7</code>;</li>
 <li><code>x3</code> with <code>x5</code> and <code>x9</code>.</li>
 </ul>
-<p>In a real-world application we would know more about the items than just a few keywords that we get with the <code>HolzingerSwineford1939</code> dataset. In any case, we see that our model generally fails to account for the observed correlations between the items belonging to the factor <code>visual</code> and those belonging to the factor <code>speed</code>, and for the observed association between items <code>x3</code> and <code>x5</code>. If we believed that the model misses meaningful associations between items and non-target constructs represented by the latent factors, we might specify cross-loadings. If we believed that the model fails to account for the shared sources of influence on the indicators that are unrelated to the factors, such as wording effects or context, we would specify residual covariances <span class="citation" data-cites="asparouhov_bayesian_2015">(<a href="#ref-asparouhov_bayesian_2015" role="doc-biblioref">Asparouhov, Muthén, and Morin 2015</a>)</span>. In either case, we should explain the decision. Here, we will just specify the covariances.</p>
+<p>In a real-world application, we would know more about the items than just the few keywords provided in the <code>HolzingerSwineford1939</code> dataset. In any case, we see that our model generally fails to account for the observed correlations between the items belonging to the factor <code>visual</code> and those belonging to the factor <code>speed</code>, as well as for the observed association between items <code>x3</code> and <code>x5</code>.</p>
+<p>If we believe that the model misses meaningful associations between items and non-target constructs represented by the latent factors, we might specify cross-loadings. If we believe that the model fails to account for shared sources of influence on the indicators that are unrelated to the factors, such as wording effects or context, we would specify residual covariances <span class="citation" data-cites="asparouhov_bayesian_2015">(<a href="#ref-asparouhov_bayesian_2015" role="doc-biblioref">Asparouhov, Muthén, and Morin 2015</a>)</span>. In either case, we should explain the decision. Here, we will specify the covariances.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define models</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>three_factor_model <span class="ot">&lt;-</span> <span class="st">'</span></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="st">visual =~ x1 + x2 + x3</span></span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="st">textual =~ x4 + x5 + x6</span></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="st">speed =~ x7 + x8 + x9</span></span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="st">x1~~x7</span></span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="st">x1~~x9</span></span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="st">x2~~x7</span></span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="st">x3~~x5</span></span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="st">x3~~x9</span></span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a><span class="st">'</span></span>
-<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>three_factor_cfa_res <span class="ot">&lt;-</span> lavaan<span class="sc">::</span><span class="fu">cfa</span>(<span class="at">model =</span> three_factor_model,</span>
-<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>                                <span class="at">data =</span> Data,</span>
-<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>                                <span class="at">estimator =</span> <span class="st">'mlr'</span>,</span>
-<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>                                <span class="at">std.lv =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(lavaan<span class="sc">::</span><span class="fu">fitMeasures</span>(three_factor_cfa_res, <span class="at">fit.measures =</span> fit_measures), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define models</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>three_factor_model <span class="ot">&lt;-</span> <span class="st">'</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="st">visual =~ x1 + x2 + x3</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="st">textual =~ x4 + x5 + x6</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="st">speed =~ x7 + x8 + x9</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="st">x1~~x7</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="st">x1~~x9</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="st">x2~~x7</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="st">x3~~x5</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="st">x3~~x9</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="st">'</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>three_factor_cfa_res <span class="ot">&lt;-</span> lavaan<span class="sc">::</span><span class="fu">cfa</span>(<span class="at">model =</span> three_factor_model,</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>                                <span class="at">data =</span> Data,</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>                                <span class="at">estimator =</span> <span class="st">'mlr'</span>,</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>                                <span class="at">std.lv =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(lavaan<span class="sc">::</span><span class="fu">fitMeasures</span>(three_factor_cfa_res, <span class="at">fit.measures =</span> fit_measures), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> chisq.scaled            df pvalue.scaled    cfi.robust  rmsea.robust 
        39.369        19.000         0.004         0.976         0.060 
          srmr           aic           bic          bic2 
         0.043      7482.346      7578.730      7496.273 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>lavaan<span class="sc">::</span><span class="fu">lavResiduals</span>(three_factor_cfa_res)<span class="sc">$</span>cov</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>lavaan<span class="sc">::</span><span class="fu">lavResiduals</span>(three_factor_cfa_res)<span class="sc">$</span>cov</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       x1     x2     x3     x4     x5     x6     x7     x8     x9
 x1  0.027                                                        
@@ -551,13 +547,13 @@ x8 -0.015 -0.041  0.011 -0.067 -0.034 -0.022  0.027  0.000
 x9  0.043  0.095  0.016  0.062  0.082  0.070 -0.044 -0.004 -0.001</code></pre>
 </div>
 </div>
-<p>After we introduced the residual covariances, the model still fails to pass the exact-fit test, but has acceptable values on approximate fit indices and there are not other correlation residuals that would require our attention. We could check the value of the residual correlations (not correlation residuals!) by running <code>standardizedSolution(three_factor_cfa_res)</code> and subsetting the rows.</p>
+<p>After having introduced the residual covariances, the model still fails to pass the exact-fit test but has acceptable values on the approximate fit indices, and there are no other correlation residuals that require our attention. We can check the value of the residual correlations (not correlation residuals!) by running <code>standardizedSolution(three_factor_cfa_res)</code> and subsetting the rows.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>standardized_solution <span class="ot">&lt;-</span> <span class="fu">standardizedSolution</span>(three_factor_cfa_res)</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">subset</span>(standardized_solution, <span class="fu">grepl</span>(<span class="st">"~~"</span>, op) <span class="sc">&amp;</span> </span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>         <span class="fu">grepl</span>(<span class="st">"^x[0-9]+$"</span>, lhs) <span class="sc">&amp;</span> </span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>         <span class="fu">grepl</span>(<span class="st">"^x[0-9]+$"</span>, rhs) <span class="sc">&amp;</span> </span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>         lhs <span class="sc">!=</span> rhs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>standardized_solution <span class="ot">&lt;-</span> <span class="fu">standardizedSolution</span>(three_factor_cfa_res)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">subset</span>(standardized_solution, <span class="fu">grepl</span>(<span class="st">"~~"</span>, op) <span class="sc">&amp;</span> </span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>         <span class="fu">grepl</span>(<span class="st">"^x[0-9]+$"</span>, lhs) <span class="sc">&amp;</span> </span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>         <span class="fu">grepl</span>(<span class="st">"^x[0-9]+$"</span>, rhs) <span class="sc">&amp;</span> </span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>         lhs <span class="sc">!=</span> rhs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   lhs op rhs est.std    se      z pvalue ci.lower ci.upper
 10  x1 ~~  x7  -0.226 0.110 -2.061  0.039   -0.441   -0.011
@@ -569,16 +565,16 @@ x9  0.043  0.095  0.016  0.062  0.082  0.070 -0.044 -0.004 -0.001</code></pre>
 </div>
 
 <div class="no-row-height column-margin column-container"><div class="">
-<p>We use <code>subset()</code> and <code>grepl()</code> to find rows, such that:</p>
+<p>We use <code>subset()</code> and <code>grepl()</code> to find rows that:</p>
 <ul>
 <li>have <code>~~</code> in the column <code>op</code></li>
-<li>start with <code>x</code> followed by a numeric value in columns <code>lhs</code> and <code>rhs</code></li>
-<li>and where the values for rows <code>lhs</code> and <code>rhs</code> are different (because we are interested in the correlations)<br>
+<li>start with <code>x</code> followed by a numeric value in the columns <code>lhs</code> and <code>rhs</code></li>
+<li>have different values in the columns <code>lhs</code> and <code>rhs</code> (because we are interested in the correlations)<br>
 </li>
 </ul>
 </div></div><p>Now, we will inspect factor loadings and the correlation structure between the factors.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>lavaan<span class="sc">::</span><span class="fu">lavInspect</span>(three_factor_cfa_res, <span class="st">"std"</span>)<span class="sc">$</span>lambda</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>lavaan<span class="sc">::</span><span class="fu">lavInspect</span>(three_factor_cfa_res, <span class="st">"std"</span>)<span class="sc">$</span>lambda</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   visual textul speed
 x1  0.747  0.000 0.000
@@ -591,8 +587,8 @@ x7  0.000  0.000 0.623
 x8  0.000  0.000 0.736
 x9  0.000  0.000 0.616</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># interfactor correlation</span></span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>lavaan<span class="sc">::</span><span class="fu">lavInspect</span>(three_factor_cfa_res, <span class="st">"std"</span>)<span class="sc">$</span>psi</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># interfactor correlation</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>lavaan<span class="sc">::</span><span class="fu">lavInspect</span>(three_factor_cfa_res, <span class="st">"std"</span>)<span class="sc">$</span>psi</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        visual textul speed
 visual   1.000             
@@ -600,14 +596,14 @@ textual  0.470  1.000
 speed    0.440  0.278 1.000</code></pre>
 </div>
 </div>
-<p>We can see that all the standardized factor loadings have non-trivial (0.3&lt;) values and vary in magnitude. Correlations between the factors range from 0.470 (<code>textual</code> and <code>visual</code>) to 0.278 (<code>speed</code> and <code>textual</code>).</p>
+<p>We can see that all the standardized factor loadings have non-trivial values (greater than .3) and vary in magnitude. Correlations between the factors range from .470 (<code>textual</code> and <code>visual</code>) to .278 (<code>speed</code> and <code>textual</code>).</p>
 </section>
 </section>
 <section id="descriptive-statistics-of-indicators-reliability-and-criterion-validity" class="level2">
 <h2 class="anchored" data-anchor-id="descriptive-statistics-of-indicators-reliability-and-criterion-validity">Descriptive statistics of indicators, reliability, and criterion validity</h2>
-<p>In this section we will take a closer look at the indicators themselves. First, we will compute descriptive statistics.</p>
+<p>In this section, we will take a closer look at the indicators themselves and the observed scores. First, we will compute descriptive statistics for the indicators:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">describe</span>(Data[ , <span class="fu">unlist</span>(lookup_table<span class="sc">$</span>item)])[, <span class="fu">c</span>(<span class="st">"mean"</span>, <span class="st">"sd"</span>, <span class="st">"skew"</span>, <span class="st">"kurtosis"</span>, <span class="st">"n"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">describe</span>(Data[ , <span class="fu">unlist</span>(lookup_table<span class="sc">$</span>item)])[, <span class="fu">c</span>(<span class="st">"mean"</span>, <span class="st">"sd"</span>, <span class="st">"skew"</span>, <span class="st">"kurtosis"</span>, <span class="st">"n"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   mean   sd  skew kurtosis   n
 x1 4.94 1.17 -0.25     0.31 301
@@ -621,59 +617,59 @@ x8 5.53 1.01  0.53     1.17 301
 x9 5.37 1.01  0.20     0.29 301</code></pre>
 </div>
 </div>
-<p>Then, we calculate the reliability coefficients. To learn about the reliability, scholars usually compute Cronbach’s α. Yet, this coefficient is not appropriate when the indicators are congeneric. If the factor loadings vary substantially, we should compute McDonald’s ω<sub>h</sub> <span class="citation" data-cites="zinbarg_cronbachs_2005">(<a href="#ref-zinbarg_cronbachs_2005" role="doc-biblioref">Zinbarg et al. 2005</a>)</span>. Still, we will compute both coeffcients for the sake of demonstration. For Cronbach’s α, we will compute the median and 95% credible interval.</p>
+<p>Then, we calculate the reliability coefficients. To assess reliability, scholars usually compute Cronbach’s α. However, this coefficient is not appropriate when the indicators are congeneric. If the factor loadings vary substantially, we should compute McDonald’s ω<sub>h</sub> <span class="citation" data-cites="zinbarg_cronbachs_2005">(<a href="#ref-zinbarg_cronbachs_2005" role="doc-biblioref">Zinbarg et al. 2005</a>)</span>. Still, we will compute both coeffcients for the sake of demonstration. Still, we will compute both coefficients for the sake of demonstration. For Cronbach’s α, we will compute the median and 95% credible interval.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate Cronbachs alpha as example for scale "textual"</span></span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>textual_alphas <span class="ot">&lt;-</span> psych<span class="sc">::</span><span class="fu">alpha</span>(Data[, lookup_table[lookup_table<span class="sc">$</span>subscale <span class="sc">==</span> <span class="st">"textual"</span>, <span class="st">"item"</span>]],</span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>                               <span class="at">n.iter =</span> <span class="dv">1000</span>)</span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the median and the 95% CI</span></span>
-<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(textual_alphas[[<span class="st">"boot.ci"</span>]], <span class="at">digits =</span> <span class="dv">2</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate Cronbachs alpha as example for scale "textual"</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>textual_alphas <span class="ot">&lt;-</span> psych<span class="sc">::</span><span class="fu">alpha</span>(Data[, lookup_table[lookup_table<span class="sc">$</span>subscale <span class="sc">==</span> <span class="st">"textual"</span>, <span class="st">"item"</span>]],</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>                               <span class="at">n.iter =</span> <span class="dv">1000</span>)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the median and the 95% CI</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(textual_alphas[[<span class="st">"boot.ci"</span>]], <span class="at">digits =</span> <span class="dv">2</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> 2.5%   50% 97.5% 
  0.86  0.88  0.90 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># McDonalds omega hierarchical</span></span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>semTools<span class="sc">::</span><span class="fu">reliability</span>(three_factor_cfa_res, <span class="at">what =</span> <span class="st">"omega3"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># McDonalds omega hierarchical</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>semTools<span class="sc">::</span><span class="fu">reliability</span>(three_factor_cfa_res, <span class="at">what =</span> <span class="st">"omega3"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>          visual   textual     speed
 omega3 0.5528055 0.8773156 0.7021118</code></pre>
 </div>
 </div>
-<p>The results suggest that the reliability for the scale “visual” is not satisfactory.</p>
+<p>The results suggest that the reliability for the “visual” scale is not satisfactory.</p>
 <p>Lastly, we will investigate the criterion validity. For this, we will compute correlations between the mean scale scores and four variables that we have in the dataset: gender, age, school, and grade.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating unweighted means </span></span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(subscale <span class="cf">in</span> <span class="fu">unique</span>(lookup_table<span class="sc">$</span>subscale)) {</span>
-<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  subscale_name <span class="ot">&lt;-</span> <span class="fu">paste</span>(subscale, <span class="st">"mean"</span>, <span class="at">sep =</span> <span class="st">"_"</span>)</span>
-<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  items <span class="ot">&lt;-</span> lookup_table[lookup_table<span class="sc">$</span>subscale <span class="sc">==</span> subscale, <span class="st">"item"</span>]</span>
-<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>  mean_score <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(Data[, items], <span class="at">na.rm =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  Data[, subscale_name] <span class="ot">&lt;-</span> mean_score</span>
-<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform school variable to a numeric variable</span></span>
-<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>Data<span class="sc">$</span>school_numeric <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(Data<span class="sc">$</span>school)</span>
-<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Define variables for correlational analyses</span></span>
-<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a>cor_variables <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"visual_mean"</span>, <span class="st">"textual_mean"</span>, <span class="st">"speed_mean"</span>,</span>
-<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"sex"</span>, <span class="st">"age"</span>, <span class="st">"school_numeric"</span>, <span class="st">"grade"</span>)</span>
-<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-17"><a href="#cb46-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate correlations &amp; p-values</span></span>
-<span id="cb46-18"><a href="#cb46-18" aria-hidden="true" tabindex="-1"></a>cor_coef <span class="ot">&lt;-</span> Hmisc<span class="sc">::</span><span class="fu">rcorr</span>(<span class="fu">as.matrix</span>(Data[, cor_variables]))<span class="sc">$</span>r</span>
-<span id="cb46-19"><a href="#cb46-19" aria-hidden="true" tabindex="-1"></a>cor_pval <span class="ot">&lt;-</span> Hmisc<span class="sc">::</span><span class="fu">rcorr</span>(<span class="fu">as.matrix</span>(Data[, cor_variables]))<span class="sc">$</span>P</span>
-<span id="cb46-20"><a href="#cb46-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-21"><a href="#cb46-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtering rows and columns</span></span>
-<span id="cb46-22"><a href="#cb46-22" aria-hidden="true" tabindex="-1"></a>cor_coef <span class="ot">&lt;-</span> cor_coef[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"mean"</span>, <span class="fu">rownames</span>(cor_coef)),<span class="fu">grepl</span>(<span class="st">"mean"</span>, <span class="fu">colnames</span>(cor_coef))]</span>
-<span id="cb46-23"><a href="#cb46-23" aria-hidden="true" tabindex="-1"></a>cor_pval <span class="ot">&lt;-</span> cor_pval[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"mean"</span>, <span class="fu">rownames</span>(cor_pval)),<span class="fu">grepl</span>(<span class="st">"mean"</span>, <span class="fu">colnames</span>(cor_pval))]</span>
-<span id="cb46-24"><a href="#cb46-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-25"><a href="#cb46-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Formatting the output to two and three decimal places</span></span>
-<span id="cb46-26"><a href="#cb46-26" aria-hidden="true" tabindex="-1"></a>cor_coef <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(cor_coef) <span class="sc">%&gt;%</span></span>
-<span id="cb46-27"><a href="#cb46-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">sprintf</span>(<span class="st">"%.2f"</span>, .)))</span>
-<span id="cb46-28"><a href="#cb46-28" aria-hidden="true" tabindex="-1"></a>cor_pval <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(cor_pval) <span class="sc">%&gt;%</span></span>
-<span id="cb46-29"><a href="#cb46-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, .)))</span>
-<span id="cb46-30"><a href="#cb46-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-31"><a href="#cb46-31" aria-hidden="true" tabindex="-1"></a>cor_coef</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating unweighted means </span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(subscale <span class="cf">in</span> <span class="fu">unique</span>(lookup_table<span class="sc">$</span>subscale)) {</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  subscale_name <span class="ot">&lt;-</span> <span class="fu">paste</span>(subscale, <span class="st">"mean"</span>, <span class="at">sep =</span> <span class="st">"_"</span>)</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  items <span class="ot">&lt;-</span> lookup_table[lookup_table<span class="sc">$</span>subscale <span class="sc">==</span> subscale, <span class="st">"item"</span>]</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  mean_score <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(Data[, items], <span class="at">na.rm =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  Data[, subscale_name] <span class="ot">&lt;-</span> mean_score</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform school variable to a numeric variable</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>Data<span class="sc">$</span>school_numeric <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(Data<span class="sc">$</span>school)</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Define variables for correlational analyses</span></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>cor_variables <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"visual_mean"</span>, <span class="st">"textual_mean"</span>, <span class="st">"speed_mean"</span>,</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"sex"</span>, <span class="st">"age"</span>, <span class="st">"school_numeric"</span>, <span class="st">"grade"</span>)</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate correlations &amp; p-values</span></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>cor_coef <span class="ot">&lt;-</span> Hmisc<span class="sc">::</span><span class="fu">rcorr</span>(<span class="fu">as.matrix</span>(Data[, cor_variables]))<span class="sc">$</span>r</span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>cor_pval <span class="ot">&lt;-</span> Hmisc<span class="sc">::</span><span class="fu">rcorr</span>(<span class="fu">as.matrix</span>(Data[, cor_variables]))<span class="sc">$</span>P</span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtering rows and columns</span></span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a>cor_coef <span class="ot">&lt;-</span> cor_coef[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"mean"</span>, <span class="fu">rownames</span>(cor_coef)),<span class="fu">grepl</span>(<span class="st">"mean"</span>, <span class="fu">colnames</span>(cor_coef))]</span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a>cor_pval <span class="ot">&lt;-</span> cor_pval[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"mean"</span>, <span class="fu">rownames</span>(cor_pval)),<span class="fu">grepl</span>(<span class="st">"mean"</span>, <span class="fu">colnames</span>(cor_pval))]</span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Formatting the output to two and three decimal places</span></span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a>cor_coef <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(cor_coef) <span class="sc">%&gt;%</span></span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">sprintf</span>(<span class="st">"%.2f"</span>, .)))</span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true" tabindex="-1"></a>cor_pval <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(cor_pval) <span class="sc">%&gt;%</span></span>
+<span id="cb40-29"><a href="#cb40-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, .)))</span>
+<span id="cb40-30"><a href="#cb40-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-31"><a href="#cb40-31" aria-hidden="true" tabindex="-1"></a>cor_coef</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>               visual_mean textual_mean speed_mean
 sex                  -0.17         0.07       0.05
@@ -681,7 +677,7 @@ age                  -0.00        -0.23       0.21
 school_numeric        0.05        -0.27       0.14
 grade                 0.20         0.20       0.37</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>cor_pval </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>cor_pval </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>               visual_mean textual_mean speed_mean
 sex                  0.004        0.223      0.358
@@ -690,13 +686,13 @@ school_numeric       0.345        0.000      0.016
 grade                0.001        0.001      0.000</code></pre>
 </div>
 </div>
-<p>Correlations are small to moderate and not all them are significant. We see that the scale visual correlates with gender and grade, scales textual and speed with age, school, and grade.</p>
+<p>Correlations are small to moderate, and not all of them are significant. We see that the “visual” scale correlates with gender and grade, while the “textual” and “speed” scales correlate with age, school, and grade.</p>
 </section>
 <section id="descriptive-statistics-of-the-scales" class="level2">
 <h2 class="anchored" data-anchor-id="descriptive-statistics-of-the-scales">Descriptive statistics of the scales</h2>
-<p>The very last part of this tutorial consists of computing descriptive statistics for the scale scores.</p>
+<p>The final part of this tutorial consists of computing descriptive statistics for the scale scores.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">describe</span>(Data[, <span class="fu">c</span>(<span class="st">"visual_mean"</span>, <span class="st">"textual_mean"</span>, <span class="st">"speed_mean"</span>)])[, <span class="fu">c</span>(<span class="st">"mean"</span>, <span class="st">"sd"</span>, <span class="st">"skew"</span>, <span class="st">"kurtosis"</span>, <span class="st">"n"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">describe</span>(Data[, <span class="fu">c</span>(<span class="st">"visual_mean"</span>, <span class="st">"textual_mean"</span>, <span class="st">"speed_mean"</span>)])[, <span class="fu">c</span>(<span class="st">"mean"</span>, <span class="st">"sd"</span>, <span class="st">"skew"</span>, <span class="st">"kurtosis"</span>, <span class="st">"n"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>             mean   sd skew kurtosis   n
 visual_mean  4.42 0.88 0.18    -0.09 301
@@ -749,7 +745,7 @@ Zinbarg, Richard E., William Revelle, Iftah Yovel, and Wen Li. 2005. <span>“Cr
 
 <ol>
 <li id="fn1"><p>If you are interested in the details of exploratory factor analysis, you might want to check the book by <span class="citation" data-cites="fabrigar_exploratory_2012">Fabrigar and Wegener (<a href="#ref-fabrigar_exploratory_2012" role="doc-biblioref">2012</a>)</span><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>Evaluation of the local model fit often highlights the same model misspecifications as the inspection of modification indices. Yet, these two procedures have different premises. Inspection of correlations residuals address the question of the violation of the conditional independence assumption <span class="citation" data-cites="bollen_latent_2002">(indicators should be independent conditional on the latent variables, see <a href="#ref-bollen_latent_2002" role="doc-biblioref">Bollen 2002</a>)</span>. With modification indices, we investigate factors that can improve model fit. We prefer the former as answering the question of independence assumption is more meaningful than merely improving the fit of the model.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Evaluation of the local model fit often highlights the same model misspecifications as the inspection of modification indices. Yet, these two procedures have different premises. Inspection of correlation residuals addresses the question of the violation of the conditional independence assumption <span class="citation" data-cites="bollen_latent_2002">(indicators should be independent conditional on the latent variables, see <a href="#ref-bollen_latent_2002" role="doc-biblioref">Bollen 2002</a>)</span>. With modification indices, we investigate factors that can improve model fit. We prefer the former, as answering the question of the independence assumption is more meaningful than merely improving the fit of the model.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@misc{urban2024,
   author = {Urban, Julian and Grüning, David and Koc, Piotr},
