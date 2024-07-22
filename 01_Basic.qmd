@@ -8,7 +8,7 @@ author:
   - name: Julian Urban
     affiliation: "GESIS – Leibniz Institute for the Social Sciences"
   - name: David Grüning
-    affiliation: ""
+    affiliations: "Heidelberg University; GESIS – Leibniz Institute for the Social Sciences"
   - name: Piotr Koc
     affiliation: ""
 
