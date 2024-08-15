@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Piotr Koc">
 <meta name="author" content="Julian Urban">
 <meta name="author" content="David Grüning">
-<meta name="author" content="Piotr Koc">
 
 <title>Basic Analysis for Scale Archiving</title>
 <style>
@@ -126,7 +126,7 @@ div.csl-indent {
              <p class="subtitle lead"><em><em>ZIS R-Tutorials</em></em></p>
     </div>
     <div class="logo">
-             <img src="pics/zis_logo.svg" height="78">
+             <img src="pics/zis_logo.svg" height="80">
           </div>
   </div>
 
@@ -134,6 +134,14 @@ div.csl-indent {
     <div class="quarto-title-meta-heading">Authors</div>
     <div class="quarto-title-meta-heading">Affiliations</div>
         <div class="quarto-title-meta-contents">
+      <p class="author">Piotr Koc </p>
+    </div>
+        <div class="quarto-title-meta-contents">
+            <p class="affiliation">
+        GESIS – Leibniz Institute for the Social Sciences
+      </p>
+          </div>
+            <div class="quarto-title-meta-contents">
       <p class="author">Julian Urban </p>
     </div>
         <div class="quarto-title-meta-contents">
@@ -146,15 +154,7 @@ div.csl-indent {
     </div>
         <div class="quarto-title-meta-contents">
             <p class="affiliation">
-        
-      </p>
-          </div>
-            <div class="quarto-title-meta-contents">
-      <p class="author">Piotr Koc </p>
-    </div>
-        <div class="quarto-title-meta-contents">
-            <p class="affiliation">
-        
+        Heidelberg University; GESIS – Leibniz Institute for the Social Sciences
       </p>
           </div>
           </div>
@@ -169,7 +169,7 @@ div.csl-indent {
          <div>
       <div class="quarto-title-meta-heading">Modified</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">01.07.2024</p>
+        <p class="date">15.08.2024</p>
       </div>
     </div>
       </div>
@@ -235,7 +235,7 @@ $grade
  157  143    1 </code></pre>
 </div>
 </div>
-<p>For continuous variables, we compute the mean, standard deviation, skewness, kurtosis, and the percentage of missing data using the base R functions and <code>skew()</code> and <code>kurtosi()</code> functions from the <code>psych</code> package.</p>
+<p>For continuous variables, we compute the mean, standard deviation, skewness, excess kurtosis, and the percentage of missing data using the base R functions and <code>skew()</code> and <code>kurtosi()</code> functions from the <code>psych</code> package.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute aggregated age variable of year and months</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>Data<span class="sc">$</span>age <span class="ot">&lt;-</span> (Data<span class="sc">$</span>ageyr <span class="sc">*</span> <span class="dv">12</span> <span class="sc">+</span> Data<span class="sc">$</span>agemo) <span class="sc">/</span> <span class="dv">12</span></span>
@@ -257,8 +257,8 @@ $grade
 <span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Format the numeric columns to 2 decimal places using sprintf</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>smmry <span class="ot">&lt;-</span> smmry <span class="sc">%&gt;%</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(avrg_, sd_, skw_, krtss_), </span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>smmry <span class="ot">&lt;-</span> smmry <span class="sc">|&gt;</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(avrg_, sd_, skw_, krtss_), </span>
 <span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>                <span class="sc">~</span> <span class="fu">sprintf</span>(<span class="st">"%.2f"</span>, .)))</span>
 <span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Rename columns</span></span>
@@ -269,7 +269,7 @@ $grade
 1      age 13.44               1.02     0.70     0.10              0</code></pre>
 </div>
 </div>
-<p>Alternatively, we could use the <code>describe()</code> function from the <code>psych</code> package, which can be particularly useful with multiple continuous variables. The only caveat of that function is that it will not produce the percentage of missing observations per variable automatically, which we could easily circumvent by running <code>colSums(is.na(data))/n</code>, where <code>n</code> is the total number of observations.</p>
+<p>Alternatively, we could use the <code>describe()</code> function from the <code>psych</code> package, which can be particularly useful with multiple continuous variables. The only caveat of that function is that it will not produce the percentage of missing observations per variable automatically, which we could easily circumvent by running <code>colSums(is.na(data))/nrow(data)</code>, where <code>colSums(is.na(data))</code> counts the occurrences of missing data for the variables in our data set, and <code>nrow(data)</code> gives us the total number of rows.</p>
 </section>
 <section id="dimensionality-assessment-factorial-validity" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="dimensionality-assessment-factorial-validity">Dimensionality Assessment &amp; Factorial Validity</h2>
@@ -333,7 +333,7 @@ Be careful
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fm =</span> <span class="st">"pa"</span>,</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">nfactors =</span> <span class="dv">3</span>,</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">rotate =</span> <span class="st">"oblimin"</span>,</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">scores =</span> <span class="st">"regression"</span>, <span class="at">oblique.scores =</span> F,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">scores =</span> <span class="st">"regression"</span>, <span class="at">oblique.scores =</span> <span class="cn">FALSE</span>,</span>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">SMC =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">cor =</span> <span class="st">"cor"</span>)</span>
 <span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
@@ -372,9 +372,9 @@ Cumulative Var 0.247 0.388 0.526</code></pre>
 <li>Three-dimensional tau-equivalent model.</li>
 </ol>
 <p>While it often makes sense to compare models 1 and 2 because model 1 is typically considered more parsimonious (having fewer latent factors), it might not be clear why we would estimate models 2 and 3, and what the terms “congeneric” and “tau-equivalent” even mean.</p>
-<p>In the congeneric model, we assume that the indicators measure the same construct but not necessarily to the same degree. With the tau-equivalent model, we assume that the indicators measure the construct to the same degree, and we enforce this by fixing unstandardized factor loadings to 1.0. If the fit of the latter is not substantially worse than the former, we can conclude that the indicators are tau-equivalent <span class="citation" data-cites="kline_principles_2016">(<a href="#ref-kline_principles_2016" role="doc-biblioref">Kline 2016</a>)</span>.</p>
-<p>One of the significant advantages of the tau-equivalent model is that it allows for greater comparability of scores across independent studies using the same items, as the scores do not depend on study-specific factor loadings <span class="citation" data-cites="widaman_thinking_2023">(<a href="#ref-widaman_thinking_2023" role="doc-biblioref">Widaman and Revelle 2023</a>)</span>. Additionally, the correlation between the sum scores and the true (or factor) scores is then high.</p>
-<p>To estimate the three models, we first define the model syntax. Then we specify the estimator as Robust Maximum Likelihood (MLR) and set the option <code>std.lv = TRUE</code> to impose the identification constraints on the model, i.e., the mean of the latent variable is equal to 0 and the variance is equal to 1.</p>
+<p>In the congeneric model, we assume that the indicators measure the same construct but not necessarily to the same degree. With the tau-equivalent model, we assume that the indicators measure the construct to the same degree, and we enforce this by constraining the unstandardized factor loadings of each factor to equality. If the fit of the latter is not substantially worse than the former, we can conclude that the indicators are tau-equivalent <span class="citation" data-cites="kline_principles_2016">(<a href="#ref-kline_principles_2016" role="doc-biblioref">Kline 2016</a>)</span>.</p>
+<p>One of the significant advantages of the tau-equivalent model is that it allows for greater comparability of scores across independent studies using the same items, as the scores do not depend on study-specific factor loadings <span class="citation" data-cites="widaman_thinking_2023">(<a href="#ref-widaman_thinking_2023" role="doc-biblioref">Widaman and Revelle 2023</a>)</span>.</p>
+<p>To estimate the three models, we first define the model syntax. Then we specify the estimator as Robust Maximum Likelihood (MLR) and set the option <code>std.lv = TRUE</code> to impose the identification constraints on the model, i.e., the mean of the latent variable is equal to 0 and the variance is equal to 1<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. We use MLR by default as it also works in situations where continuous indicators have severely non-normal distributions.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define models</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>one_factor_model <span class="ot">&lt;-</span> <span class="st">'</span></span>
@@ -447,7 +447,7 @@ Cumulative Var 0.247 0.388 0.526</code></pre>
 </div>
 </div>
 <p>First, we inspect the scaled chi-square and the corresponding p-values. They suggest that our models fail the exact-fit test and do not fit the data well.</p>
-<p>We also check the approximate fit indices, i.e., the robust versions of the Comparative Fit Index (CFI), the Root Mean Square Error of Approximation (RMSEA), and the Standardized Root Mean Square Residual (SRMR). Different cut-off values are proposed in the literature for these indices <span class="citation" data-cites="hu_cutoff_1999 byrne_structural_1994">(e.g., <a href="#ref-hu_cutoff_1999" role="doc-biblioref">Hu and Bentler 1999</a>; <a href="#ref-byrne_structural_1994" role="doc-biblioref">Byrne 1994</a>)</span>. We will assume that CFI values smaller than .950, RMSEA values greater than .08, and SRMR values greater than .10 suggest a poor fit. In the case of all our models, the indices suggest an unsatisfactory fit, with the three-factor model with varying loadings being the best-fitting.</p>
+<p>We also check the most common approximate fit indices, i.e., the robust versions of the Comparative Fit Index (CFI), the Root Mean Square Error of Approximation (RMSEA), and the Standardized Root Mean Square Residual (SRMR)<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>. Different cut-off values are proposed in the literature for these indices <span class="citation" data-cites="hu_cutoff_1999 byrne_structural_1994">(e.g., <a href="#ref-hu_cutoff_1999" role="doc-biblioref">Hu and Bentler 1999</a>; <a href="#ref-byrne_structural_1994" role="doc-biblioref">Byrne 1994</a>)</span>. We will assume that CFI values smaller than .950, RMSEA values greater than .08, and SRMR values greater than .10 suggest a poor fit. In the case of all our models, the indices suggest an unsatisfactory fit, with the three-factor model with varying loadings being the best-fitting.</p>
 <div class="callout callout-style-simple callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -480,8 +480,8 @@ three_factor_tau_cfa 30 7527.6 7583.2 107.411     17.317       6   0.008185 **
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 </div>
-<p>The test confirms the conclusions from the comparison of fit indices — the model with varying factor loadings fits the data the best.</p>
-<p>To identify the problems with the best-fitting model, we will evaluate the local model fit. Specifically, we will inspect the matrix of correlation residuals and look for residuals whose absolute value is greater than .10, as they can be suggestive of model misfit.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p>The test confirms the conclusions from the comparison of fit indices — the model with varying factor loadings fits the data best.</p>
+<p>To identify the problems with the best-fitting model, we will evaluate the local model fit. Specifically, we will inspect the matrix of correlation residuals and look for the residuals whose absolute value is greater than .10, as they can be suggestive of model misfit.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate local model fit</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract residual correlaton matrix</span></span>
@@ -549,7 +549,7 @@ x9  0.043  0.095  0.016  0.062  0.082  0.070 -0.044 -0.004 -0.001</code></pre>
 </div>
 <p>After having introduced the residual covariances, the model still fails to pass the exact-fit test but has acceptable values on the approximate fit indices, and there are no other correlation residuals that require our attention. We can check the value of the residual correlations (not correlation residuals!) by running <code>standardizedSolution(three_factor_cfa_res)</code> and subsetting the rows.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>standardized_solution <span class="ot">&lt;-</span> <span class="fu">standardizedSolution</span>(three_factor_cfa_res)</span>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>standardized_solution <span class="ot">&lt;-</span> lavaan<span class="sc">::</span><span class="fu">standardizedSolution</span>(three_factor_cfa_res)</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">subset</span>(standardized_solution, <span class="fu">grepl</span>(<span class="st">"~~"</span>, op) <span class="sc">&amp;</span> </span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>         <span class="fu">grepl</span>(<span class="st">"^x[0-9]+$"</span>, lhs) <span class="sc">&amp;</span> </span>
 <span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>         <span class="fu">grepl</span>(<span class="st">"^x[0-9]+$"</span>, rhs) <span class="sc">&amp;</span> </span>
@@ -617,59 +617,81 @@ x8 5.53 1.01  0.53     1.17 301
 x9 5.37 1.01  0.20     0.29 301</code></pre>
 </div>
 </div>
-<p>Then, we calculate the reliability coefficients. To assess reliability, scholars usually compute Cronbach’s α. However, this coefficient is not appropriate when the indicators are congeneric. If the factor loadings vary substantially, we should compute McDonald’s ω<sub>h</sub> <span class="citation" data-cites="zinbarg_cronbachs_2005">(<a href="#ref-zinbarg_cronbachs_2005" role="doc-biblioref">Zinbarg et al. 2005</a>)</span>. Still, we will compute both coeffcients for the sake of demonstration. Still, we will compute both coefficients for the sake of demonstration. For Cronbach’s α, we will compute the median and 95% credible interval.</p>
+<p>Then, we calculate the reliability coefficients. To assess reliability, scholars usually compute Cronbach’s α. However, this coefficient is not appropriate when the indicators are congeneric. If the factor loadings vary substantially, we should compute McDonald’s ω<sub>h</sub> <span class="citation" data-cites="zinbarg_cronbachs_2005">(<a href="#ref-zinbarg_cronbachs_2005" role="doc-biblioref">Zinbarg et al. 2005</a>)</span>. Still, we will compute both coefficients for the sake of demonstration. For Cronbach’s α, we will compute the median and 95% confidence interval.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate Cronbachs alpha as example for scale "textual"</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>textual_alphas <span class="ot">&lt;-</span> psych<span class="sc">::</span><span class="fu">alpha</span>(Data[, lookup_table[lookup_table<span class="sc">$</span>subscale <span class="sc">==</span> <span class="st">"textual"</span>, <span class="st">"item"</span>]],</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>                               <span class="at">n.iter =</span> <span class="dv">1000</span>)</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the median and the 95% CI</span></span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(textual_alphas[[<span class="st">"boot.ci"</span>]], <span class="at">digits =</span> <span class="dv">2</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating a vector with subscales and iterating the calculations over it</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>subscales <span class="ot">&lt;-</span> <span class="fu">unique</span>(lookup_table<span class="sc">$</span>subscale)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (subscale <span class="cf">in</span> subscales){</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>alpha_i <span class="ot">&lt;-</span> psych<span class="sc">::</span><span class="fu">alpha</span>(Data[, lookup_table[lookup_table<span class="sc">$</span>subscale <span class="sc">==</span> subscale, <span class="st">"item"</span>]],</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>                               <span class="at">n.iter =</span> <span class="dv">1000</span>)</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Rounding </span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>alpha_sum <span class="ot">&lt;-</span> <span class="fu">round</span>(alpha_i[[<span class="st">"boot.ci"</span>]], <span class="dv">2</span>)</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the subscale name</span></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Subscale:"</span>, subscale, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the corresponding alpha values</span></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(alpha_sum)</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Add an empty line for better readability between subscales</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> 2.5%   50% 97.5% 
- 0.86  0.88  0.90 </code></pre>
+<pre><code>Subscale: visual 
+ 2.5%   50% 97.5% 
+ 0.55  0.63  0.69 
+
+Subscale: textual 
+ 2.5%   50% 97.5% 
+ 0.86  0.88  0.90 
+
+Subscale: speed 
+ 2.5%   50% 97.5% 
+ 0.61  0.69  0.75 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># McDonalds omega hierarchical</span></span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>semTools<span class="sc">::</span><span class="fu">reliability</span>(three_factor_cfa_res, <span class="at">what =</span> <span class="st">"omega3"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>omegas <span class="ot">&lt;-</span> semTools<span class="sc">::</span><span class="fu">compRelSEM</span>(three_factor_cfa_res)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(omegas, <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>          visual   textual     speed
-omega3 0.5528055 0.8773156 0.7021118</code></pre>
+<pre><code> visual textual   speed 
+   0.55    0.88    0.70 </code></pre>
 </div>
 </div>
 <p>The results suggest that the reliability for the “visual” scale is not satisfactory.</p>
 <p>Lastly, we will investigate the criterion validity. For this, we will compute correlations between the mean scale scores and four variables that we have in the dataset: gender, age, school, and grade.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating unweighted means </span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(subscale <span class="cf">in</span> <span class="fu">unique</span>(lookup_table<span class="sc">$</span>subscale)) {</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  subscale_name <span class="ot">&lt;-</span> <span class="fu">paste</span>(subscale, <span class="st">"mean"</span>, <span class="at">sep =</span> <span class="st">"_"</span>)</span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  items <span class="ot">&lt;-</span> lookup_table[lookup_table<span class="sc">$</span>subscale <span class="sc">==</span> subscale, <span class="st">"item"</span>]</span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  mean_score <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(Data[, items], <span class="at">na.rm =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  Data[, subscale_name] <span class="ot">&lt;-</span> mean_score</span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform school variable to a numeric variable</span></span>
-<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>Data<span class="sc">$</span>school_numeric <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(Data<span class="sc">$</span>school)</span>
-<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Define variables for correlational analyses</span></span>
-<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>cor_variables <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"visual_mean"</span>, <span class="st">"textual_mean"</span>, <span class="st">"speed_mean"</span>,</span>
-<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"sex"</span>, <span class="st">"age"</span>, <span class="st">"school_numeric"</span>, <span class="st">"grade"</span>)</span>
-<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate correlations &amp; p-values</span></span>
-<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>cor_coef <span class="ot">&lt;-</span> Hmisc<span class="sc">::</span><span class="fu">rcorr</span>(<span class="fu">as.matrix</span>(Data[, cor_variables]))<span class="sc">$</span>r</span>
-<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>cor_pval <span class="ot">&lt;-</span> Hmisc<span class="sc">::</span><span class="fu">rcorr</span>(<span class="fu">as.matrix</span>(Data[, cor_variables]))<span class="sc">$</span>P</span>
-<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtering rows and columns</span></span>
-<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a>cor_coef <span class="ot">&lt;-</span> cor_coef[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"mean"</span>, <span class="fu">rownames</span>(cor_coef)),<span class="fu">grepl</span>(<span class="st">"mean"</span>, <span class="fu">colnames</span>(cor_coef))]</span>
-<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a>cor_pval <span class="ot">&lt;-</span> cor_pval[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"mean"</span>, <span class="fu">rownames</span>(cor_pval)),<span class="fu">grepl</span>(<span class="st">"mean"</span>, <span class="fu">colnames</span>(cor_pval))]</span>
-<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Formatting the output to two and three decimal places</span></span>
-<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a>cor_coef <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(cor_coef) <span class="sc">%&gt;%</span></span>
-<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">sprintf</span>(<span class="st">"%.2f"</span>, .)))</span>
-<span id="cb40-28"><a href="#cb40-28" aria-hidden="true" tabindex="-1"></a>cor_pval <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(cor_pval) <span class="sc">%&gt;%</span></span>
-<span id="cb40-29"><a href="#cb40-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, .)))</span>
-<span id="cb40-30"><a href="#cb40-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-31"><a href="#cb40-31" aria-hidden="true" tabindex="-1"></a>cor_coef</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>subscales <span class="ot">&lt;-</span> <span class="fu">unique</span>(lookup_table<span class="sc">$</span>subscale)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(subscale <span class="cf">in</span> subscales) {</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  subscale_name <span class="ot">&lt;-</span> <span class="fu">paste</span>(subscale, <span class="st">"mean"</span>, <span class="at">sep =</span> <span class="st">"_"</span>)</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  items <span class="ot">&lt;-</span> lookup_table[lookup_table<span class="sc">$</span>subscale <span class="sc">==</span> subscale, <span class="st">"item"</span>]</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  mean_score <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(Data[, items], <span class="at">na.rm =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  Data[, subscale_name] <span class="ot">&lt;-</span> mean_score</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform school variable to a numeric variable</span></span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>Data<span class="sc">$</span>school_numeric <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(Data<span class="sc">$</span>school)</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Define variables for correlational analyses</span></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>cor_variables <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"visual_mean"</span>, <span class="st">"textual_mean"</span>, <span class="st">"speed_mean"</span>,</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"sex"</span>, <span class="st">"age"</span>, <span class="st">"school_numeric"</span>, <span class="st">"grade"</span>)</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate correlations &amp; p-values</span></span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>cor_coef <span class="ot">&lt;-</span> Hmisc<span class="sc">::</span><span class="fu">rcorr</span>(<span class="fu">as.matrix</span>(Data[, cor_variables]))<span class="sc">$</span>r</span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>cor_pval <span class="ot">&lt;-</span> Hmisc<span class="sc">::</span><span class="fu">rcorr</span>(<span class="fu">as.matrix</span>(Data[, cor_variables]))<span class="sc">$</span>P</span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtering rows and columns</span></span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a>cor_coef <span class="ot">&lt;-</span> cor_coef[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"mean"</span>, <span class="fu">rownames</span>(cor_coef)),<span class="fu">grepl</span>(<span class="st">"mean"</span>, <span class="fu">colnames</span>(cor_coef))]</span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a>cor_pval <span class="ot">&lt;-</span> cor_pval[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"mean"</span>, <span class="fu">rownames</span>(cor_pval)),<span class="fu">grepl</span>(<span class="st">"mean"</span>, <span class="fu">colnames</span>(cor_pval))]</span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Formatting the output to two and three decimal places</span></span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a>cor_coef <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(cor_coef) <span class="sc">%&gt;%</span></span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">sprintf</span>(<span class="st">"%.2f"</span>, .)))</span>
+<span id="cb40-29"><a href="#cb40-29" aria-hidden="true" tabindex="-1"></a>cor_pval <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(cor_pval) <span class="sc">%&gt;%</span></span>
+<span id="cb40-30"><a href="#cb40-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, .)))</span>
+<span id="cb40-31"><a href="#cb40-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-32"><a href="#cb40-32" aria-hidden="true" tabindex="-1"></a>cor_coef</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>               visual_mean textual_mean speed_mean
 sex                  -0.17         0.07       0.05
@@ -745,18 +767,21 @@ Zinbarg, Richard E., William Revelle, Iftah Yovel, and Wen Li. 2005. <span>“Cr
 
 <ol>
 <li id="fn1"><p>If you are interested in the details of exploratory factor analysis, you might want to check the book by <span class="citation" data-cites="fabrigar_exploratory_2012">Fabrigar and Wegener (<a href="#ref-fabrigar_exploratory_2012" role="doc-biblioref">2012</a>)</span><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>Evaluation of the local model fit often highlights the same model misspecifications as the inspection of modification indices. Yet, these two procedures have different premises. Inspection of correlation residuals addresses the question of the violation of the conditional independence assumption <span class="citation" data-cites="bollen_latent_2002">(indicators should be independent conditional on the latent variables, see <a href="#ref-bollen_latent_2002" role="doc-biblioref">Bollen 2002</a>)</span>. With modification indices, we investigate factors that can improve model fit. We prefer the former, as answering the question of the independence assumption is more meaningful than merely improving the fit of the model.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>We could choose other identification constraints. For more details, see <span class="citation" data-cites="kline_principles_2016">Kline (<a href="#ref-kline_principles_2016" role="doc-biblioref">2016</a>)</span><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Since we use MLR, we also use the robust versions of the fit indices<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Evaluation of the local model fit often highlights the same model misspecifications as the inspection of modification indices. Yet, these two procedures have different premises. Inspection of correlation residuals addresses the question of the violation of the conditional independence assumption <span class="citation" data-cites="bollen_latent_2002">(indicators should be independent conditional on the latent variables, see <a href="#ref-bollen_latent_2002" role="doc-biblioref">Bollen 2002</a>)</span>. With modification indices, we investigate factors that can improve model fit. We prefer the former, as answering the question of the independence assumption is more meaningful than merely improving the fit of the model.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
-</section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@misc{urban2024,
-  author = {Urban, Julian and Grüning, David and Koc, Piotr},
+</section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@misc{koc2024,
+  author = {Koc, Piotr and Urban, Julian and Grüning, David},
   publisher = {GESIS – Leibniz Institute for the Social Sciences},
   title = {Basic {Analysis} for {Scale} {Archiving}},
   date = {2024},
+  urldate = {},
   url = {https://zis.gesis.org/infotexte/GuidelineMaterials.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-urban2024" class="csl-entry quarto-appendix-citeas" role="listitem">
-Urban, Julian, David Grüning, and Piotr Koc. 2024. <span>“Basic Analysis
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-koc2024" class="csl-entry quarto-appendix-citeas" role="listitem">
+Koc, Piotr, Julian Urban, and David Grüning. 2024. <span>“Basic Analysis
 for Scale Archiving .”</span> <em>ZIS R-Tutorials</em>. GESIS – Leibniz
 Institute for the Social Sciences. <a href="https://zis.gesis.org/infotexte/GuidelineMaterials.html">https://zis.gesis.org/infotexte/GuidelineMaterials.html</a>.
 </div></div></section></div></main>

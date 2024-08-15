@@ -5,12 +5,17 @@ logo: pics/zis_logo.svg
 bibliography: basic.bib
 
 author:
+  - name: Piotr Koc
+    affiliation: "GESIS – Leibniz Institute for the Social Sciences"
   - name: Julian Urban
     affiliation: "GESIS – Leibniz Institute for the Social Sciences"
   - name: David Grüning
     affiliations: "Heidelberg University; GESIS – Leibniz Institute for the Social Sciences"
+<<<<<<< Updated upstream
   - name: Piotr Koc
     affiliation: ""
+=======
+>>>>>>> Stashed changes
 
    
 date: 2024-07-01
@@ -18,7 +23,7 @@ date-format: "DD.MM.YYYY"
 date-modified	: last-modified
 format:
   html:
-    code-overflow: wrap
+    code-overflow: scroll
     code-copy: true
     toc: true
     toc-location: left
@@ -34,10 +39,12 @@ citation:
     title: |
         Basic Analysis for Scale Archiving
     author:
+       - name: Piotr Koc
        - name: Julian Urban
        - name: David Grüning
-       - name: Piotr Koc
+
     issued: 2024
+    accessed: urldate 
     container-title: ZIS R-tutorials
     publisher: GESIS – Leibniz Institute for the Social Sciences 
     URL: https://zis.gesis.org/infotexte/GuidelineMaterials.html
@@ -88,7 +95,7 @@ nominal_sample_statistics
 
 ```
 
-For continuous variables, we compute the mean, standard deviation, skewness, kurtosis, and the percentage of missing data using the base R functions and `skew()` and `kurtosi()` functions from the `psych` package.
+For continuous variables, we compute the mean, standard deviation, skewness, excess kurtosis, and the percentage of missing data using the base R functions and `skew()` and `kurtosi()` functions from the `psych` package.
 
 ```{r}
 # Compute aggregated age variable of year and months
@@ -111,15 +118,15 @@ smmry <- data.frame(
 )
 
 # Format the numeric columns to 2 decimal places using sprintf
-smmry <- smmry %>%
-  mutate(across(c(avrg_, sd_, skw_, krtss_), 
+smmry <- smmry |>
+  dplyr::mutate(across(c(avrg_, sd_, skw_, krtss_), 
                 ~ sprintf("%.2f", .)))
 
 # Rename columns
 colnames(smmry) <- c("Variable", "Mean", "Standard Deviation", "Skewness", "Kurtosis", "% Missing Data")
 smmry
 ```
-Alternatively, we could use the `describe()` function from the `psych` package, which can be particularly useful with multiple continuous variables. The only caveat of that function is that it will not produce the percentage of missing observations per variable automatically, which we could easily circumvent by running `colSums(is.na(data))/n`, where `n` is the total number of observations.
+Alternatively, we could use the `describe()` function from the `psych` package, which can be particularly useful with multiple continuous variables. The only caveat of that function is that it will not produce the percentage of missing observations per variable automatically, which we could easily circumvent by running `colSums(is.na(data))/nrow(data)`, where `colSums(is.na(data))` counts the occurrences of missing data for the variables in our data set, and `nrow(data)` gives us the total number of rows.
 
 ## Dimensionality Assessment & Factorial Validity 
 First, we build a look-up table where items are assigned to different subscales. We will use the table for the subsequent analyses in this document. 
@@ -167,7 +174,7 @@ efa <- psych::fa(Data[ , unlist(lookup_table$item)],
                  fm = "pa",
                  nfactors = 3,
                  rotate = "oblimin",
-                 scores = "regression", oblique.scores = F,
+                 scores = "regression", oblique.scores = FALSE,
                  SMC = TRUE,
                  cor = "cor")
 
@@ -189,11 +196,11 @@ To estimate the confirmatory factor analytic model, we will use the `lavaan` pac
 
 While it often makes sense to compare models 1 and 2 because model 1 is typically considered more parsimonious (having fewer latent factors), it might not be clear why we would estimate models 2 and 3, and what the terms "congeneric" and "tau-equivalent" even mean.
 
-In the congeneric model, we assume that the indicators measure the same construct but not necessarily to the same degree. With the tau-equivalent model, we assume that the indicators measure the construct to the same degree, and we enforce this by fixing unstandardized factor loadings to 1.0. If the fit of the latter is not substantially worse than the former, we can conclude that the indicators are tau-equivalent [@kline_principles_2016].
+In the congeneric model, we assume that the indicators measure the same construct but not necessarily to the same degree. With the tau-equivalent model, we assume that the indicators measure the construct to the same degree, and we enforce this by constraining the unstandardized factor loadings of each factor to equality. If the fit of the latter is not substantially worse than the former, we can conclude that the indicators are tau-equivalent [@kline_principles_2016].
 
-One of the significant advantages of the tau-equivalent model is that it allows for greater comparability of scores across independent studies using the same items, as the scores do not depend on study-specific factor loadings [@widaman_thinking_2023]. Additionally, the correlation between the sum scores and the true (or factor) scores is then high.
+One of the significant advantages of the tau-equivalent model is that it allows for greater comparability of scores across independent studies using the same items, as the scores do not depend on study-specific factor loadings [@widaman_thinking_2023]. 
 
-To estimate the three models, we first define the model syntax. Then we specify the estimator as Robust Maximum Likelihood (MLR) and set the option `std.lv = TRUE` to impose the identification constraints on the model, i.e., the mean of the latent variable is equal to 0 and the variance is equal to 1.
+To estimate the three models, we first define the model syntax. Then we specify the estimator as Robust Maximum Likelihood (MLR) and set the option `std.lv = TRUE` to impose the identification constraints on the model, i.e., the mean of the latent variable is equal to 0 and the variance is equal to 1^[We could choose other identification constraints. For more details, see @kline_principles_2016]. We use MLR by default as it also works in situations where continuous indicators have severely non-normal distributions.
 
 ```{r}
 # Define models
@@ -252,7 +259,7 @@ round(lavaan::fitMeasures(three_factor_tau_cfa, fit.measures = fit_measures), di
 ```
 First, we inspect the scaled chi-square and the corresponding p-values. They suggest that our models fail the exact-fit test and do not fit the data well.
 
-We also check the approximate fit indices, i.e., the robust versions of the Comparative Fit Index (CFI), the Root Mean Square Error of Approximation (RMSEA), and the Standardized Root Mean Square Residual (SRMR). Different cut-off values are proposed in the literature for these indices [e.g., @hu_cutoff_1999; @byrne_structural_1994]. We will assume that CFI values smaller than .950, RMSEA values greater than .08, and SRMR values greater than .10 suggest a poor fit. In the case of all our models, the indices suggest an unsatisfactory fit, with the three-factor model with varying loadings being the best-fitting.
+We also check the most common approximate fit indices, i.e., the robust versions of the Comparative Fit Index (CFI), the Root Mean Square Error of Approximation (RMSEA), and the Standardized Root Mean Square Residual (SRMR)^[Since we use MLR, we also use the robust versions of the fit indices]. Different cut-off values are proposed in the literature for these indices [e.g., @hu_cutoff_1999; @byrne_structural_1994]. We will assume that CFI values smaller than .950, RMSEA values greater than .08, and SRMR values greater than .10 suggest a poor fit. In the case of all our models, the indices suggest an unsatisfactory fit, with the three-factor model with varying loadings being the best-fitting.
 
 ::: {.callout-important appearance="simple"}
 ## Be careful
@@ -312,7 +319,7 @@ lavaan::lavResiduals(three_factor_cfa_res)$cov
 After having introduced the residual covariances, the model still fails to pass the exact-fit test but has acceptable values on the approximate fit indices, and there are no other correlation residuals that require our attention. We can check the value of the residual correlations (not correlation residuals!) by running `standardizedSolution(three_factor_cfa_res)` and subsetting the rows.
 
 ```{r}
-standardized_solution <- standardizedSolution(three_factor_cfa_res)
+standardized_solution <- lavaan::standardizedSolution(three_factor_cfa_res)
 subset(standardized_solution, grepl("~~", op) & 
          grepl("^x[0-9]+$", lhs) & 
          grepl("^x[0-9]+$", rhs) & 
@@ -340,19 +347,32 @@ In this section, we will take a closer look at the indicators themselves and the
 psych::describe(Data[ , unlist(lookup_table$item)])[, c("mean", "sd", "skew", "kurtosis", "n")]
 ```
 
-Then, we calculate the reliability coefficients. To assess reliability, scholars usually compute Cronbach’s α. However, this coefficient is not appropriate when the indicators are congeneric. If the factor loadings vary substantially, we should compute McDonald’s ω~h~  [@zinbarg_cronbachs_2005]. Still, we will compute both coefficients for the sake of demonstration. For Cronbach’s α, we will compute the median and 95% credible interval. 
+Then, we calculate the reliability coefficients. To assess reliability, scholars usually compute Cronbach’s α. However, this coefficient is not appropriate when the indicators are congeneric. If the factor loadings vary substantially, we should compute McDonald’s ω~h~  [@zinbarg_cronbachs_2005]. Still, we will compute both coefficients for the sake of demonstration. For Cronbach’s α, we will compute the median and 95% confidence interval. 
 
 ```{r}
 #| message: false
-# Estimate Cronbachs alpha as example for scale "textual"
-textual_alphas <- psych::alpha(Data[, lookup_table[lookup_table$subscale == "textual", "item"]],
+# Creating a vector with subscales and iterating the calculations over it
+subscales <- unique(lookup_table$subscale)
+for (subscale in subscales){
+alpha_i <- psych::alpha(Data[, lookup_table[lookup_table$subscale == subscale, "item"]],
                                n.iter = 1000)
+# Rounding 
+alpha_sum <- round(alpha_i[["boot.ci"]], 2)
 
-# Extract the median and the 95% CI
-round(textual_alphas[["boot.ci"]], digits = 2) 
+# Print the subscale name
+cat("Subscale:", subscale, "\n")
+  
+# Print the corresponding alpha values
+print(alpha_sum)
+  
+# Add an empty line for better readability between subscales
+cat("\n")
+}
 
 # McDonalds omega hierarchical
-semTools::reliability(three_factor_cfa_res, what = "omega3")
+omegas <- semTools::compRelSEM(three_factor_cfa_res)
+round(omegas, 2)
+
 ```
 The results suggest that the reliability for the "visual" scale is not satisfactory.
 
@@ -361,7 +381,8 @@ Lastly, we will investigate the criterion validity. For this, we will compute co
 
 ```{r}
 # Creating unweighted means 
-for(subscale in unique(lookup_table$subscale)) {
+subscales <- unique(lookup_table$subscale)
+for(subscale in subscales) {
   subscale_name <- paste(subscale, "mean", sep = "_")
   items <- lookup_table[lookup_table$subscale == subscale, "item"]
   mean_score <- rowMeans(Data[, items], na.rm = FALSE)

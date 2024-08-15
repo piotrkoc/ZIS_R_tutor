@@ -1,5 +1,0 @@
-"0","cor_pval <- cor_res[!grepl(""mean"", rownames(cor_pval)),grepl(""mean"", colnames(cor_pval))]
-"
-"2","Error in cor_res[!grepl(""mean"", rownames(cor_pval)), grepl(""mean"", colnames(cor_pval))] : 
-  incorrect number of dimensions
-"
