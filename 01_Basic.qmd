@@ -11,11 +11,6 @@ author:
     affiliation: "GESIS – Leibniz Institute for the Social Sciences"
   - name: David Grüning
     affiliations: "Heidelberg University; GESIS – Leibniz Institute for the Social Sciences"
-<<<<<<< Updated upstream
-  - name: Piotr Koc
-    affiliation: ""
-=======
->>>>>>> Stashed changes
 
    
 date: 2024-07-01
