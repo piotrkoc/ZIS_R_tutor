@@ -1,0 +1,5 @@
+install.packages("lavaan")
+install.packages("semTools")
+install.packages("psych")
+install.packages("Hmisc")
+install.packages("dplyr")
