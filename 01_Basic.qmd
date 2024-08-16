@@ -39,7 +39,6 @@ citation:
        - name: David Grüning
 
     issued: 2024
-    accessed: urldate 
     container-title: ZIS R-tutorials
     publisher: GESIS – Leibniz Institute for the Social Sciences 
     URL: https://zis.gesis.org/infotexte/GuidelineMaterials.html
