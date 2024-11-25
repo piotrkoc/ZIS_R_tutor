@@ -1,7 +1,8 @@
 ---
 title: "Basic Analysis for Scale Archiving"
-subtitle: "*ZIS R-Tutorials*"
+subtitle: "*R-Tutorials*"
 logo: technical/pics/zis_logo.svg
+picture: technical/pics/kodaqs_icon.png 
 bibliography: basic.bib
 
 author:
@@ -11,11 +12,13 @@ author:
     affiliation: "GESIS – Leibniz Institute for the Social Sciences; Trier University"
   - name: David Grüning
     affiliations: "Heidelberg University; GESIS – Leibniz Institute for the Social Sciences"
+  - name: Zoe Greer
+    affiliations: "Victoria University of Wellington; GESIS – Leibniz Institute for the Social Sciences"   
 
    
 date: 2024-08-15
 date-format: "DD.MM.YYYY"
-date-modified	: last-modified
+date-modified	: 2024-11-25
 format:
   html:
     code-overflow: scroll
@@ -30,23 +33,33 @@ format:
     
 license: "CC BY-NC 4.0"
 citation: 
-    type: "document"
+    type: "webpage"
     title: |
         Basic Analysis for Scale Archiving
     author:
        - name: Piotr Koc
        - name: Julian Urban
        - name: David Grüning
+       - name: Zoe Greer
 
-    issued: 2024
-    container-title: ZIS R-tutorials
+    issued: 2024-12-01
+    #container-title: ZIS R-tutorials
     publisher: GESIS – Leibniz Institute for the Social Sciences 
     URL: https://zis.gesis.org/infotexte/GuidelineMaterials.html
     
 ---
-## Introduction
+## At a Glance
 
-The following tutorial presents the basic analysis required for an instrument to be archived in the Open Access Repository for Measurement Instruments (ZIS). As an example, we use a scale with continuous indicators, so not all parts of the analysis are appropriate for instruments with categorical indicators. We point this out whenever relevant. The treatment of categorical indicators is covered in a separate tutorial. 
+What should you pay attention to while trying to validate a scale? What analyses do you need to conduct to get your instrument published in a journal or archived in a repository?  
+This tutorial presents the basic analyses that you usually need to do to make your scale publicly available, with a focus on computation. Specifically, you will learn:
+
+- how to compute descriptive statistics for items and their aggregates (e.g., mean scores),
+- how to explore the dimensionality of the data,
+- how to fit confirmatory factor analytic models and choose the optimal solution,
+- how to calculate different reliability coefficients,
+- and which commonly used procedures you should approach with caution.
+
+As an example, we use a scale with continuous indicators, so not all parts of the analysis are appropriate for instruments with categorical indicators. We highlight this whenever relevant. The treatment of categorical indicators is covered in a separate tutorial.
 
 ## Data Preparation & Descriptive Analysis
 In this tutorial, we will use the `HolzingerSwineford1939` data set, which contains mental ability test scores of seventh- and eighth-grade children from two different schools (Pasteur and Grant-White). 
@@ -416,4 +429,5 @@ The final part of this tutorial consists of computing descriptive statistics for
 psych::describe(Data[, c("visual_mean", "textual_mean", "speed_mean")])[, c("mean", "sd", "skew", "kurtosis", "n")]
 ```
 
-
+## Conclusion and recommendations 
+Now that you have completed the tutorial, you should be able to conduct the basic analyses needed to evaluate the psychometric qualities of scales with continuous indicators. You have learned which descriptive statistics are typically reported, how to explore the dimensionality of the data using parallel analysis, and how to run a confirmatory factor analytic model and understand the key elements of its output. Additionally, you should be able to calculate different reliability metrics, and know which one to use when the items are non-homogeneous. Finally, you should now understand how to investigate criterion validity by ensuring that the scales capture the intended construct by evaluating whether the direction and magnitude of correlations with external variables aligns with expectations.

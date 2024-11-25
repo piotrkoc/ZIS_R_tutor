@@ -9,6 +9,7 @@
 <meta name="author" content="Piotr Koc">
 <meta name="author" content="Julian Urban">
 <meta name="author" content="David Grüning">
+<meta name="author" content="Zoe Greer">
 
 <title>Basic Analysis for Scale Archiving</title>
 <style>
@@ -103,7 +104,7 @@ div.csl-indent {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#at-a-glance" id="toc-at-a-glance" class="nav-link active" data-scroll-target="#at-a-glance">At a Glance</a></li>
   <li><a href="#data-preparation-descriptive-analysis" id="toc-data-preparation-descriptive-analysis" class="nav-link" data-scroll-target="#data-preparation-descriptive-analysis">Data Preparation &amp; Descriptive Analysis</a></li>
   <li><a href="#dimensionality-assessment-factorial-validity" id="toc-dimensionality-assessment-factorial-validity" class="nav-link" data-scroll-target="#dimensionality-assessment-factorial-validity">Dimensionality Assessment &amp; Factorial Validity</a>
   <ul class="collapse">
@@ -112,6 +113,7 @@ div.csl-indent {
   </ul></li>
   <li><a href="#descriptive-statistics-of-indicators-reliability-and-criterion-validity" id="toc-descriptive-statistics-of-indicators-reliability-and-criterion-validity" class="nav-link" data-scroll-target="#descriptive-statistics-of-indicators-reliability-and-criterion-validity">Descriptive statistics of indicators, reliability, and criterion validity</a></li>
   <li><a href="#descriptive-statistics-of-the-scales" id="toc-descriptive-statistics-of-the-scales" class="nav-link" data-scroll-target="#descriptive-statistics-of-the-scales">Descriptive statistics of the scales</a></li>
+  <li><a href="#conclusion-and-recommendations" id="toc-conclusion-and-recommendations" class="nav-link" data-scroll-target="#conclusion-and-recommendations">Conclusion and recommendations</a></li>
   </ul>
 </nav>
 </div>
@@ -123,7 +125,7 @@ div.csl-indent {
   <div class="quarto-title">
         <div class="title-container">
       <h1 class="title">Basic Analysis for Scale Archiving</h1>
-             <p class="subtitle lead"><em><em>ZIS R-Tutorials</em></em></p>
+             <p class="subtitle lead"><em><em>R-Tutorials</em></em></p>
     </div>
     <div class="logo">
              <img src="technical/pics/zis_logo.svg" height="100">
@@ -157,6 +159,14 @@ div.csl-indent {
         Heidelberg University; GESIS – Leibniz Institute for the Social Sciences
       </p>
           </div>
+            <div class="quarto-title-meta-contents">
+      <p class="author">Zoe Greer </p>
+    </div>
+        <div class="quarto-title-meta-contents">
+            <p class="affiliation">
+        Victoria University of Wellington; GESIS – Leibniz Institute for the Social Sciences
+      </p>
+          </div>
           </div>
 
   <div class="quarto-title-meta">
@@ -169,7 +179,7 @@ div.csl-indent {
          <div>
       <div class="quarto-title-meta-heading">Modified</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">18.11.2024</p>
+        <p class="date">25.11.2024</p>
       </div>
     </div>
       </div>
@@ -177,9 +187,18 @@ div.csl-indent {
    </header>
 
 
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>The following tutorial presents the basic analysis required for an instrument to be archived in the Open Access Repository for Measurement Instruments (ZIS). As an example, we use a scale with continuous indicators, so not all parts of the analysis are appropriate for instruments with categorical indicators. We point this out whenever relevant. The treatment of categorical indicators is covered in a separate tutorial.</p>
+<section id="at-a-glance" class="level2">
+<h2 class="anchored" data-anchor-id="at-a-glance">At a Glance</h2>
+<p>What should you pay attention to while trying to validate a scale? What analyses do you need to conduct to get your instrument published in a journal or archived in a repository?<br>
+This tutorial presents the basic analyses that you usually need to do to make your scale publicly available, with a focus on computation. Specifically, you will learn:</p>
+<ul>
+<li>how to compute descriptive statistics for items and their aggregates (e.g., mean scores),</li>
+<li>how to explore the dimensionality of the data,</li>
+<li>how to fit confirmatory factor analytic models and choose the optimal solution,</li>
+<li>how to calculate different reliability coefficients,</li>
+<li>and which commonly used procedures you should approach with caution.</li>
+</ul>
+<p>As an example, we use a scale with continuous indicators, so not all parts of the analysis are appropriate for instruments with categorical indicators. We highlight this whenever relevant. The treatment of categorical indicators is covered in a separate tutorial.</p>
 </section>
 <section id="data-preparation-descriptive-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="data-preparation-descriptive-analysis">Data Preparation &amp; Descriptive Analysis</h2>
@@ -722,6 +741,10 @@ textual_mean 3.20 1.07 0.16    -0.16 301
 speed_mean   5.03 0.81 0.14     0.12 301</code></pre>
 </div>
 </div>
+</section>
+<section id="conclusion-and-recommendations" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion-and-recommendations">Conclusion and recommendations</h2>
+<p>Now that you have completed the tutorial, you should be able to conduct the basic analyses needed to evaluate the psychometric qualities of scales with continuous indicators. You have learned which descriptive statistics are typically reported, how to explore the dimensionality of the data using parallel analysis, and how to run a confirmatory factor analytic model and understand the key elements of its output. Additionally, you should be able to calculate different reliability metrics, and know which one to use when the items are non-homogeneous. Finally, you should now understand how to investigate criterion validity by ensuring that the scales capture the intended construct by evaluating whether the direction and magnitude of correlations with external variables aligns with expectations.</p>
 
 </section>
 
@@ -771,18 +794,19 @@ Zinbarg, Richard E., William Revelle, Iftah Yovel, and Wen Li. 2005. <span>“Cr
 <li id="fn3"><p>Since we use MLR, we also use the robust versions of the fit indices<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn4"><p>Evaluation of the local model fit often highlights the same model misspecifications as the inspection of modification indices. Yet, these two procedures have different premises. Inspection of correlation residuals addresses the question of the violation of the conditional independence assumption <span class="citation" data-cites="bollen_latent_2002">(indicators should be independent conditional on the latent variables, see <a href="#ref-bollen_latent_2002" role="doc-biblioref">Bollen 2002</a>)</span>. With modification indices, we investigate factors that can improve model fit. We prefer the former, as answering the question of the independence assumption is more meaningful than merely improving the fit of the model.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
-</section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@misc{koc2024,
-  author = {Koc, Piotr and Urban, Julian and Grüning, David},
+</section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{koc2024,
+  author = {Koc, Piotr and Urban, Julian and Grüning, David and Greer,
+    Zoe},
   publisher = {GESIS – Leibniz Institute for the Social Sciences},
   title = {Basic {Analysis} for {Scale} {Archiving}},
-  date = {2024},
+  date = {2024-12-01},
   url = {https://zis.gesis.org/infotexte/GuidelineMaterials.html},
   langid = {en}
 }
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-koc2024" class="csl-entry quarto-appendix-citeas" role="listitem">
-Koc, Piotr, Julian Urban, and David Grüning. 2024. <span>“Basic Analysis
-for Scale Archiving .”</span> <em>ZIS R-Tutorials</em>. GESIS – Leibniz
-Institute for the Social Sciences. <a href="https://zis.gesis.org/infotexte/GuidelineMaterials.html">https://zis.gesis.org/infotexte/GuidelineMaterials.html</a>.
+Koc, Piotr, Julian Urban, David Grüning, and Zoe Greer. 2024.
+<span>“Basic Analysis for Scale Archiving .”</span> GESIS – Leibniz
+Institute for the Social Sciences. December 1, 2024. <a href="https://zis.gesis.org/infotexte/GuidelineMaterials.html">https://zis.gesis.org/infotexte/GuidelineMaterials.html</a>.
 </div></div></section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
