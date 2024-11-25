@@ -22,6 +22,8 @@ date-modified	: 2024-11-25
 format:
   html:
     code-overflow: scroll
+    code-fold: false
+    code-summary: "Show the code"
     code-copy: true
     toc: true
     toc-location: left
