@@ -1,6 +1,6 @@
 ---
-title: "Basic Analysis for Scale Archiving"
-subtitle: "*R-Tutorials in Psychometrics*"
+title: "Analysis of scales with categorical indicators"
+subtitle: "*R-Tutorials*"
 logo: technical/pics/zis_logo.svg
 picture: technical/pics/kodaqs_icon.png 
 bibliography: basic.bib
@@ -8,17 +8,17 @@ bibliography: basic.bib
 author:
   - name: Piotr Koc
     affiliation: "GESIS – Leibniz Institute for the Social Sciences"
-  - name: Julian Urban
-    affiliation: "GESIS – Leibniz Institute for the Social Sciences; Trier University"
-  - name: David Grüning
-    affiliations: "Heidelberg University; GESIS – Leibniz Institute for the Social Sciences"
-  - name: Zoe Greer
-    affiliations: "Victoria University of Wellington; GESIS – Leibniz Institute for the Social Sciences"   
+# - name: Julian Urban
+#    affiliation: "GESIS – Leibniz Institute for the Social Sciences; Trier University"
+#  - name: David Grüning
+#    affiliations: "Heidelberg University; GESIS – Leibniz Institute for the Social Sciences"
+#  - name: Zoe Greer
+#    affiliations: "Victoria University of Wellington; GESIS – Leibniz Institute for the Social Sciences"   
 
    
-date: 2025-02-15
+date: 2024-08-15
 date-format: "DD.MM.YYYY"
-date-modified	: 2025-04-04
+date-modified	: 2024-11-25
 format:
   html:
     code-overflow: scroll
@@ -35,23 +35,26 @@ format:
     
 license: "CC BY-NC 4.0"
 citation: 
-    type: "document"
-    title: Basic Analysis for Scale Archiving
+    type: "webpage"
+    title: |
+        Basic Analysis for Scale Archiving
     author:
        - name: Piotr Koc
        - name: Julian Urban
        - name: David Grüning
        - name: Zoe Greer
 
-    issued: 2025-02-15
-    container-title: "R-Tutorials in Psychometrics"
-    version: 1.0
+    issued: 2024-12-01
+    #container-title: ZIS R-tutorials
     publisher: GESIS – Leibniz Institute for the Social Sciences 
-    DOI: 10.6102/r-zis_basa-1
-
+    URL: https://zis.gesis.org/infotexte/GuidelineMaterials.html
     
 ---
 ## At a Glance
+
+What should you pay attention to while trying to validate a scale with categorical indicators? What are the challenges and potential solutions?
+
+This tutorial introduces the topic of categorical indicators 
 
 What should you pay attention to while trying to validate a scale? What analyses do you need to conduct to get your instrument published in a journal or archived in a repository?  
 This tutorial presents the basic analyses that you usually need to do to make your scale publicly available, with a focus on computation. Specifically, you will learn:

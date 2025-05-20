@@ -1,5 +1,0 @@
-"0","standardized_solution <- standardizedSolution(three_factor_cfa_res)"
-"0","subset(standardized_solution, grepl(""~~"", op) & "
-"0","         grepl(""^x[0-9]+$"", lhs) & "
-"0","         grepl(""^x[0-9]+$"", rhs) & "
-"0","         lhs != rhs)"
