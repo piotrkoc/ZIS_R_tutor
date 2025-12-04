@@ -1,0 +1,1278 @@
+---
+title: "Missing Data in Scale Validation"
+subtitle: "*ZIS R-Tutorials*"
+logo: pics/zis_logo.svg
+bibliography: missing_data.bib
+author:
+  - name: Julian Urban
+    affiliation: "GESIS – Leibniz Institute for the Social Sciences; Trier University"
+  - name: Piotr Koc
+    affiliation: "GESIS – Leibniz Institute for the Social Sciences"
+  - name: Zoe Greer
+    affiliations: "GESIS – Leibniz Institute for the Social Sciences; Te Herenga Waka – Victoria University of Wellington"
+  - name: Franziska Feldmann
+    affiliations: "GESIS – Leibniz Institute for the Social Sciences"
+date: 2025-01-01
+date-format: "DD.MM.YYYY"
+date-modified	: last-modified
+format:
+  html:
+    
+    code-overflow: scroll
+    code-copy: true
+    toc: true
+    toc-location: left
+    theme: cosmo
+    html-math-method: katex
+    css: technical/styles.css
+    template-partials:
+       - technical/title-block.html
+license: "CC BY-NC 4.0"
+citation: 
+    type: "document"
+    title: |
+        Missing Data in Scale Validation
+    author:
+       - name: Julian Urban
+       - name: Piotr Koc
+       - name: Zoe Greer
+       - name: Franziska Feldmann
+    issued: 2025
+    container-title: ZIS R-tutorials
+    publisher: GESIS – Leibniz Institute for the Social Sciences 
+    URL: https://zis.gesis.org/infotexte/GuidelineMaterials.html
+editor_options: 
+  chunk_output_type: console
+editor: 
+  markdown: 
+    wrap: sentence
+---
+
+## At a Glance
+
+What should you pay attention to when you encounter missing item-level data in your scale validation?
+How can you account for these missing data in your analyses?
+This tutorial presents important aspects to consider - such as the missing data mechanism - and how to estimate the psychometric properties of your scale in the presence of missing data. Only basic R knowledge is required, and no prior experience with missing data is necessary.
+Specifically, this tutorial addresses:
+
+-   the different types of missing data mechanisms
+-   how to describe and visualize missing data
+-   various strategies for handling missing data, such as multiple imputation
+-   a small simulation study demonstrating the performance of these strategies in estimating descriptive statistics, model fit, reliabilities, and factor loadings
+
+As an example, we use a scale with continuous indicators; therefore, not all parts of the analysis may be appropriate for instruments with categorical indicators.
+
+## Data
+
+In this tutorial, we use the `HolzingerSwineford1939` [@rosseel2025] dataset, which includes mental ability test scores from seventh- and eighth-grade students attending two different schools (Pasteur and Grant-White).
+
+
+
+```{r}
+#| message: false
+#| warning: false
+
+library(lavaan)
+library(psych)
+library(dplyr)
+library(lavaan.mi)
+library(mice)
+library(ggmice)
+library(ggplot2)
+
+# Loading the data
+Data <- lavaan::HolzingerSwineford1939
+
+# Define a vector with names of scale variables
+variable_names <- paste("x", c(1:9), sep = "")
+```
+
+The first variable of interest is the presence of missing data.
+We calculate both the absolute number of missing values per variable and the relative proportion of missing data for each variable.
+
+```{r}
+# Missing values per variable
+colSums(is.na(Data[, variable_names]))
+
+# Percentage of missing values
+colSums(is.na(Data[, variable_names])) / nrow(Data)
+```
+
+The scale variables contain no missing values. We will create missing data under specific missingness mechanisms, which allows us to evaluate the performance of different strategies for handling missing data in our later simulation study. The next section introduces the different missing data mechanisms. In addition, we will repeatedly generate missing data according to each mechanism for the simulation study.
+
+## Missing Data Mechanisms
+
+How we handle missing data depends heavily on the underlying missing data mechanism.
+In general, three mechanisms can be distinguished [@Rubin.1987]:
+
+- Missing completely at random (MCAR)
+- Missing at random (MAR)
+- Missing not at random (MNAR)
+
+We will now take a closer look at these mechanisms and introduce missing values into our dataset according to each one.
+
+::: {.column-margin}
+This tutorial focuses on item nonresponse, which means that some data of a participant are missing. In contrast, unit nonresponse means that some persons refsued to participate and hence the sample is not representative. For a more detailed discussion, see @vanbuuren2018.
+:::
+
+### Missing Completely at Random (MCAR)
+
+Data are considered missing completely at random (MCAR) when the probability of missingness on a variable is unrelated to any observed or unobserved data in the dataset  [@Chen.2020; @Rubin.1987; @vanBuuren.2010].
+For example, consider an online survey in which a technical issue causes the software to randomly fail to save some responses.
+As a result, some data are missing, but this missingness is unrelated to the values of the missing variable or to any other variables in the dataset.
+To display MCAR, we adapted the Figure of @Thoemmes.2015.
+
+
+```{r, echo=FALSE}
+# Create the flowchart
+DiagrammeR::grViz("
+digraph flowchart {
+
+  graph [rankdir=TB,
+         ranksep=.3,   
+        nodesep=.3, ]  
+
+  node [width=0.01,height=0.01 shape=box, style=filled, fillcolor=\"#e0e0e0\", color=\"#333\", fontname=\"Arial\", fontsize=4]
+
+  A [label=\"Observed\\nCovariate\"]
+  B [label=\"Scale\\nVariable\"]
+  C [label=\"Unobserved\\nCovariate\"]
+  D [label=\"Missingness\"]
+
+   A -> B [arrowsize=0.5]
+
+  
+{ rank = same; A; C }
+{ rank = same; B; D }
+
+
+}
+",
+width = 800,
+height = 400)
+``` 
+
+
+To introduce MCAR into our dataset, we randomly delete data points.
+Specifically, we randomly determine whether each value for a given variable is missing (0) or observed (1).
+This missingness process can be modeled using the `rbinom()` function, which draws random 0/1 values from a binomial distribution with a fixed probability (here, indicating whether each case is set to missing).
+To more robustly evaluate the effects of MCAR in a small simulation study, we repeat this random deletion process 500 times.
+We introduce missingness in 15% of the cases for each variable.
+
+```{r}
+# set seed for reproducibility
+set.seed(15101050)
+
+# Build a 100 datasets with MCAR
+Data_list_MCAR <- lapply(c(1:500),
+                    function(repetition) {
+                      Data_MCAR <- Data
+                      Data_MCAR[, variable_names] <- sapply(c(1:length(variable_names)),
+                                                            function(col_index) {
+                                                              variable <- Data_MCAR[, variable_names[col_index]]
+                                                              missings <- as.logical(rbinom(n = nrow(Data),
+                                                                                            size = 1,
+                                                                                            prob = .15))
+                                                              variable[missings] <- NA
+                                                              return(variable)
+                                                              })
+                      return(Data_MCAR)
+                      })
+
+# Check whether introducing of missings worked as planned
+round(rowMeans(sapply(Data_list_MCAR,
+                      function(data) {
+                        colSums(is.na(data[, variable_names])) / nrow(data)
+                        })),
+      digits = 3)
+# roughly 15% missing data per variable
+```
+
+::: {.column-margin}
+The outer lapply(1:500, ...) reruns the MCAR procedure 500 times, returning a list of 500 modified copies of the data.
+Inside each replicate, sapply(1:length(variable_names), ...) loops over the selected columns, uses rbinom() to flag ~15% per column as missing, and simplifies the resulting equal-length vectors into a matrix that’s assigned back to Data_MCAR[, variable_names].
+:::
+
+### Missing at Random (MAR)
+
+Missingness is considered misssing at random (MAR) when the probability of a value being missing on a variable depends only on observed data but not on the unobserved (i.e., missing) values themselves, after conditioning on the observed values [@Chen.2020; @vanBuuren.2010].
+For example, imagine we have collected an online survey about daily screentime with an age diverse sample.
+Let’s assume that younger participants have a higher screentime than older participants, but younger people are also more likely to not answer our screentime questions.  Without conditioning on age, the missing values on screentime would depend on the missing values and would therefore be missing not at random. However, after conditioning on age the missing values on screentime are independent of the missing values and missings are thus missing at random.
+Again, we display MAR, by adapting the Figure of @Thoemmes.2015.
+
+```{r, echo=FALSE}
+# Create the flowchart
+DiagrammeR::grViz("
+digraph flowchart {
+
+  graph [rankdir=TB,
+         ranksep=.3,   
+        nodesep=.3, ]  
+
+  node [width=0.01,height=0.01 shape=box, style=filled, fillcolor=\"#e0e0e0\", color=\"#333\", fontname=\"Arial\", fontsize=4]
+
+  A [label=\"Observed\\nCovariate\"]
+  B [label=\"Scale\\nVariable\"]
+  C [label=\"Unobserved\\nCovariate\"]
+  D [label=\"Missingness\"]
+
+  A -> B [arrowsize=0.2]
+  A -> D [arrowsize=0.2]
+
+  { rank = same; A; C }
+{ rank = same; B; D }
+  
+    # Invisible edges to enforce 2x2 grid
+  C -> B [style=invis]
+  C -> D [style=invis]
+
+}
+",
+width = 800,
+height = 400)
+```
+
+
+To introduce MAR into our mental ability school dataset, we first need to define a conditional missingness model.
+In this case, we condition the probability of missingness on sex and grade, as both variables are associated with the values of our scale variables.
+In the first step, we specify that the probability of a value being missing depends on a participant’s sex and grade (7th grade or 8th grade).
+We then determine whether each value is missing (0) or observed (1) using the `rbinom()` function, applying probabilities based on the defined relationships with sex and grade.
+To more thoroughly evaluate the effects of MAR, we repeat this missingness process 500 times.
+As with MCAR, we introduce missingness in 15% of the cases for each variable.
+
+```{r}
+### Define the probability of missingness as a function of sex and grade.
+# 1. Compute a linear predictor that determines how likely a value is to be missing  
+logit_MAR <- -2.5 * (Data$sex - 1) - 3.5 * (Data$grade - 7)
+# 2. Convert the linear predictor into probabilities between 0 and 1
+#    using the inverse logit (logistic) function
+prob_MAR <- 1 / (1 + exp(-logit_MAR))
+
+# One value in prob_MAR is missing because grade was missing
+# Replace this missing probability with 0.15
+prob_MAR[is.na(prob_MAR)] <- .15
+
+# Overview prob_MAR
+psych::describe(prob_MAR)
+
+# Build a 100 datasets with MCAR
+Data_list_MAR <- lapply(c(1:500),
+                    function(repetition) {
+                      Data_MAR <- Data
+                      Data_MAR[, variable_names] <- sapply(c(1:length(variable_names)),
+                                                           function(col_index) {
+                                                             variable <- Data_MAR[, variable_names[col_index]]
+                                                             missings <- as.logical(rbinom(n = nrow(Data),
+                                                                                           size = 1,
+                                                                                           prob = prob_MAR))
+                                                             variable[missings] <- NA
+                                                             return(variable)
+                                                             })
+                      return(Data_MAR)
+                      })
+
+# Check whether introducing of missings worked as planned
+round(rowMeans(sapply(Data_list_MAR,
+                      function(data) {
+                        colSums(is.na(data[, variable_names])) / nrow(data)
+                        })),
+      digits = 3)
+# roughly 15% missing data per variable
+ 
+```
+
+### Missing not at Random (MNAR)
+
+Missingness is considered not at random (MNAR) when the probability of a value being missing depends on the unobserved (i.e., missing) data itself, even after conditioning on the observed values.
+This definition leaves two scenarios of MNAR [@Thoemmes.2015].
+In the first scenario, the missingness depends on the unobserved values of the variable of interest.
+Returning to our screentime survey example, imagine the survey program has the following issue: it fails to save responses with values greater than 8, even though the response scale ranges from 1 to 10.
+In this case, the probability of missingness depends directly on the (unobserved) value of the variable of interest.
+No matter which other variables we condition on, the missingness still relates to the missing value - therefore, the missingness mechanism is not missing at random.
+The adpted Figure of @Thoemmes.2015 displays this scenario.
+
+```{r, echo=FALSE}
+# Create the flowchart
+DiagrammeR::grViz("
+digraph flowchart {
+
+  graph [rankdir=TB,
+         splines = ortho,
+         ranksep=.3,   
+        nodesep=.3, ]  
+
+  node [width=0.01,height=0.01 shape=box, style=filled, fillcolor=\"#e0e0e0\", color=\"#333\", fontname=\"Arial\", fontsize=4]
+
+  A [label=\"Observed\\nCovariate\"]
+  B [label=\"Scale\\nVariable\"]
+  C [label=\"Unobserved\\nCovariate\"]
+  D [label=\"Missingness\"]
+
+  A -> B [arrowsize=0.2]
+  B -> D [arrowsize=0.2]
+
+  { rank = same; A; C }
+  { rank = same; B; D }
+
+}
+",
+width = 800,
+height = 400)
+```
+    
+
+In the second scenario, missingness depends on the unobserved values of an unobserved covariate.
+Remember the MAR example, where missingness depended on age.
+This time, however, age was not included in the survey.
+Consequently, missingness depends on the unobserved values of an unobserved covariate.
+The adapted Figure of @Thoemmes.2015 displays this scenario.
+
+```{r, echo=FALSE}
+# Create the flowchart
+DiagrammeR::grViz("
+digraph flowchart {
+
+  graph [rankdir=TB,
+         ranksep=.3,   
+        nodesep=.3, ]  
+
+  node [width=0.01,height=0.01 shape=box, style=filled, fillcolor=\"#e0e0e0\", color=\"#333\", fontname=\"Arial\", fontsize=4]
+
+  A [label=\"Observed\\nCovariate\"]
+  B [label=\"Scale\\nVariable\"]
+  C [label=\"Unobserved\\nCovariate\"]
+  D [label=\"Missingness\"]
+
+   A -> B [arrowsize=0.5]
+   C -> D [arrowsize=0.5]
+   C -> B [arrowsize=0.5]
+  
+{ rank = same; A; C }
+{ rank = same; B; D }
+  
+  # Invisible edges to enforce 2x2 grid
+  C -> D [style=invis]
+
+}
+",
+width = 800,
+height = 400)
+``` 
+
+
+To simulate MNAR in our dataset, we define a condition where missingness is based on the values of the variable itself. Specifically, to introduce approximately 15% missingness, we remove all values above a certain percentile. Initially, we used the 85th percentile, but this led to slightly fewer than 15% missing values, so we adjusted the threshold to the 83.4th percentile.
+Thus, we introduce missing data by deleting all values above a predefined percentile, which varies normally around 0.834 with a standard deviation (*SD*) of 0.02.
+
+```{r}
+# define probabilities for missingness
+probs_MNAR <- rnorm(500, .834, .02)
+
+# Introducing missings
+Data_list_MNAR <- lapply(probs_MNAR,
+                          function(prob) {
+                            data_temp <- Data
+                            data_temp[, variable_names] <- sapply(c(1:length(variable_names)),
+                                                                  function(col_index) {
+                                                                    variable <- data_temp[, variable_names[col_index]]
+                                                                    missings <- variable > quantile(variable, probs = prob)
+                                                                    variable[missings] <- NA
+                                                                    return(variable)
+                                                                    })
+                            return(data_temp)
+                            })
+
+# Check whether introducing of missings worked as planned
+round(rowMeans(sapply(Data_list_MNAR,
+                      function(data) {
+                        colSums(is.na(data[, variable_names])) / nrow(data)
+                        })),
+      digits = 3)
+# roughly 15% missing data per variable
+ 
+```
+
+## Describe & Analyse Missing Data Occurrence
+
+In real-world studies, the exact missing data mechanism is usually unknown.
+Therefore, we must describe and analyze the occurrence of missing data.
+To this end, we select one dataset for each missing data mechanism (MCAR, MAR, MNAR) to illustrate and compare their effects.
+Additionally, we create a list containing these datasets by missing data mechanism to facilitate subsequent analyses and computations.
+
+```{r}
+# One dataset for MCAR
+Data_MCAR <- Data_list_MCAR[[1]]
+
+# One dataset for MAR
+Data_MAR <- Data_list_MAR[[1]]
+
+# One dataset for MAR
+Data_MNAR <- Data_list_MNAR[[1]]
+
+# Create a list containing all datasets
+list_data <- list(Data_MCAR, Data_MAR, Data_MNAR)
+names(list_data) <- c("MCAR", "MAR", "MNAR")
+```
+
+### Describe Missing Data Occurrence
+
+Missing data can be described in several ways.
+First, we can estimate and visualize the occurrence of missing data for each variable and each case.
+Next, we can examine the missing data patterns more closely using the `ggmice` package.
+We begin by describing and plotting the missing values per variable.
+
+```{r}
+# Describe missing cases per variable
+missings_per_variable <- as.data.frame(sapply(list_data,
+                                              function(data) {
+                                                colSums(is.na(data[, variable_names])) / nrow(data)
+                                                }))
+colnames(missings_per_variable) <- c("MCAR", "MAR", "MNAR")
+round(missings_per_variable, digits = 3)
+
+# Plot misings per variable
+missings_per_variable %>%
+  dplyr::mutate(Variable = variable_names) %>%
+  tidyr::pivot_longer(cols = c("MCAR", "MAR", "MNAR"),
+                      values_to = "Percentage missing",
+                      names_to = "Mechanism") %>%
+  dplyr::mutate(Mechanism = factor(Mechanism, levels = c("MCAR", "MAR", "MNAR"))) %>%
+  ggplot2::ggplot(ggplot2::aes(x = Variable,
+                               y = `Percentage missing`,
+                               fill = Mechanism)) +
+  ggplot2::geom_bar(stat = "identity",
+                    position = "dodge",
+                    color = "black") +
+  ggplot2::scale_y_continuous(limits = c(0, 1),
+                              breaks = seq(0, 1, .25)) +
+  ggplot2::labs(title = "Percentage Missing Data per Variable") +
+  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"))
+
+    
+
+```
+
+As expected, the percentage of missing values varies around 15%, with no major differences between the three missing data mechanisms.
+This is no surprise given we introduced 15% missing data per variable for each mechanism.
+Next, we will examine the missing values on a case-by-case basis.
+
+```{r}
+# Describe missing variable for each case
+missings_per_case <- as.data.frame(sapply(list_data,
+                                              function(data) {
+                                                rowSums(is.na(data[, variable_names]))
+                                                }))
+colnames(missings_per_case) <- c("MCAR", "MAR", "MNAR")
+colMeans(missings_per_case)
+
+# Plot misings for each variable
+missings_per_case %>%
+  dplyr::mutate(ID = c(1:nrow(missings_per_case))) %>%
+  tidyr::pivot_longer(cols = c("MCAR", "MAR", "MNAR"),
+                      values_to = "Percentage missing",
+                      names_to = "Mechanism") %>%
+  dplyr::mutate(Mechanism = factor(Mechanism, levels = c("MCAR", "MAR", "MNAR"))) %>%
+  ggplot2::ggplot(ggplot2::aes(x = as.factor(`Percentage missing`),
+                               fill = Mechanism)) +
+  ggplot2::geom_bar(position = "dodge",
+                    color = "black") +
+  ggplot2::labs(y = "Frequency of Cases", 
+                x ="\nNumber of Missing Variables",
+                title = "Number of Missing Variables per Case") +
+  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"))
+
+```
+
+When examining missingness per case, we observe the first differences between the missing data mechanisms. For MCAR, the number of missing values per case follows a binomial distribution with an expected value of 9 \* 0.15 = 1.35. In contrast, the distributions for MAR and MNAR are noticeably skewed. Investigating the occurrence of missing data is important, as it can provide insights into the reasons for missingness and influence how missing data should be handled [@vanbuuren2018]. To better understand the occurrence of missing data and its consequences, we examine the missing data pattern.
+
+#### Missing Data Pattern
+
+The missing data pattern summarizes missingness both per case and per variable. It shows, for example, how many participants have complete data and whether missingness in one variable is associated with missingness in others. For instance, in longitudinal studies, participants who drop out may have missing data in all subsequent waves. In planned missingness designs, specific groups of participants may have systematically missing blocks of variables. In most cases, however, such clear patterns do not occur. Nevertheless, it is important to identify participants with a large amount of missing data or variables with very few observed values, as these can complicate, for example, the imputation process [@vanbuuren2018].
+
+To visualize these patterns, we use the  `plot_pattern()` function from the `ggmice` package [@oberman2025]. For this example, we focus on the missing data patterns for the test scores (x1, x2, x3).
+
+```{r}
+# Plot missings data pattern
+lapply(list_data,
+       function(data) {
+         ggmice::plot_pattern(data[, c("x1", "x2", "x3")],
+                              square = FALSE) +
+           ggplot2::labs(title = "Missing Data Patterns") +
+           ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"))
+       })
+
+```
+
+The missing data patterns align with the plots showing missingness by case and by variable.
+While the number of cases with no missing variables is higher for MAR and MNAR, there are also more cases with two or three missing variables under these mechanisms.
+Additionally, the patterns provide an overview of whether missingness in one variable is associated with missingness in others.
+
+### Analyse Missing Data Occurence
+
+In real-world data scenarios, the true missing data mechanism (i.e., MCAR, MAR, or MNAR) is typically unknown.
+However, different missing data mechanisms require different strategies for handling missingness.
+Generally, we cannot test a particular missing data mechanism.
+There are only tests that can provide evidence that the MCAR assumption does not hold.
+That is, if missingness is associated with observed covariates, the data are not MCAR.
+Importantly, the absence of such associations are no prove for MCAR - missingness may still depend on the unobserved values of the variable itself or on the values of unobserved covariates [@Raykov.2011].
+Hence, although examining associations between missingness and other variables can provide useful insights - such as when selecting covariates for multiple imputation - it is rarely advisable to draw conclusions about the underlying missing data mechanism from such tests.
+Nonetheless, it can be useful to think about the causal relationships underlying the missingness [@Thoemmes.2015].
+
+## Strategies of Dealing with Missing Data
+
+There are several strategies for handling missing data.
+In this tutorial, we focus on pairwise deletion, listwise deletion, multiple imputation, and full-information maximum likelihood (FIML). First, we introduce the rationale behind each of these methods. Next, we discuss which strategies are most suitable for different types of analyses and under various missing data mechanisms. Finally, we support this discussion with simulation results comparing the estimation of descriptive statistics, model fit, reliability, and factor loadings across the different missing data mechanisms, using the full sample results as a benchmark.
+
+### Pairwise Deletion
+
+Pairwise deletion uses all available data to estimate each statistic.
+For example, means for a variable are calculated using all cases with observed values for that variable, and correlations between two variables are estimated using all cases with observed data on both variables. However, this means that the sample size and composition can vary across different statistics. Moreover, pairwise deletion can result in biased estimates, when missings are not MCAR [@vanbuuren2018]. Pairwise deletion is typically specified directly in the analysis code.
+
+#### Prorated Mean Scores
+
+Prorated means are frequently used to estimate a participant’s scale score when some item responses are missing.
+For example, if a participant answers 4 out of 5 items on a scale, their scale score is estimated as the mean of those four valid responses. Similar to pairwise deletion, this approach uses all available information.
+However, calculating a prorated mean score effectively replaces missing item values with the participant’s own average response. This method is appropriate only when item difficulties and selectivities do not vary substantially and the missing data mechanism is MCAR. Otherwise, it may lead to biased individual scale scores, biased group means, and biased (co-)variances [@mazza2015]. Estimating prorated mean scores is therefore not recommended.
+
+### Listwise Deletion
+
+Listwise deletion excludes all cases that have missing values on any variable relevant to the analysis. This approach reduces the sample size, which leads to a loss of statistical efficiency. Although it has the advantage that all analyses are conducted on the same set of cases, the loss of information can be tremendous and is only valid under MCAR [@vanbuuren2018]. If listwise deletion cannot be spcified in the analyses code, it requries the creation of a new dataset where all cases with missing values on any variable of interest are removed.
+
+
+### Multiple Imputations
+
+One frequently used approach for handling missing data is multiple imputation. In this tutorial, we use the `mice` package [@vanbuuren2011], which implements Multivariate Imputation by Chained Equations to replace missing values with plausible estimates.  
+
+To apply `mice`, we first need to define our imputation model.  
+
+
+**Step 1: Variable selection.**  
+
+We must decide which variables to include as predictors in the imputation model, as these variables help to impute the missing values. To avoid biased estimates, at a minimum, all variables used in the analysis model should be included - a principle known as *congeniality* [@meng1994]. It is often beneficial to include additional variables beyond the analysis model, particularly those that are highly correlated with the variables to be imputed or with the missingness itself. In our MAR example, missingness correlates with `sex`, which might not be part of the analysis model. Omitting `sex` from the imputation model could result in data that are still missing not at random. Including variables that are associated with missingness is important to avoid biased estimates, while including variables that are highly correlated with those to be imputed can increase precision. However, including variables that themselves have a large amount of missing data, or including many variables when the sample size is small, may also lead to biased estimates [@axenfeld2022; @Murray.2018; @vanbuuren2018].
+
+**Step 2: Choosing the imputation method.**  
+
+The `mice` package offers various imputation methods suitable for different data types. For numeric variables, `mice` uses `norm` (Bayesian linear regression) as default; for binary variables, `mice` uses `logreg` (Bayesian logistic regression) as default. A widely used method method, which is recommended especially for metric variables^[for an overview on how to implement pmm for unordered categorical variables, see @koller2009], is `pmm` (predictive mean matching) [@rubin1986; @little1986]. In `pmm`, missing values are imputed by borrowing observed values from "donor" cases with similar observed data, preserving realistic data distributions.
+
+::: {.column-margin}
+According to @vanbuuren2018, using Bayesian regression for imputations is preferable to standard regression. Unlike standard regression, Bayesian regression draws from the posterior distribution to obtain predicted values. Consequently, the predicted (i.e., imputed) values reflect the uncertainty inherent in the imputation process. Standard regression, which produces a single deterministic predicted value, does not account for this uncertainty and is therefore not recommended.
+:::
+
+**Step 3: Setting the number of iterations.**  
+
+Multiple imputation via chained equations is an iterative process where each iteration refines the estimates using the most recent imputations. More iterations improve the stability of the imputation model and help achieve convergence. Typically, 5 to 20 iterations are sufficient to reach convergence [@vanbuuren2018]. However, for some cases the number of iterations need to be substantially higher to achieve convergence [@vanbuuren2018]. As discussed later, we can evaluate whether the imputations converged. One way to deal with convergence issues is to increase the number of iterations.
+
+**Step 4: Deciding on the number of imputed datasets.**
+
+Because imputation involves randomness, creating multiple imputed datasets allows pooling of results to reduce variance. More imputed datasets improve the precision of estimates but increase computation time. @vanbuuren2018 argues that 5 to 20 imputed datasets are usually sufficient, especially when point estimates are of interest. Aligning with this recommendation, @White.2011 suggest using at least as many imputations as the percentage of missing data (e.g., 15 imputations for 15% missing data).
+
+**Step 5: Analyze data & pool results.**
+
+Once the data have been imputed, they can be analyzed. The first step is to perform the planned analyses separately in each imputed dataset. For descriptive statistics, this may involve estimating the mean (i.e., the intercept) of a variable within each dataset (noted as $\hat{\theta_i}$, with theta indicating the mean and *i*  the imputed data set). The second step is to combine, or pool, these estimates using, for example, Rubin’s Rule [@Rubin.1987]. According to Rubin’s Rule, the pooled estimate (noted as $\bar{\theta}$) is the arithmetic mean of the estimates obtained from the individual imputed datasets (with m indicating the number of imputed data sets). For descriptive statistics, this corresponds to calculating the mean across the estimated means from all imputed datasets [@enders2022].
+
+::: {.column-margin}
+Using the arithmetic mean of the estimates to pool according to Rubin’s Rule [@Rubin.1987] is only valid for approximately normally distributed quantities, such as means or regression coefficients. To pool other quantities, such as correlation coefficients, requires a transformation (e.g., Fisher's z transformation) before pooling [@vanbuuren2018].
+:::
+
+$$ \bar{\theta} = \frac{1}{m} \sum_{i=1}^{m} \hat{\theta_i} $$
+
+The variance (i.e., the squared standard error) of the pooled estimate can also be computed. It consists of two components: (1) the within-imputation variance, which represents the average variance estimate across the imputed datasets, and (2) the between-imputation variance, which reflects the variability of the estimates across the imputed datasets and thus captures the uncertainty introduced by imputation [@enders2022]. 
+The within-imputation variance can be estimated using the following formula [@enders2022]^[Instead of the displayed formula, bootstraping can be used to estimate the within-imputation variance [@bartlett2020]]:
+
+$$ V_W = \frac{1}{m} \sum_{i=1}^{m}\hat{SE_i^2} $$
+
+The between-imputation variance can be estimated using the following formula [@enders2022]:
+
+$$ V_B = \frac{1}{m - 1} \sum_{i=1}^{m}( \hat{\theta_i} - \bar{\theta})^2 $$
+
+
+The total variance is then obtained by summing the within-imputation variance and (1 + 1/number of imputations) times the between-imputation variance [@Rubin.1987; @enders2022]:
+
+ $$ V_t = V_W + V_B + \frac{V_B}{m} $$
+ 
+ The square-root of the total variance is then the pooled standard error [@enders2022].
+ 
+ $$ SE = \sqrt{V_t} $$
+ 
+ **Illustrative Example**
+
+For our example, we impute missing values in the scale variables, including `sex` and `grade` as predictors since missingness may depend on them. We use `pmm` to generate 15 imputed datasets with 10 iterations for the MAR scenario. After imputation, we check whether the model has converged using taceplots and stripplots.
+
+```{r}
+# Conducting multiple imputations
+multiple_imputations_MAR <- mice::mice(Data_MAR,
+                                        m = 15,
+                                        method = "pmm", 
+                                        maxit = 10,
+                                        printFlag = FALSE)
+
+  
+# Check convergence of models for 3 example variables
+plot(multiple_imputations_MAR,
+     c("x1", "x2", "x3"),
+     main = "Traceplots")
+
+# Traces intermix and no trends at late iterations are visible
+
+# Write function to create stripplots for variables x1, x2, and x3
+stripplots_x1 <- function(imp) {
+  lapply(c("x1"),
+         function(variable) {
+           mice::stripplot(imp,
+                           as.formula(paste(variable, " ~ .imp", sep = "")),
+                           pch = 20,
+                           cex = 2,
+                           main = "Stripplot")
+           })
+}
+
+# Plot Stripplots
+stripplots_x1(multiple_imputations_MAR)
+# Imputed values (red) intermix with observed values (blue)
+```
+
+The trace plots intermix and no trend is visible in the later iterations. This intermix and the absence of a trend indicate convergence, which means that the number of iterations was sufficient. A trend at late iterations would have indicated that the estimate has not yet converged. 
+
+The stripplots show that the imputed values (in red) intermingle with the observed values (in blue). If the imputed and observed values do not intermingle, this can either indicate the absence of MCAR or a bad imputation model [@vanbuuren2018].
+
+As the model has converged, we can now estimate pooled statistics. First, we estimate the pooled mean by fitting a linear model with only an intercept (i.e., no predictors) in each imputed dataset. In such a model, the intercept corresponds to the sample mean of the outcome variable. We then pool these intercept estimates across imputations. Next, we fit a CFA model using `lavaan.mi` to examine both model fit, the resulting reliability, and the factor loadings. Additionally, we compare the pooled statistics to those of the full sample. 
+
+```{r, warning=FALSE}
+# Estimate pooled mean of x1
+multiple_imputation_means_MAR <- with(multiple_imputations_MAR,
+                                       lm(x1 ~ 1))
+multiple_imputation_pooled_mean_MAR <- summary(mice::pool(multiple_imputation_means_MAR))
+
+# Compare pooled mean to true mean
+multiple_imputation_pooled_mean_MAR[, c(2, 3)]
+mean(Data$x1)
+sd(Data$x1) / sqrt(nrow(Data))
+
+# Estimate CFA scross imputed datasets
+# Define factor model
+three_fator_model <- '
+visual =~ x1 + x2 + x3
+textual =~ x4 + x5 + x6
+speed =~ x7 + x8 + x9
+'
+
+# Estimate CFAs
+# multiple imputations
+cfa_multiple_imputations_MAR <- lavaan.mi::cfa.mi(model = three_fator_model,
+                                                   data = multiple_imputations_MAR,
+                                                   estimator = "ml",
+                                                   std.lv = TRUE)
+
+# Full sample
+cfa_full_data <- lavaan::cfa(model = three_fator_model,
+                             data = Data,
+                             estimator = 'ml',
+                             std.lv = TRUE)
+
+# Compare model fit
+fit_measures <- c("chisq.scaled", "df", "pvalue.scaled",
+                  "cfi.robust", "rmsea.robust", "srmr")
+
+lavaan::fitmeasures(cfa_full_data, 
+                    fit.measures = fit_measures)
+lavaan::fitmeasures(cfa_multiple_imputations_MAR, 
+                    fit.measures = fit_measures)
+
+# Compare reliability
+semTools::compRelSEM(cfa_full_data)
+semTools::compRelSEM(cfa_multiple_imputations_MAR)
+
+# Compare factor loadings
+loadings_full <- unlist(lavaan::lavInspect(cfa_full_data, "est")$lambda)
+loadings_full[loadings_full != 0]
+lavaan.mi::parameterEstimates.mi(cfa_multiple_imputations_MAR)$est[c(1:9)]
+```
+
+The displayed results show, that the results estimated with multiple imputations closely reassembles those of the full sample. We will discuss this more thoroughly later in the simulation study.
+
+### Full-Information Maximum Likelihood (FIML)
+
+A popular way to handle missing data in factor models, such as confirmatory factor analysis (CFA), is Full Information Maximum Likelihood (*FIML*). The basic idea of maximum likelihood is to estimate how likely the observed data are, given certain assumptions about the population. For example, if the population IQ has a mean of 100 and variance of 225, how likely is it to observe a score of 95? This probability is called the likelihood, and we usually work with its logarithm (log-likelihood) for convenience. Statistical methods based on maximum likelihood then find the parameter values that maximize the likelihood of the observed data - that is, the values under which the observed data are most probable.
+
+When we have multiple variables, maximum likelihood considers the combination of all observed scores, taking into account their means, variances, and how the variables relate to each other (covariances). For instance, we can estimate how likely it is to see an IQ of 95 and a well-being score of 65, given the population averages and the correlation between IQ and well-being.
+
+Missing data complicate this calculation. Simply leaving out cases with missing values can distort the estimates for all variables, not just the ones with missing data. This can lead to biased results, especially if the missingness depends on observed data (MAR).
+
+FIML solves this by using all the available information. It calculates likelihoods for different subgroups of participants based on their missing data patterns (e.g., people with complete data, people missing an IQ score, people missing a well-being score). Then, it combines these subgroup likelihoods to estimate the overall model parameters. In addition, FIML adjusts the standard errors of the estimates according to how much information is available for each parameter, giving more accurate results than simply ignoring missing data..  
+
+One advantage of FIML is that dealing with missing values is integrated into the analysis process. The disadvantage of FIML is that it is only applicable in combination with methods using maximum likelihood. 
+
+In the code below, we demonstrate how FIML is specified in a CFA.
+
+```{r}
+# Estimate CFA using FIML
+cfa_FIML_MAR <- lavaan::cfa(model = three_fator_model,
+                            data = Data_MAR,
+                            estimator = 'ml',
+                            std.lv = TRUE,
+                            missing = "FIML")
+
+# Compare model fit
+lavaan::fitmeasures(cfa_full_data, 
+                    fit.measures = fit_measures)
+lavaan::fitmeasures(cfa_FIML_MAR, 
+                    fit.measures = fit_measures)
+
+# Compare reliability
+semTools::compRelSEM(cfa_full_data)
+semTools::compRelSEM(cfa_FIML_MAR)
+
+# Compare factor loadings
+lavaan::lavInspect(cfa_full_data, "est")$lambda
+lavaan::lavInspect(cfa_FIML_MAR, "est")$lambda
+
+```
+The results show that the estimates obtained using FIML under MAR closely resemble those from the full sample.
+
+
+### Recap
+
+In this section we introduced different ways of dealing with missing data. We introduced rather simple strategies such as pairwise or listwise deletion, but also more complex strategies such as multiple imputations and FIML. For these more complex strategies, we demonstrated their application under the MAR assumption and showed that the results closely resemble those of the full sample. The next section builds on this by presenting a small simulation study that compares different strategies across various missing data mechanisms.
+
+## Simulation Study
+
+This section introduces a small Monte-Carlo simulation study. Simulation studies are empirical experiments used to investigate the performance of statistical methods under controlled conditions [@morris.2019]. They rely on pseudo-random sampling from a specified population model to evaluate how well sample-based estimates recover known population parameters. In essence, simulation studies allow researchers to assess how statistical procedures behave across many hypothetical replications of an experiment, each generated from the same underlying population [@morris.2019].
+
+In this simulation study, we generated 500 samples for each missing data mechanism. For each sample, we estimated item means, model fit indices, reliability, and factor loadings. We then evaluated how closely these estimates resembled the corresponding statistics from the full sample, which served as the population reference. We also compared different strategies for handling missing data and assessed their performance under the different missing data mechanisms.
+
+To evaluate the performance of these strategies, we focused on two commonly used performance measures: (Monte-Carlo) bias and standard error [@morris.2019]. Bias quantifies how much the mean of the sample-based estimates deviates from the true population parameter. If the mean of the sample estimates equals the population value, the estimator is unbiased. If the mean of the sample estimates deviates from the population value, the estimator is biased. Standard error reflects the variability of the sample estimates around their mean. A smaller standard error indicates that estimates from different samples are more tightly clustered around the average estimate, implying greater statistical efficiency or precision [@morris.2019].
+
+The figure below illustrates these concepts by showing potential distributions of sample estimates. The first row represents unbiased estimation, where the dashed line (mean of the sample estimates) aligns with the solid line (population value). The second row shows biased estimation, where the dashed line deviates from the solid line. The first column displays estimates with a low standard error (narrower distribution), whereas the second column represents estimates with a high standard error (wider distribution).
+
+```{r}
+#| code-fold: true
+
+par(mfrow = c(2, 2), mar = c(4, 4, 3, 2), font.main = 2)
+
+# Define standard deviations
+sd_low <- 1
+sd_high <- 2 * sd_low  # 2x the low SE
+
+# Define common axis limits for all plots
+x_range <- c(-6, 6)
+y_max <- 9e2
+
+# Number of samples for histogram
+n_samples <- 5e3
+
+# Define uniform breaks for all histograms (extend well beyond x_range to catch all values)
+breaks <- seq(x_range[1] - 2, x_range[2] + 2, by = 0.4)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate ONE base sample from standard normal
+base_sample <- rnorm(n_samples, mean = 0, sd = 1)
+
+# Transform the base sample for each plot
+samples1 <- base_sample * sd_low + 0  # Low SE, No Bias
+samples2 <- base_sample * sd_high + 0  # High SE, No Bias
+samples3 <- base_sample * sd_low + 1  # Low SE, Bias
+samples4 <- base_sample * sd_high + 1  # High SE, Bias
+
+# Determine the range of all data
+all_data <- c(samples1, samples2, samples3, samples4)
+data_range <- range(all_data)
+
+# Create breaks that span from well before the minimum to well after the maximum
+breaks <- seq(floor(min(data_range, x_range[1]) - 2), 
+              ceiling(max(data_range, x_range[2]) + 2), 
+              by = 0.4)
+
+# Function to plot a histogram with vertical lines
+plot_histogram <- function(samples, mean_val, true_val, title, show_labels = TRUE) {
+  # Create histogram
+  hist(samples, breaks = breaks, xlim = x_range, ylim = c(0, y_max),
+       axes = FALSE, xlab = "", ylab = "", main = title,
+       col = "gray80", border = "black")
+  
+  # Add vertical lines
+  abline(v = true_val, lwd = 2, lty = 1)  # solid line for theta
+  abline(v = mean_val, lwd = 2, lty = 3)  # dotted line for theta-bar
+  
+  # Add labels under the lines (outside plot area)
+  if (show_labels) {
+    mtext(expression(bold(theta)), side = 1, line = 1, at = true_val, font = 2)
+    mtext(expression(bold(bar(theta))), side = 1, line = 1, at = mean_val, font = 2)
+  }
+}
+
+# Top left: Low Standard Error, No Bias
+plot_histogram(mean_val = 0, samples = samples1, true_val = 0, 
+               title = "Low Standard Error\n", show_labels = TRUE)
+mtext("No Bias", side = 2, line = 2.5, las = 3, font = 2)
+
+# Top right: High Standard Error, No Bias
+plot_histogram(mean_val = 0, samples = samples2, true_val = 0, 
+               title = "High Standard Error\n", show_labels = TRUE)
+
+# Bottom left: Low Standard Error
+plot_histogram(mean_val = 1, samples = samples3, true_val = 0, 
+               title = "", show_labels = TRUE)
+mtext("Bias", side = 2, line = 2.5, las = 3, font = 2)
+
+# Bottom right: High Standard Error
+plot_histogram(mean_val = 1 , samples = samples4, true_val = 0, 
+               title = "", show_labels = TRUE)
+```
+
+
+We present the results for bias using boxplots. In our simulation study, the boxplots indicate the quartiles (i.e., 25th percentile, median, 75th percentile) of the sample-based estimates. If the median is close to zero, the deviation from the population value is small - indicating that the statistic is unbiased. Contrary, a deviation of the median from zero would indicate bias.
+
+We present the results for the standard error by presenting tables. These tables show the standard error for the respective strategy under a specific missing data mechanism. Smaller standard error indicate a higher precision of the sample-based estimates. Additionally, we present the standard error of the statistic estimated using the full sample without missing data (`Data`). As the full sample can rely on more information - as it has no missing data - we expect the standard errors of the sample-based estimates to be slightly higher than the standard errors of the full sample.
+
+
+```{r}
+#| code-fold: true
+
+# Built list with data
+list_simulation <- list(MCAR = Data_list_MCAR,
+                        MAR = Data_list_MAR,
+                        MNAR = Data_list_MNAR)
+
+# Write function to plot or table simulation results
+plot_bias <- function(results,
+                      true,
+                      title,
+                      levels) {
+  number_strategies <- length(unique(results$strategy))
+  results$order <- c(rep(c(2:4), times = number_strategies))
+  results$strategy <- factor(results$strategy, levels = levels)
+  outcome <- colnames(results)[1]
+  results$bias <- as.numeric(results[[outcome]]) - true
+  
+   plot <-  ggplot2::ggplot(data = results,
+                            ggplot2::aes(x = reorder(mechanism, order), 
+                                         y = bias,
+                                         fill = strategy)) +
+     ggplot2::geom_boxplot(position = ggplot2::position_dodge(width = 0.8)) +
+     ggplot2::geom_hline(yintercept = 0) +
+     ggplot2::theme_minimal() +
+     ggplot2::labs(x = "Missing Data Mechanism",
+                   y = "Bias",
+                   fill = "Strategy",
+                   caption = "The boxplots display the bias for the different strategies under different missing data mechanisms.\nThe black line within each boxplot indicates the median bias.",
+                   title = title) +
+     ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"),
+                    plot.caption = ggplot2::element_text(hjust = 0))
+   return(plot)
+}
+
+table_se <- function(results,
+                     true_se,
+                     between_only = FALSE) {
+  pooled_ses <- as.data.frame(sapply(unique(results$mechanism),
+                       function(mechanism) {
+                         sapply(unique(results$strategy),
+                                function(strategy) {
+                                  
+                                  df_temp <- results[results$mechanism == mechanism &
+                                                       results$strategy == strategy, ]
+                                  if(!between_only) {
+                                  V_w <- mean(as.numeric(df_temp$se)^2, na.rm = TRUE)
+                                  if(strategy == "MI") {
+                                    V_b <- var(as.numeric(df_temp[, 1]))
+                                    V_t <- sqrt(V_w + V_b + V_b / nrow(df_temp))
+                                  } else {
+                                    V_t <- sqrt(V_w)
+                                  }
+                                  } else {
+                                    V_t <- sd(as.numeric(df_temp[, 1]), na.rm = TRUE)
+                                  }
+                                  return(round(V_t, digits = 3))
+                                })
+                       }))
+  display_true <- paste0("Full Sample SE = ", round(true_se, digits = 3))
+  output <- knitr::kable(pooled_ses,
+                         caption = "Standard Errors for Different Strategies under Different Missing-Data-Mechanisms") %>%
+    kableExtra::kable_styling(full_width = FALSE,
+                              position = "center") %>%
+    kableExtra::footnote(general_title = "Note.",
+                         general = display_true
+  )
+
+  return(output)
+}
+
+
+# Conduct multiple imputations for all datasets
+list_simulation_mi <- lapply(list_simulation,
+                             function(mechanism) {
+                               lapply(mechanism,
+                                      function(data) { 
+                                        data_temp <- data[, c("sex", "grade", variable_names)]
+                                        mice::mice(data_temp,
+                                                   m = 15,
+                                                   method = "pmm", 
+                                                   maxit = 10,
+                                                   printFlag = FALSE)
+                                        })
+                               })
+```
+
+### Descriptive Statistics
+
+We estimated bias and standard error (SE) for the mean of the first item. The plot below shows the bias for the estimated mean for the different strategies under the three missing data mechanisms. The plot allows two takeaways. First, the mean for each strategy is substantially lower than the true mean from the full sample under MNAR. This is expected since missing data were generated by deleting high values. Second, pairwise deletion and multiple imputation recover the true mean relatively well under MAR and all strategies recover the true mean well under MCAR. The table below displays the SEs. As expected the SEs were usually slightly higher than the SE of the full sample. However, the SEs of listwise deletion were substantially larger than those of pairwise deletion and multiple imputations. This finding indicates that these two methods are statistically more efficient (i.e., more precise) than listwise deletion.
+
+```{r}
+#| code-fold: true
+
+# Estimate statistics for pairwise deletion
+simulation_descriptives_pairwise <- lapply(list_simulation,
+                                           function(mechanism) {
+                                             data_temp <- t(sapply(mechanism,
+                                                                 function(df_temp) {
+                                                                   raw_descs <- psych::describe(df_temp$x1)[,c("mean", "se")]
+                                                                 }))
+                                             return(data_temp)
+                                           }) %>%
+  do.call(rbind.data.frame, .)
+colnames(simulation_descriptives_pairwise) <- c("means", "se")
+simulation_descriptives_pairwise$mechanism <- rep(c("MCAR", "MAR", "MNAR"), each = 500)
+simulation_descriptives_pairwise$strategy <- "Pairwise"
+
+# Estimate statistics for listwise deletion
+simulation_descriptives_listwise <- lapply(list_simulation,
+                                           function(mechanism) {
+                                              data_temp <- t(sapply(mechanism,
+                                                                 function(df_temp) {
+                                                                   data_listwise <- df_temp[rowSums(is.na(df_temp[, variable_names])) == 0, ]
+                                                                   raw_descs <- psych::describe(data_listwise$x1)[,c("mean", "se")]
+                                                                 }))
+                                             return(data_temp)
+                                           }) %>%
+  do.call(rbind.data.frame, .)
+colnames(simulation_descriptives_listwise) <- c("means", "se")
+simulation_descriptives_listwise$mechanism <- rep(c("MCAR", "MAR", "MNAR"), each = 500)
+simulation_descriptives_listwise$strategy <- "Listwise"
+
+# Estimate statistics for multiple imputations
+simulation_descriptives_mi <- lapply(list_simulation_mi,
+                                           function(mechanism) {
+                                             data_temp <- t(sapply(mechanism,
+                                                                 function(imp_data) {
+                                                                    means <- with(imp_data, lm(x1 ~ 1))
+                                                                    pooled_mean <- mice::pool(means)
+                                                                    summary_pooled <- summary(pooled_mean)
+                                                                    out <- unlist(summary_pooled[, c("estimate", "std.error")])
+                                                                    return(out)
+                                                                 }))
+                                             return(data_temp)
+                                           }) %>%
+  do.call(rbind.data.frame, .)
+colnames(simulation_descriptives_mi) <- c("means", "se")
+simulation_descriptives_mi$mechanism <- rep(c("MCAR", "MAR", "MNAR"), each = 500)
+simulation_descriptives_mi$strategy <- "MI"
+
+# built a list with all simulation results
+simulation_descriptives <- rbind(simulation_descriptives_pairwise,
+                                 simulation_descriptives_listwise,
+                                 simulation_descriptives_mi)
+
+
+# Create plots & table
+plot_bias(simulation_descriptives,
+          true = mean(Data$x1),
+          title = "Bias for the Mean of Item X1",
+          levels = c("Pairwise", "Listwise", "MI"))
+
+table_se(simulation_descriptives,
+         true_se = sd(Data$x1) / sqrt(nrow(Data)))
+
+```
+
+### Model Fit
+
+We estimated bias and standard error (SE) for the CFI of the three-factor model^[Because we did not use bootstrapping to estimate the SEs for each sample-based CFI, the SEs simply represent the variance across the sample-based CFIs. However, the samples are not independent, as they are all drawn from the same relatively small population — the full sample. Therefore, the SEs are likely underestimated.]. The plot and the table below display bias and SEs for different strategies under different missing data mechanisms. The plot shows that the CFI of the full sample is recovered well by all strategies under MCAR. Under MAR, multiple imputations recover the CFI well. Under MNAR, no strategy can recover the CFI well.
+
+::: {.column-margin}
+According to the study of @lee2021, FIML tends to overestimate the CFI, whereas multiple imputation tends to underestimate the RMSEA. Therefore, they recommend relying on the CFI when using multiple imputation and on the RMSEA when using FIML.
+:::
+
+```{r, warning=FALSE}
+#| code-fold: true
+
+# Estimate cfas using fiml
+simulation_cfas_fiml <- lapply(list_simulation,
+                               function(mechanism) {
+                                 cfas <- lapply(mechanism,
+                                                lavaan::cfa,
+                                                model = three_fator_model,
+                                                std.lv = TRUE, 
+                                                estimator = "ml",
+                                                missing = "FIML")
+                                 return(cfas)
+                               })
+# Extract CFI
+simulation_cfi_fiml_raw <- lapply(simulation_cfas_fiml,
+                                function(mechanism) {
+                                  out <- as.data.frame(t(sapply(mechanism,
+                                                                lavaan::fitmeasures,
+                                                                c("cfi"))))
+                                  return(out)
+                                }) 
+
+simulation_cfi_fiml <- data.frame(CFI = unlist(simulation_cfi_fiml_raw),
+                                  mechanism = rep(c("MCAR", "MAR", "MNAR"), each = 500),
+                                  strategy = "FIML")
+  
+
+# Estimate cfa using listwise deletion
+simulation_cfas_listwise <- lapply(list_simulation,
+                                   function(mechanism) {
+                                     cfas <- lapply(mechanism,
+                                                    function(data) {
+                                                      data_temp <- data[rowSums(is.na(data[, variable_names])) == 0, ]
+                                                      out <- lavaan::cfa(model = three_fator_model,
+                                                                         data = data_temp,
+                                                                         std.lv = TRUE, 
+                                                                         estimator = "ml")
+                                                      return(out)
+                                                    })
+                                                    
+                                     return(cfas)
+                                     }) 
+# Extract CFI
+simulation_cfi_listwise_raw <- lapply(simulation_cfas_listwise,
+                                function(mechanism) {
+                                  mechanism <- mechanism[sapply(mechanism, function(model) {model@Fit@converged})]
+                                  out <- t(sapply(mechanism,
+                                                  lavaan::fitmeasures,
+                                                  c("cfi")))
+                                  if(length(out) < 500) {
+                                    out <- c(out,
+                                            rep(NA, times = 500 - length(out)))
+                                  }
+                                  return(out)
+                                })
+
+simulation_cfi_listwise <- data.frame(CFI = unlist(simulation_cfi_listwise_raw),
+                                     mechanism = rep(c("MCAR", "MAR", "MNAR"), each = 500),
+                                     strategy = "Listwise")
+
+# Estimate cfa using multiple imputations
+simulation_cfas_mi <- lapply(list_simulation_mi,
+                               function(mechanism) {
+                                 cfas <- lapply(mechanism,
+                                                lavaan.mi::cfa.mi,
+                                                model = three_fator_model,
+                                                std.lv = TRUE, 
+                                                estimator = "ml")
+                                 return(cfas)
+                               })
+
+
+# Extract CFI
+simulation_cfi_mi_raw <- lapply(simulation_cfas_mi,
+                                function(mechanism) {
+                                  out <- t(sapply(mechanism,
+                                                lavaan.mi::fitmeasures,
+                                                c("cfi")))
+
+                                  return(out)
+                                })
+
+
+simulation_cfi_mi <- data.frame(CFI = unlist(simulation_cfi_mi_raw),
+                                mechanism = rep(c("MCAR", "MAR", "MNAR"), each = 500),
+                                strategy = "MI")
+
+# built a list with all simulation results
+simulation_cfi <- rbind(simulation_cfi_fiml,
+                         simulation_cfi_listwise,
+                         simulation_cfi_mi)
+
+
+# Estimate SE for cfi omega using bootstrapping
+bootstrap_cfas <- purrr::map_dfr(c(1:500),
+                                 function(index) {
+                                   Data_temp <- Data[sample(c(1:nrow(Data)),
+                                                            nrow(Data),
+                                                            replace = TRUE), ]
+                                   cfa_temp <- lavaan::cfa(three_fator_model,
+                                                           data = Data_temp, 
+                                                           estimator = "ml",
+                                                           std.lv = TRUE)
+                                   omega_temp <- semTools::compRelSEM(cfa_temp)[2]
+                                   cfi_temp <- lavaan::fitmeasures(cfa_temp, "cfi")
+                                   out <- data.frame(omega = omega_temp,
+                                                     cfi = cfi_temp)
+                                   return(out)
+                                   })
+se_cfi <- sd(bootstrap_cfas$cfi, na.rm = TRUE)
+
+# Create plots & table
+plot_bias(simulation_cfi,
+          true = lavaan::fitmeasures(cfa_full_data, "cfi"),
+          title = "Bias for the CFI",
+          levels = c("FIML", "Listwise", "MI"))
+
+table_se(simulation_cfi,
+         true_se = se_cfi,
+         between_only = TRUE)
+
+
+```
+
+
+### Reliability
+
+We estimate bias and standard error (SE) for McDonald's omega^[Because we did not use bootstrapping to estimate the SEs for each sample-based reliability, the SEs simply represent the variance across the sample-based reliabilities. However, the samples are not independent, as they are all drawn from the same relatively small population—the full sample. Therefore, the SEs are likely underestimated.]. We focus on the omega of the subscale *textual*. All strategies recover the reliability of the full sample accurately under MCAR and MAR, but not under MNAR. As before, FIML and multiple imputation are statistically more efficient than listwise deletion.
+
+```{r, warning = FALSE}
+#| code-fold: true
+
+# Estimate statistics for FIML
+simulation_reliability_fiml <- lapply(simulation_cfas_fiml,
+                                      function(mechanism) {
+                                        all_omegas <- sapply(mechanism,
+                                                             semTools::compRelSEM)
+                                        omega_textual <- all_omegas[2, ]
+                                        return(omega_textual)
+                                        }) %>%
+  unlist()
+simulation_reliability_fiml_results <- data.frame(omega = simulation_reliability_fiml,
+                                                  mechanism = rep(c("MCAR", "MAR", "MNAR"), each = 500),
+                                                  strategy = "FIML")
+
+# Estimate statistics for listwise deletion
+simulation_reliability_listwise <- lapply(simulation_cfas_listwise,
+                                          function(mechanism) {
+                                            all_omegas <- sapply(mechanism,
+                                                                 semTools::compRelSEM)
+                                            omega_textual <- all_omegas[2, ]
+                                            return(omega_textual)
+                                        }) %>%
+  unlist()
+simulation_reliability_listwise_results <- data.frame(omega = simulation_reliability_listwise,
+                                                      mechanism = rep(c("MCAR", "MAR", "MNAR"), each = 500),
+                                                      strategy = "Listwise")
+
+# Estimate statistics for multiple imputations
+simulation_reliability_mi <- lapply(simulation_cfas_mi,
+                                      function(mechanism) {
+                                        all_omegas <- sapply(mechanism,
+                                                             semTools::compRelSEM)
+                                        omega_textual <- all_omegas[2, ]
+                                        return(omega_textual)
+                                        }) %>%
+  unlist()
+simulation_reliability_mi_results <- data.frame(omega = simulation_reliability_mi,
+                                                mechanism = rep(c("MCAR", "MAR", "MNAR"), each = 500),
+                                                strategy = "MI")
+
+# built a list with all simulation results
+simulation_reliability <- rbind(simulation_reliability_fiml_results,
+                               simulation_reliability_listwise_results,
+                               simulation_reliability_mi_results)
+
+# Extract SE
+se_omega <- sd(bootstrap_cfas$omega)
+
+# Create plots & table
+plot_bias(simulation_reliability,
+          true = semTools::compRelSEM(cfa_full_data)[2],
+          title = "Bias for the Reliability",
+          levels = c("FIML", "Listwise", "MI"))
+
+table_se(simulation_reliability,
+         true_se = se_omega,
+         between_only = TRUE)
+
+```
+
+### Factor Loadings
+
+We estimate bias and empirical SE for the factor loading of the first item. Again, we observe a similar pattern. All strategies recover the true factor loading well under MCAR and MAR but not under MNAR, and FIML and multiple imputation are statistically more efficient than listwise deletion.
+
+```{r, warning = FALSE, echo=FALSE}
+# Estimate statistics for FIML
+simulation_loading_fiml <- lapply(simulation_cfas_fiml,
+                                      function(mechanism) {
+                                        loadings <- t(sapply(mechanism,
+                                                             function(fit) {
+                                                               loading <- lavaan::lavInspect(fit,
+                                                                                             what = "est")$lambda[1]
+                                                               se <- lavaan::lavInspect(fit,
+                                                                                        what = "se")$lambda[1]
+                                                               return(c(loading, se))
+                                                             }))
+                                        return(loadings)
+                                        }) %>%
+  do.call(rbind.data.frame, .)
+colnames(simulation_loading_fiml) <- c("loading", "se")
+simulation_loading_fiml$mechanism <- rep(c("MCAR", "MAR", "MNAR"), each = 500)
+simulation_loading_fiml$strategy <- "FIML"
+
+# Estimate statistics for listwise deletion
+simulation_loading_listwise <- lapply(simulation_cfas_listwise,
+                                          function(mechanism) {
+                                             loadings <- t(sapply(mechanism,
+                                                             function(fit) {
+                                                               loading <- lavaan::lavInspect(fit,
+                                                                                             what = "est")$lambda[1]
+                                                               se <- lavaan::lavInspect(fit,
+                                                                                        what = "se")$lambda[1]
+                                                               return(c(loading, se))
+                                                             }))
+                                             return(loadings)
+                                        }) %>%
+  do.call(rbind.data.frame, .)
+colnames(simulation_loading_listwise) <- c("loading", "se")
+simulation_loading_listwise$loading[simulation_loading_listwise$loading > 3] <- NA
+simulation_loading_listwise$mechanism <- rep(c("MCAR", "MAR", "MNAR"), each = 500)
+simulation_loading_listwise$strategy <- "Listwise"
+
+# Estimate statistics for multiple imputations
+simulation_loading_mi <- lapply(simulation_cfas_mi,
+                                function(mechanism) {
+                                  loadings <- t(sapply(mechanism,
+                                                     function(fit) {
+                                                       lavaan.mi::parameterEstimates.mi(fit)[1, c("est", "se")]
+                                                       }))
+                                  return(loadings)
+                                  }) %>%
+  do.call(rbind.data.frame, .)
+colnames(simulation_loading_mi) <- c("loading", "se")
+simulation_loading_mi$mechanism <- rep(c("MCAR", "MAR", "MNAR"), each = 500)
+simulation_loading_mi$strategy <- "MI"
+
+# built a list with all simulation results
+simulation_loading <- rbind(simulation_loading_fiml,
+                            simulation_loading_listwise,
+                            simulation_loading_mi)
+
+
+se_loading <- lavaan::lavInspect(cfa_full_data, what = "se")$lambda[1]
+
+# Create plots & table
+plot_bias(simulation_loading,
+          true = semTools::compRelSEM(cfa_full_data)[2],
+          title = "Bias for the Factor Loading of X1",
+          levels = c("FIML", "Listwise", "MI"))
+
+table_se(simulation_loading,
+         true_se = se_loading)
+
+```
+
+
+## Summary
+
+In summary, in our small Monte-Carlo simulation, especially multiple imputation and FIML provided Monte-Carlo unbiased and efficient estimates in psychometric analyses under MCAR and MAR scenarios. For multiple imputations, it is essential to include all relevant variables in the imputation model - otherwise, bias may be introduced. Listwise deletion also yields unbiased estimates under MCAR (and under specific circumstances MAR) but is less efficient. In MNAR scenarios, there is little that can be done to fully account for the missingness. Therefore, FIML and multiple imputation are the preferred strategies for estimating psychometric statistics. It is also crucial that the data are not MNAR, as this severely limits the accuracy of psychometric estimates.
+
+
+## Conclusion and recommendations
+
+In this tutorial, we discussed different mechanisms that can generate missing data and strategies for dealing with them. We showed the consequences of ignoring missing data and explained that, depending on the mechanism driving its presence, you might be able to ameliorate its negative impact, either in terms of bias or loss of precision.
+
+As there are no definitive tests to identify the missing data mechanism (with the exception of tests for data not being MCAR), you should critically reflect on the theoretical process that may have caused the missingness.
+
+If the data are MCAR, you do not need to worry about bias, though the loss of precision may still be an issue.
+If the data are MAR, both precision and bias can be problematic. In this case, we recommend using multiple imputation or FIML by default.
+Data that are MNAR are the most difficult to handle. There are no easy solutions, and the available methods typically require a higher level of statistical modeling proficiency. We did not cover these techniques here, but several approaches are available [see, e.g., @daniels2008, Ch. 9; @enders2022, Ch. 9] that you may wish to explore if you encounter this situation.
+

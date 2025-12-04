@@ -1,0 +1,66 @@
+<header id="title-block-header" class="quarto-title-block default">
+  <div class="quarto-title">
+    $if(title)$
+    <div class="title-container">
+      <h1 class="title">$title$</h1>
+      $endif$ $if(subtitle)$
+      <p class="subtitle lead"><em>$subtitle$</em></p>
+    </div>
+    <div class="logo">
+      $endif$ $if(logo)$
+      <img src="$logo$" height="100" />
+      $endif$
+    </div>
+  </div>
+
+  <div class="quarto-title-meta-author">
+    <div class="quarto-title-meta-heading">$labels.authors$</div>
+    <div class="quarto-title-meta-heading">$labels.affiliations$</div>
+    $for(by-author)$
+    <div class="quarto-title-meta-contents">
+      <p class="author">$_title-meta-author.html()$</p>
+    </div>
+    $if(by-author.affiliations)$
+    <div class="quarto-title-meta-contents">
+      $for(by-author.affiliations)$
+      <p class="affiliation">
+        $it.name$
+      </p>
+      $endfor$
+    </div>
+    $endif$
+    $endfor$
+  </div>
+
+  <div class="quarto-title-meta">
+    $if(date)$
+    <div>
+      <div class="quarto-title-meta-heading">$labels.published$</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">$date$</p>
+      </div>
+    </div>
+    $endif$ $if(date-modified)$
+    <div>
+      <div class="quarto-title-meta-heading">$labels.modified$</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">$date-modified$</p>
+      </div>
+    </div>
+    $endif$
+  </div>
+
+  $if(abstract)$
+  <div class="abstract">
+    <div class="abstract-title">$abstract-title$</div>
+    $abstract$
+  </div>
+  $endif$ $if(keywords)$
+  <div>
+    <div class="keywords">
+      <div class="block-title">$labels.keywords$</div>
+      <p>$for(keywords)$$it$$sep$, $endfor$</p>
+    </div>
+  </div>
+  $endif$
+</header>
