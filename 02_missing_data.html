@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.7.32">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -25,8 +25,9 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 /* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -37,7 +38,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -81,27 +82,28 @@ div.csl-indent {
 }</style>
 
 
-<script src="missing_data_files/libs/clipboard/clipboard.min.js"></script>
-<script src="missing_data_files/libs/quarto-html/quarto.js"></script>
-<script src="missing_data_files/libs/quarto-html/popper.min.js"></script>
-<script src="missing_data_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="missing_data_files/libs/quarto-html/anchor.min.js"></script>
-<link href="missing_data_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="missing_data_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="missing_data_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="missing_data_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="missing_data_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
-<script src="missing_data_files/libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="02_missing_data_files/libs/clipboard/clipboard.min.js"></script>
+<script src="02_missing_data_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="02_missing_data_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="02_missing_data_files/libs/quarto-html/popper.min.js"></script>
+<script src="02_missing_data_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="02_missing_data_files/libs/quarto-html/anchor.min.js"></script>
+<link href="02_missing_data_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="02_missing_data_files/libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="02_missing_data_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="02_missing_data_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="02_missing_data_files/libs/bootstrap/bootstrap-0d32754dec5c963b719b68ad757b426b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="02_missing_data_files/libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
 
-<script src="missing_data_files/libs/viz-1.8.2/viz.js"></script>
+<script src="02_missing_data_files/libs/viz-1.8.2/viz.js"></script>
 
-<link href="missing_data_files/libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
+<link href="02_missing_data_files/libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
 
-<script src="missing_data_files/libs/grViz-binding-1.0.11/grViz.js"></script>
+<script src="02_missing_data_files/libs/grViz-binding-1.0.11/grViz.js"></script>
 
-<script src="missing_data_files/libs/kePrint-0.0.1/kePrint.js"></script>
+<script src="02_missing_data_files/libs/kePrint-0.0.1/kePrint.js"></script>
 
-<link href="missing_data_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+<link href="02_missing_data_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 
 
   <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
@@ -151,7 +153,7 @@ window.Quarto = {
 <link rel="stylesheet" href="technical/styles.css">
 </head>
 
-<body>
+<body class="quarto-light">
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
 <div id="quarto-sidebar-toc-left" class="sidebar toc-left">
@@ -172,7 +174,7 @@ window.Quarto = {
   <li><a href="#describe-missing-data-occurrence" id="toc-describe-missing-data-occurrence" class="nav-link" data-scroll-target="#describe-missing-data-occurrence">Describe Missing Data Occurrence</a></li>
   <li><a href="#analyse-missing-data-occurence" id="toc-analyse-missing-data-occurence" class="nav-link" data-scroll-target="#analyse-missing-data-occurence">Analyse Missing Data Occurence</a></li>
   </ul></li>
-  <li><a href="#strategies-of-dealing-with-missing-data" id="toc-strategies-of-dealing-with-missing-data" class="nav-link" data-scroll-target="#strategies-of-dealing-with-missing-data">Strategies of Dealing with Missing Data</a>
+  <li><a href="#strategies-for-dealing-with-missing-data" id="toc-strategies-for-dealing-with-missing-data" class="nav-link" data-scroll-target="#strategies-for-dealing-with-missing-data">Strategies for Dealing with Missing Data</a>
   <ul class="collapse">
   <li><a href="#pairwise-deletion" id="toc-pairwise-deletion" class="nav-link" data-scroll-target="#pairwise-deletion">Pairwise Deletion</a></li>
   <li><a href="#listwise-deletion" id="toc-listwise-deletion" class="nav-link" data-scroll-target="#listwise-deletion">Listwise Deletion</a></li>
@@ -186,9 +188,10 @@ window.Quarto = {
   <li><a href="#model-fit" id="toc-model-fit" class="nav-link" data-scroll-target="#model-fit">Model Fit</a></li>
   <li><a href="#reliability" id="toc-reliability" class="nav-link" data-scroll-target="#reliability">Reliability</a></li>
   <li><a href="#factor-loadings" id="toc-factor-loadings" class="nav-link" data-scroll-target="#factor-loadings">Factor Loadings</a></li>
+  <li><a href="#recap-1" id="toc-recap-1" class="nav-link" data-scroll-target="#recap-1">Recap</a></li>
   </ul></li>
-  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
   <li><a href="#conclusion-and-recommendations" id="toc-conclusion-and-recommendations" class="nav-link" data-scroll-target="#conclusion-and-recommendations">Conclusion and recommendations</a></li>
+  
   </ul>
 </nav>
 </div>
@@ -200,10 +203,10 @@ window.Quarto = {
   <div class="quarto-title">
         <div class="title-container">
       <h1 class="title">Missing Data in Scale Validation</h1>
-             <p class="subtitle lead"><em><em>ZIS R-Tutorials</em></em></p>
+             <p class="subtitle lead"><em><em>R-Tutorials in Psychometrics</em></em></p>
     </div>
     <div class="logo">
-             <img src="pics/zis_logo.svg" height="100">
+             <img src="technical/pics/zis_logo.svg" height="100">
           </div>
   </div>
 
@@ -248,13 +251,13 @@ window.Quarto = {
         <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">01.01.2025</p>
+        <p class="date">08.12.2025</p>
       </div>
     </div>
          <div>
       <div class="quarto-title-meta-heading">Modified</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">02.12.2025</p>
+        <p class="date">09.12.2025</p>
       </div>
     </div>
       </div>
@@ -310,7 +313,7 @@ window.Quarto = {
 </section>
 <section id="missing-data-mechanisms" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="missing-data-mechanisms">Missing Data Mechanisms</h2>
-<p>How we handle missing data depends heavily on the underlying missing data mechanism. In general, three mechanisms can be distinguished <span class="citation" data-cites="Rubin.1987">(<a href="#ref-Rubin.1987" role="doc-biblioref">D. B. Rubin 1987</a>)</span>:</p>
+<p>How we handle missing data depends heavily on the underlying missing data mechanism. In general, three mechanisms can be distinguished <span class="citation" data-cites="Rubin.1987">(<a href="#ref-Rubin.1987" role="doc-biblioref">Rubin 1987</a>)</span>:</p>
 <ul>
 <li>Missing completely at random (MCAR)</li>
 <li>Missing at random (MAR)</li>
@@ -319,14 +322,14 @@ window.Quarto = {
 <p>We will now take a closer look at these mechanisms and introduce missing values into our dataset according to each one.</p>
 
 <div class="no-row-height column-margin column-container"><div class="">
-<p>This tutorial focuses on item nonresponse, which means that some data of a participant are missing. In contrast, unit nonresponse means that some persons refsued to participate and hence the sample is not representative. For a more detailed discussion, see <span class="citation" data-cites="vanbuuren2018">Buuren (<a href="#ref-vanbuuren2018" role="doc-biblioref">2018</a>)</span>.</p>
+<p>This tutorial focuses on item nonresponse, which means that some data of a participant are missing. In contrast, unit nonresponse occurs when some sampled individuals do not participate at all, so no information is obtained from them. For a more detailed discussion, see <span class="citation" data-cites="vanbuuren2018">van Buuren (<a href="#ref-vanbuuren2018" role="doc-biblioref">2018</a>)</span>.</p>
 </div></div><section id="missing-completely-at-random-mcar" class="level3 page-columns page-full">
 <h3 class="anchored" data-anchor-id="missing-completely-at-random-mcar">Missing Completely at Random (MCAR)</h3>
-<p>Data are considered missing completely at random (MCAR) when the probability of missingness on a variable is unrelated to any observed or unobserved data in the dataset <span class="citation" data-cites="Chen.2020 Rubin.1987 vanBuuren.2010">(<a href="#ref-Chen.2020" role="doc-biblioref">Chen, Savalei, and Rhemtulla 2020</a>; <a href="#ref-Rubin.1987" role="doc-biblioref">D. B. Rubin 1987</a>; <a href="#ref-vanBuuren.2010" role="doc-biblioref">van Buuren 2010</a>)</span>. For example, consider an online survey in which a technical issue causes the software to randomly fail to save some responses. As a result, some data are missing, but this missingness is unrelated to the values of the missing variable or to any other variables in the dataset. To display MCAR, we adapted the Figure of <span class="citation" data-cites="Thoemmes.2015">Thoemmes and Mohan (<a href="#ref-Thoemmes.2015" role="doc-biblioref">2015</a>)</span>.</p>
+<p>Data are considered missing completely at random (MCAR) when the probability of missingness on a variable is unrelated to any observed or unobserved data in the dataset <span class="citation" data-cites="Chen.2020 Rubin.1987 vanBuuren.2010">(<a href="#ref-Chen.2020" role="doc-biblioref">Chen, Savalei, and Rhemtulla 2020</a>; <a href="#ref-Rubin.1987" role="doc-biblioref">Rubin 1987</a>; <a href="#ref-vanBuuren.2010" role="doc-biblioref">van Buuren 2010</a>)</span>. For example, consider an online survey in which a technical issue causes the software to randomly fail to save some responses. As a result, some data are missing, but this missingness is unrelated to the values of the missing variable or to any other variables in the dataset. To display MCAR, we adapted the Figure of <span class="citation" data-cites="Thoemmes.2015">Thoemmes and Mohan (<a href="#ref-Thoemmes.2015" role="doc-biblioref">2015</a>)</span>.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="htmlwidget-66e9c577aa09d2544a94" style="width:100%;height:325px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-66e9c577aa09d2544a94">{"x":{"diagram":"\ndigraph flowchart {\n\n  graph [rankdir=TB,\n         ranksep=.3,   \n        nodesep=.3, ]  \n\n  node [width=0.01,height=0.01 shape=box, style=filled, fillcolor=\"#e0e0e0\", color=\"#333\", fontname=\"Arial\", fontsize=4]\n\n  A [label=\"Observed\\nCovariate\"]\n  B [label=\"Scale\\nVariable\"]\n  C [label=\"Unobserved\\nCovariate\"]\n  D [label=\"Missingness\"]\n\n   A -> B [arrowsize=0.5]\n\n  \n{ rank = same; A; C }\n{ rank = same; B; D }\n\n\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-da714471187d65b56730" style="width:100%;height:325px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-da714471187d65b56730">{"x":{"diagram":"\ndigraph flowchart {\n\n  graph [rankdir=TB,\n         ranksep=.3,   \n        nodesep=.3, ]  \n\n  node [width=0.01,height=0.01 shape=box, style=filled, fillcolor=\"#e0e0e0\", color=\"#333\", fontname=\"Arial\", fontsize=4]\n\n  A [label=\"Observed\\nCovariate\"]\n  B [label=\"Scale\\nVariable\"]\n  C [label=\"Unobserved\\nCovariate\"]\n  D [label=\"Missingness\"]\n\n   A -> B [arrowsize=0.2]\n\n  \n{ rank = same; A; C }\n{ rank = same; B; D }\n\n\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>To introduce MCAR into our dataset, we randomly delete data points. Specifically, we randomly determine whether each value for a given variable is missing (0) or observed (1). This missingness process can be modeled using the <code>rbinom()</code> function, which draws random 0/1 values from a binomial distribution with a fixed probability (here, indicating whether each case is set to missing). To more robustly evaluate the effects of MCAR in a small simulation study, we repeat this random deletion process 500 times. We introduce missingness in 15% of the cases for each variable.</p>
@@ -368,11 +371,11 @@ window.Quarto = {
 </div></div></section>
 <section id="missing-at-random-mar" class="level3">
 <h3 class="anchored" data-anchor-id="missing-at-random-mar">Missing at Random (MAR)</h3>
-<p>Missingness is considered misssing at random (MAR) when the probability of a value being missing on a variable depends only on observed data but not on the unobserved (i.e., missing) values themselves, after conditioning on the observed values <span class="citation" data-cites="Chen.2020 vanBuuren.2010">(<a href="#ref-Chen.2020" role="doc-biblioref">Chen, Savalei, and Rhemtulla 2020</a>; <a href="#ref-vanBuuren.2010" role="doc-biblioref">van Buuren 2010</a>)</span>. For example, imagine we have collected an online survey about daily screentime with an age diverse sample. Let’s assume that younger participants have a higher screentime than older participants, but younger people are also more likely to not answer our screentime questions. Without conditioning on age, the missing values on screentime would depend on the missing values and would therefore be missing not at random. However, after conditioning on age the missing values on screentime are independent of the missing values and missings are thus missing at random. Again, we display MAR, by adapting the Figure of <span class="citation" data-cites="Thoemmes.2015">Thoemmes and Mohan (<a href="#ref-Thoemmes.2015" role="doc-biblioref">2015</a>)</span>.</p>
+<p>Missingness is considered missing at random (MAR) when the probability of a value being missing on a variable depends only on observed data but not on the unobserved (i.e., missing) values themselves, after conditioning on the observed values <span class="citation" data-cites="Chen.2020 vanBuuren.2010">(<a href="#ref-Chen.2020" role="doc-biblioref">Chen, Savalei, and Rhemtulla 2020</a>; <a href="#ref-vanBuuren.2010" role="doc-biblioref">van Buuren 2010</a>)</span>. For example, imagine we have conducted an online survey about daily screentime with an age diverse sample. Let’s assume that younger participants have a higher screentime than older participants, but younger people are also more likely to not answer our screentime questions. Without conditioning on age, the missing values on screentime would depend on the missing values and would therefore be missing not at random. However, after conditioning on age the missing values on screentime are independent of the missing values and missings are thus missing at random. Again, we display MAR, by adapting the Figure of <span class="citation" data-cites="Thoemmes.2015">Thoemmes and Mohan (<a href="#ref-Thoemmes.2015" role="doc-biblioref">2015</a>)</span>.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="htmlwidget-2bf52c70b5a073858bd0" style="width:100%;height:325px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-2bf52c70b5a073858bd0">{"x":{"diagram":"\ndigraph flowchart {\n\n  graph [rankdir=TB,\n         ranksep=.3,   \n        nodesep=.3, ]  \n\n  node [width=0.01,height=0.01 shape=box, style=filled, fillcolor=\"#e0e0e0\", color=\"#333\", fontname=\"Arial\", fontsize=4]\n\n  A [label=\"Observed\\nCovariate\"]\n  B [label=\"Scale\\nVariable\"]\n  C [label=\"Unobserved\\nCovariate\"]\n  D [label=\"Missingness\"]\n\n  A -> B [arrowsize=0.2]\n  A -> D [arrowsize=0.2]\n\n  { rank = same; A; C }\n{ rank = same; B; D }\n  \n    # Invisible edges to enforce 2x2 grid\n  C -> B [style=invis]\n  C -> D [style=invis]\n\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-337b219d3079397c4bdd" style="width:100%;height:325px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-337b219d3079397c4bdd">{"x":{"diagram":"\ndigraph flowchart {\n\n  graph [rankdir=TB,\n         ranksep=.3,   \n        nodesep=.3, ]  \n\n  node [width=0.01,height=0.01 shape=box, style=filled, fillcolor=\"#e0e0e0\", color=\"#333\", fontname=\"Arial\", fontsize=4]\n\n  A [label=\"Observed\\nCovariate\"]\n  B [label=\"Scale\\nVariable\"]\n  C [label=\"Unobserved\\nCovariate\"]\n  D [label=\"Missingness\"]\n\n  A -> B [arrowsize=0.2]\n  A -> D [arrowsize=0.2]\n\n  { rank = same; A; C }\n{ rank = same; B; D }\n  \n    # Invisible edges to enforce 2x2 grid\n  C -> B [style=invis]\n  C -> D [style=invis]\n\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>To introduce MAR into our mental ability school dataset, we first need to define a conditional missingness model. In this case, we condition the probability of missingness on sex and grade, as both variables are associated with the values of our scale variables. In the first step, we specify that the probability of a value being missing depends on a participant’s sex and grade (7th grade or 8th grade). We then determine whether each value is missing (0) or observed (1) using the <code>rbinom()</code> function, applying probabilities based on the defined relationships with sex and grade. To more thoroughly evaluate the effects of MAR, we repeat this missingness process 500 times. As with MCAR, we introduce missingness in 15% of the cases for each variable.</p>
@@ -425,18 +428,18 @@ X1    1 301 0.15 0.2   0.08    0.13 0.07   0 0.5   0.5 1.11    -0.68 0.01</code>
 </section>
 <section id="missing-not-at-random-mnar" class="level3">
 <h3 class="anchored" data-anchor-id="missing-not-at-random-mnar">Missing not at Random (MNAR)</h3>
-<p>Missingness is considered not at random (MNAR) when the probability of a value being missing depends on the unobserved (i.e., missing) data itself, even after conditioning on the observed values. This definition leaves two scenarios of MNAR <span class="citation" data-cites="Thoemmes.2015">(<a href="#ref-Thoemmes.2015" role="doc-biblioref">Thoemmes and Mohan 2015</a>)</span>. In the first scenario, the missingness depends on the unobserved values of the variable of interest. Returning to our screentime survey example, imagine the survey program has the following issue: it fails to save responses with values greater than 8, even though the response scale ranges from 1 to 10. In this case, the probability of missingness depends directly on the (unobserved) value of the variable of interest. No matter which other variables we condition on, the missingness still relates to the missing value - therefore, the missingness mechanism is not at random. The adpted Figure of <span class="citation" data-cites="Thoemmes.2015">Thoemmes and Mohan (<a href="#ref-Thoemmes.2015" role="doc-biblioref">2015</a>)</span> displays this scenario.</p>
+<p>Missingness is considered not at random (MNAR) when the probability of a value being missing depends on the unobserved (i.e., missing) data itself, even after conditioning on the observed values. This definition leaves two scenarios of MNAR <span class="citation" data-cites="Thoemmes.2015">(<a href="#ref-Thoemmes.2015" role="doc-biblioref">Thoemmes and Mohan 2015</a>)</span>. In the first scenario, the missingness depends on the unobserved values of the variable of interest. Returning to our screentime survey example, imagine the survey program has the following issue: it fails to save responses with values greater than 8, even though the response scale ranges from 1 to 10. In this case, the probability of missingness depends directly on the (unobserved) value of the variable of interest. No matter which other variables we condition on, the missingness still relates to the missing value - therefore, the missingness mechanism is not missing at random. The adapted Figure of <span class="citation" data-cites="Thoemmes.2015">Thoemmes and Mohan (<a href="#ref-Thoemmes.2015" role="doc-biblioref">2015</a>)</span> displays this scenario.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="htmlwidget-7c435c35ef81a8b944a4" style="width:100%;height:325px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-7c435c35ef81a8b944a4">{"x":{"diagram":"\ndigraph flowchart {\n\n  graph [rankdir=TB,\n         splines = ortho,\n         ranksep=.3,   \n        nodesep=.3, ]  \n\n  node [width=0.01,height=0.01 shape=box, style=filled, fillcolor=\"#e0e0e0\", color=\"#333\", fontname=\"Arial\", fontsize=4]\n\n  A [label=\"Observed\\nCovariate\"]\n  B [label=\"Scale\\nVariable\"]\n  C [label=\"Unobserved\\nCovariate\"]\n  D [label=\"Missingness\"]\n\n  A -> B [arrowsize=0.2]\n  B -> D [arrowsize=0.2]\n\n  { rank = same; A; C }\n  { rank = same; B; D }\n\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-44604abd17edc5fd3f01" style="width:100%;height:325px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-44604abd17edc5fd3f01">{"x":{"diagram":"\ndigraph flowchart {\n\n  graph [rankdir=TB,\n         splines = ortho,\n         ranksep=.3,   \n        nodesep=.3, ]  \n\n  node [width=0.01,height=0.01 shape=box, style=filled, fillcolor=\"#e0e0e0\", color=\"#333\", fontname=\"Arial\", fontsize=4]\n\n  A [label=\"Observed\\nCovariate\"]\n  B [label=\"Scale\\nVariable\"]\n  C [label=\"Unobserved\\nCovariate\"]\n  D [label=\"Missingness\"]\n\n  A -> B [arrowsize=0.2]\n  B -> D [arrowsize=0.2]\n\n  { rank = same; A; C }\n  { rank = same; B; D }\n\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>In the second scenario, missingness depends on the unobserved values of an unobserved covariate. Remember the MAR example, where missingness depended on age. This time, however, age was not included in the survey. Consequently, missingness depends on the unobserved values of an unobserved covariate. The adapted Figure of <span class="citation" data-cites="Thoemmes.2015">Thoemmes and Mohan (<a href="#ref-Thoemmes.2015" role="doc-biblioref">2015</a>)</span> displays this scenario.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="htmlwidget-1b798fe70c0ba326c1ba" style="width:100%;height:325px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1b798fe70c0ba326c1ba">{"x":{"diagram":"\ndigraph flowchart {\n\n  graph [rankdir=TB,\n         ranksep=.3,   \n        nodesep=.3, ]  \n\n  node [width=0.01,height=0.01 shape=box, style=filled, fillcolor=\"#e0e0e0\", color=\"#333\", fontname=\"Arial\", fontsize=4]\n\n  A [label=\"Observed\\nCovariate\"]\n  B [label=\"Scale\\nVariable\"]\n  C [label=\"Unobserved\\nCovariate\"]\n  D [label=\"Missingness\"]\n\n   A -> B [arrowsize=0.5]\n   C -> D [arrowsize=0.5]\n   C -> B [arrowsize=0.5]\n  \n{ rank = same; A; C }\n{ rank = same; B; D }\n  \n  # Invisible edges to enforce 2x2 grid\n  C -> D [style=invis]\n\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-a10950cb2ba22c286f94" style="width:100%;height:325px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a10950cb2ba22c286f94">{"x":{"diagram":"\ndigraph flowchart {\n\n  graph [rankdir=TB,\n         ranksep=.3,   \n        nodesep=.3, ]  \n\n  node [width=0.01,height=0.01 shape=box, style=filled, fillcolor=\"#e0e0e0\", color=\"#333\", fontname=\"Arial\", fontsize=4]\n\n  A [label=\"Observed\\nCovariate\"]\n  B [label=\"Scale\\nVariable\"]\n  C [label=\"Unobserved\\nCovariate\"]\n  D [label=\"Missingness\"]\n\n   A -> B [arrowsize=0.2]\n   C -> D [arrowsize=0.2]\n   C -> B [arrowsize=0.2]\n  \n{ rank = same; A; C }\n{ rank = same; B; D }\n  \n  # Invisible edges to enforce 2x2 grid\n  C -> D [style=invis]\n\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>To simulate MNAR in our dataset, we define a condition where missingness is based on the values of the variable itself. Specifically, to introduce approximately 15% missingness, we remove all values above a certain percentile. Initially, we used the 85th percentile, but this led to slightly fewer than 15% missing values, so we adjusted the threshold to the 83.4th percentile. Thus, we introduce missing data by deleting all values above a predefined percentile, which varies normally around 0.834 with a standard deviation (<em>SD</em>) of 0.02.</p>
@@ -532,7 +535,7 @@ x9 0.193 0.183 0.156</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="missing_data_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="02_missing_data_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -568,15 +571,15 @@ x9 0.193 0.183 0.156</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="missing_data_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="02_missing_data_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>When examining missingness per case, we observe the first differences between the missing data mechanisms. For MCAR, the number of missing values per case follows a binomial distribution with an expected value of 9 * 0.15 = 1.35. In contrast, the distributions for MAR and MNAR are noticeably skewed. Investigating the occurrence of missing data is important, as it can provide insights into the reasons for missingness and influence how missing data should be handled <span class="citation" data-cites="vanbuuren2018">(<a href="#ref-vanbuuren2018" role="doc-biblioref">Buuren 2018</a>)</span>. To better understand the occurrence of missing data and its consequences, we examine the missing data pattern.</p>
+<p>When examining missingness per case, we observe the first differences between the missing data mechanisms. For MCAR, the number of missing values per case follows a binomial distribution with an expected value of 9 * 0.15 = 1.35. In contrast, the distributions for MAR and MNAR are noticeably skewed. Investigating the occurrence of missing data is important, as it can provide insights into the reasons for missingness and influence how missing data should be handled <span class="citation" data-cites="vanbuuren2018">(<a href="#ref-vanbuuren2018" role="doc-biblioref">van Buuren 2018</a>)</span>. To better understand the occurrence of missing data and its consequences, we examine the missing data pattern.</p>
 <section id="missing-data-pattern" class="level4">
 <h4 class="anchored" data-anchor-id="missing-data-pattern">Missing Data Pattern</h4>
-<p>The missing data pattern summarizes missingness both per case and per variable. It shows, for example, how many participants have complete data and whether missingness in one variable is associated with missingness in others. For instance, in longitudinal studies, participants who drop out may have missing data in all subsequent waves. In planned missingness designs, specific groups of participants may have systematically missing blocks of variables. In most cases, however, such clear patterns do not occur. Nevertheless, it is important to identify participants with a large amount of missing data or variables with very few observed values, as these can complicate the imputation process <span class="citation" data-cites="vanbuuren2018">(<a href="#ref-vanbuuren2018" role="doc-biblioref">Buuren 2018</a>)</span>.</p>
+<p>The missing data pattern summarizes missingness both per case and per variable. It shows, for example, how many participants have complete data and whether missingness in one variable is associated with missingness in others. For instance, in longitudinal studies, participants who drop out may have missing data in all subsequent waves. In planned missingness designs, specific groups of participants may have systematically missing blocks of variables. In most cases, however, such clear patterns do not occur. Nevertheless, it is important to identify participants with a large amount of missing data or variables with very few observed values, as these can complicate, for example, the imputation process <span class="citation" data-cites="vanbuuren2018">(<a href="#ref-vanbuuren2018" role="doc-biblioref">van Buuren 2018</a>)</span>.</p>
 <p>To visualize these patterns, we use the <code>plot_pattern()</code> function from the <code>ggmice</code> package <span class="citation" data-cites="oberman2025">(<a href="#ref-oberman2025" role="doc-biblioref">Oberman 2025</a>)</span>. For this example, we focus on the missing data patterns for the test scores (x1, x2, x3).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot missings data pattern</span></span>
@@ -593,7 +596,7 @@ x9 0.193 0.183 0.156</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="missing_data_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="02_missing_data_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -604,7 +607,7 @@ $MAR</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="missing_data_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="02_missing_data_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -615,7 +618,7 @@ $MNAR</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="missing_data_files/figure-html/unnamed-chunk-13-3.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="02_missing_data_files/figure-html/unnamed-chunk-13-3.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -628,12 +631,12 @@ $MNAR</code></pre>
 <p>In real-world data scenarios, the true missing data mechanism (i.e., MCAR, MAR, or MNAR) is typically unknown. However, different missing data mechanisms require different strategies for handling missingness. Generally, we cannot test a particular missing data mechanism. There are only tests that can provide evidence that the MCAR assumption does not hold. That is, if missingness is associated with observed covariates, the data are not MCAR. Importantly, the absence of such associations are no prove for MCAR - missingness may still depend on the unobserved values of the variable itself or on the values of unobserved covariates <span class="citation" data-cites="Raykov.2011">(<a href="#ref-Raykov.2011" role="doc-biblioref">Raykov 2011</a>)</span>. Hence, although examining associations between missingness and other variables can provide useful insights - such as when selecting covariates for multiple imputation - it is rarely advisable to draw conclusions about the underlying missing data mechanism from such tests. Nonetheless, it can be useful to think about the causal relationships underlying the missingness <span class="citation" data-cites="Thoemmes.2015">(<a href="#ref-Thoemmes.2015" role="doc-biblioref">Thoemmes and Mohan 2015</a>)</span>.</p>
 </section>
 </section>
-<section id="strategies-of-dealing-with-missing-data" class="level2 page-columns page-full">
-<h2 class="anchored" data-anchor-id="strategies-of-dealing-with-missing-data">Strategies of Dealing with Missing Data</h2>
-<p>There are several strategies for handling missing data. In this tutorial, we focus on pairwise deletion, listwise deletion, multiple imputation, and full-information maximum likelihood (FIML). First, we introduce the rationale behind each of these methods. Next, we discuss which strategies are most suitable for different types of analyses and under various missing data mechanisms. Finally, we support this discussion with simulation results comparing the estimation of descriptive statistics, model fit, reliability, and factor loadings across the different missing data mechanisms, using the full sample results as a benchmark.</p>
+<section id="strategies-for-dealing-with-missing-data" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="strategies-for-dealing-with-missing-data">Strategies for Dealing with Missing Data</h2>
+<p>There are several strategies for handling missing data. In this tutorial, we focus on pairwise deletion, listwise deletion, multiple imputation, and full-information maximum likelihood (FIML). First, we introduce the rationale behind each of these methods. Next, we discuss which strategies are best suited to different types of analyses and missing data mechanisms. Finally, we support this discussion with simulation results comparing the estimation of descriptive statistics, model fit, reliability, and factor loadings across the different missing data mechanisms, using the full sample results as a benchmark.</p>
 <section id="pairwise-deletion" class="level3">
 <h3 class="anchored" data-anchor-id="pairwise-deletion">Pairwise Deletion</h3>
-<p>Pairwise deletion uses all available data to estimate each statistic. For example, means for a variable are calculated using all cases with observed values for that variable, and correlations between two variables are estimated using all cases with observed data on both variables. However, this means that the sample size and composition can vary across different statistics. Moreover, pairwise deletion can result in biased estimates, when missings are not MCAR <span class="citation" data-cites="vanbuuren2018">(<a href="#ref-vanbuuren2018" role="doc-biblioref">Buuren 2018</a>)</span>. Pairwise deletion is typically specified directly in the analysis code.</p>
+<p>Pairwise deletion uses all available data to estimate each statistic. For example, means for a variable are calculated using all cases with observed values for that variable, and correlations between two variables are estimated using all cases with observed data on both variables. However, this means that the sample size and composition can vary across different statistics. Moreover, pairwise deletion can result in biased estimates, when missings are not MCAR <span class="citation" data-cites="vanbuuren2018">(<a href="#ref-vanbuuren2018" role="doc-biblioref">van Buuren 2018</a>)</span>. Pairwise deletion is typically specified directly in the analysis code.</p>
 <section id="prorated-mean-scores" class="level4">
 <h4 class="anchored" data-anchor-id="prorated-mean-scores">Prorated Mean Scores</h4>
 <p>Prorated means are frequently used to estimate a participant’s scale score when some item responses are missing. For example, if a participant answers 4 out of 5 items on a scale, their scale score is estimated as the mean of those four valid responses. Similar to pairwise deletion, this approach uses all available information. However, calculating a prorated mean score effectively replaces missing item values with the participant’s own average response. This method is appropriate only when item difficulties and selectivities do not vary substantially and the missing data mechanism is MCAR. Otherwise, it may lead to biased individual scale scores, biased group means, and biased (co-)variances <span class="citation" data-cites="mazza2015">(<a href="#ref-mazza2015" role="doc-biblioref">Mazza, Enders, and Ruehlman 2015</a>)</span>. Estimating prorated mean scores is therefore not recommended.</p>
@@ -641,39 +644,39 @@ $MNAR</code></pre>
 </section>
 <section id="listwise-deletion" class="level3">
 <h3 class="anchored" data-anchor-id="listwise-deletion">Listwise Deletion</h3>
-<p>Listwise deletion excludes all cases that have missing values on any variable relevant to the analysis. This approach reduces the sample size, which leads to a loss of statistical efficiency. Although it has the advantage that all analyses are conducted on the same set of cases, the loss of information can be tremendous and is only valid under MCAR <span class="citation" data-cites="vanbuuren2018">(<a href="#ref-vanbuuren2018" role="doc-biblioref">Buuren 2018</a>)</span>. If listwise deletion cannot be spcified in the analyses code, it requries the creation of a new dataset where all cases with missing values on any variable of interest are removed.</p>
+<p>Listwise deletion excludes all cases that have missing values on any variable relevant to the analysis. This approach reduces the sample size, which leads to a loss of statistical efficiency. Although it has the advantage that all analyses are conducted on the same set of cases, the loss of information can be tremendous and is only valid under MCAR <span class="citation" data-cites="vanbuuren2018">(<a href="#ref-vanbuuren2018" role="doc-biblioref">van Buuren 2018</a>)</span>. If listwise deletion cannot be specified in the analyses code, it requires the creation of a new dataset where all cases with missing values on any variable of interest are removed.</p>
 </section>
 <section id="multiple-imputations" class="level3 page-columns page-full">
 <h3 class="anchored" data-anchor-id="multiple-imputations">Multiple Imputations</h3>
 <p>One frequently used approach for handling missing data is multiple imputation. In this tutorial, we use the <code>mice</code> package <span class="citation" data-cites="vanbuuren2011">(<a href="#ref-vanbuuren2011" role="doc-biblioref">van Buuren and Groothuis-Oudshoorn 2011</a>)</span>, which implements Multivariate Imputation by Chained Equations to replace missing values with plausible estimates.</p>
 <p>To apply <code>mice</code>, we first need to define our imputation model.</p>
 <p><strong>Step 1: Variable selection.</strong></p>
-<p>We must decide which variables to include as predictors in the imputation model, as these variables help to impute the missing values. To avoid biased estimates, at a minimum, all variables used in the analysis model should be included - a principle known as <em>congeniality</em> <span class="citation" data-cites="meng1994">(<a href="#ref-meng1994" role="doc-biblioref">Meng 1994</a>)</span>. It is often beneficial to include additional variables beyond the analysis model, particularly those that are highly correlated with the variables to be imputed or with the missingness itself. In our MAR example, missingness correlates with <code>sex</code>, which might not be part of the analysis model. Omitting <code>sex</code> from the imputation model could result in data that are still missing not at random. Including variables that are associated with missingness is important to avoid biased estimates, while including variables that are highly correlated with those to be imputed can increase precision. However, including variables that themselves have a large amount of missing data, or including many variables when the sample size is small, may lead to biased estimates <span class="citation" data-cites="axenfeld2022 Murray.2018 vanbuuren2018">(<a href="#ref-axenfeld2022" role="doc-biblioref">Axenfeld, Bruch, and Wolf 2022</a>; <a href="#ref-Murray.2018" role="doc-biblioref">Murray 2018</a>; <a href="#ref-vanbuuren2018" role="doc-biblioref">Buuren 2018</a>)</span>.</p>
+<p>We must decide which variables to include as predictors in the imputation model, as these variables help to impute the missing values. To avoid biased estimates, at a minimum, all variables used in the analysis model should be included - a principle known as <em>congeniality</em> <span class="citation" data-cites="meng1994">(<a href="#ref-meng1994" role="doc-biblioref">Meng 1994</a>)</span>. It is often beneficial to include additional variables beyond the analysis model, particularly those that are highly correlated with the variables to be imputed or with the missingness itself. In our MAR example, missingness correlates with <code>sex</code>, which might not be part of the analysis model. Omitting <code>sex</code> from the imputation model could result in data that are still missing not at random. Including variables that are associated with missingness is important to avoid biased estimates, while including variables that are highly correlated with those to be imputed can increase precision. However, including variables that themselves have a large amount of missing data, or including many variables when the sample size is small, may also lead to biased estimates <span class="citation" data-cites="axenfeld2022 Murray.2018 vanbuuren2018">(<a href="#ref-axenfeld2022" role="doc-biblioref">Axenfeld, Bruch, and Wolf 2022</a>; <a href="#ref-Murray.2018" role="doc-biblioref">Murray 2018</a>; <a href="#ref-vanbuuren2018" role="doc-biblioref">van Buuren 2018</a>)</span>.</p>
 <p><strong>Step 2: Choosing the imputation method.</strong></p>
-<p>The <code>mice</code> package offers various imputation methods suitable for different data types. For numeric variables, <code>mice</code> uses <code>norm</code> (Bayesian linear regression) as default; for binary variables, <code>mice</code> uses <code>logreg</code> (Bayesian logistic regression) as default. A widely used method method, which is recommended especially for metric variables<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, is <code>pmm</code> (predictive mean matching) <span class="citation" data-cites="rubin1986 little1986">(<a href="#ref-rubin1986" role="doc-biblioref">Donald B. Rubin 1986</a>; <a href="#ref-little1986" role="doc-biblioref">Little 1986</a>)</span>. In <code>pmm</code>, missing values are imputed by borrowing observed values from “donor” cases with similar observed data, preserving realistic data distributions.</p>
+<p>The <code>mice</code> package offers various imputation methods suitable for different data types. For numeric variables, <code>mice</code> uses <code>norm</code> (Bayesian linear regression) as default; for binary variables, <code>mice</code> uses <code>logreg</code> (Bayesian logistic regression) as default. A widely used method method, which is recommended especially for metric variables<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, is <code>pmm</code> (predictive mean matching) <span class="citation" data-cites="rubin1986 little1986">(<a href="#ref-rubin1986" role="doc-biblioref">Rubin 1986</a>; <a href="#ref-little1986" role="doc-biblioref">Little 1986</a>)</span>. In <code>pmm</code>, missing values are imputed by borrowing observed values from “donor” cases with similar observed data, preserving realistic data distributions.</p>
 
 <div class="no-row-height column-margin column-container"><div class="">
-<p>According to <span class="citation" data-cites="vanbuuren2018">Buuren (<a href="#ref-vanbuuren2018" role="doc-biblioref">2018</a>)</span>, using Bayesian regression for imputations is preferable to standard regression. Unlike standard regression, Bayesian regression draws from the posterior distribution to obtain predicted values. Consequently, the predicted (i.e., imputed) values reflect the uncertainty inherent in the imputation process. Standard regression, which produces a single deterministic predicted value, does not account for this uncertainty and is therefore not recommended.</p>
+<p>According to <span class="citation" data-cites="vanbuuren2018">van Buuren (<a href="#ref-vanbuuren2018" role="doc-biblioref">2018</a>)</span>, using Bayesian regression for imputations is preferable to standard regression. Unlike standard regression, Bayesian regression draws from the posterior distribution to obtain predicted values. Consequently, the predicted (i.e., imputed) values reflect the uncertainty inherent in the imputation process. Standard regression, which produces a single deterministic predicted value, does not account for this uncertainty and is therefore not recommended.</p>
 </div></div><p><strong>Step 3: Setting the number of iterations.</strong></p>
-<p>Multiple imputation via chained equations is an iterative process where each iteration refines the estimates using the most recent imputations. More iterations improve the stability of the imputation model and help achieve convergence. Typically, 5 to 20 iterations are sufficient to reach convergence <span class="citation" data-cites="vanbuuren2018">(<a href="#ref-vanbuuren2018" role="doc-biblioref">Buuren 2018</a>)</span>. However, for some cases the number of iterations need to be substantially higher to achieve convergence <span class="citation" data-cites="vanbuuren2018">(<a href="#ref-vanbuuren2018" role="doc-biblioref">Buuren 2018</a>)</span>. As discussed later, we can evaluate whether the imputations converged. One way to deal with convergence issues is to increase the number of iterations.</p>
+<p>Multiple imputation via chained equations is an iterative process where each iteration refines the estimates using the most recent imputations. More iterations improve the stability of the imputation model and help achieve convergence. Typically, 5 to 20 iterations are sufficient to reach convergence <span class="citation" data-cites="vanbuuren2018">(<a href="#ref-vanbuuren2018" role="doc-biblioref">van Buuren 2018</a>)</span>. However, for some cases the number of iterations need to be substantially higher to achieve convergence <span class="citation" data-cites="vanbuuren2018">(<a href="#ref-vanbuuren2018" role="doc-biblioref">van Buuren 2018</a>)</span>. As discussed later, we can evaluate whether the imputations converged. One way to deal with convergence issues is to increase the number of iterations.</p>
 <p><strong>Step 4: Deciding on the number of imputed datasets.</strong></p>
-<p>Because imputation involves randomness, creating multiple imputed datasets allows pooling of results to reduce variance. More imputed datasets improve the precision of estimates but increase computation time. <span class="citation" data-cites="vanbuuren2018">Buuren (<a href="#ref-vanbuuren2018" role="doc-biblioref">2018</a>)</span> argues that 5 to 20 imputed datasets are usually sufficient, especially when point estimates are of interest. Aligning with this recommendation, <span class="citation" data-cites="White.2011">White, Royston, and Wood (<a href="#ref-White.2011" role="doc-biblioref">2011</a>)</span> suggest using at least as many imputations as the percentage of missing data (e.g., 15 imputations for 15% missing data).</p>
+<p>Because imputation involves randomness, creating multiple imputed datasets allows pooling of results to reduce variance. More imputed datasets improve the precision of estimates but increase computation time. <span class="citation" data-cites="vanbuuren2018">van Buuren (<a href="#ref-vanbuuren2018" role="doc-biblioref">2018</a>)</span> argues that 5 to 20 imputed datasets are usually sufficient, especially when point estimates are of interest. Aligning with this recommendation, <span class="citation" data-cites="White.2011">White, Royston, and Wood (<a href="#ref-White.2011" role="doc-biblioref">2011</a>)</span> suggest using at least as many imputations as the percentage of missing data (e.g., 15 imputations for 15% missing data).</p>
 <p><strong>Step 5: Analyze data &amp; pool results.</strong></p>
-<p>Once the data have been imputed, they can be analyzed. The first step is to perform the planned analyses separately in each imputed dataset. For descriptive statistics, this may involve estimating the mean (i.e., the intercept) of a variable within each dataset (noted as <span class="math inline">\hat{\theta_i}</span>, with theta indicating the mean and <em>i</em> the imputed data set). The second step is to combine, or pool, these estimates using, for example, Rubin’s Rule <span class="citation" data-cites="Rubin.1987">(<a href="#ref-Rubin.1987" role="doc-biblioref">D. B. Rubin 1987</a>)</span>. According to Rubin’s Rule, the pooled estimate (noted as <span class="math inline">\bar{\theta}</span>) is the arithmetic mean of the estimates obtained from the individual imputed datasets (with m indicating the number of imputed data sets). For descriptive statistics, this corresponds to calculating the mean across the estimated means from all imputed datasets <span class="citation" data-cites="enders2022">(<a href="#ref-enders2022" role="doc-biblioref">Enders 2022</a>)</span>.</p>
+<p>Once the data have been imputed, they can be analyzed. The first step is to perform the planned analyses separately in each imputed dataset. For descriptive statistics, this may involve estimating the mean (i.e., the intercept) of a variable within each dataset (noted as <span class="math inline">\hat{\theta_i}</span>, with theta indicating the mean and <em>i</em> the imputed data set). The second step is to combine, or pool, these estimates using, for example, Rubin’s Rule <span class="citation" data-cites="Rubin.1987">(<a href="#ref-Rubin.1987" role="doc-biblioref">Rubin 1987</a>)</span>. According to Rubin’s Rule, the pooled estimate (noted as <span class="math inline">\bar{\theta}</span>) is the arithmetic mean of the estimates obtained from the individual imputed datasets (with m indicating the number of imputed data sets). For descriptive statistics, this corresponds to calculating the mean across the estimated means from all imputed datasets <span class="citation" data-cites="enders2022">(<a href="#ref-enders2022" role="doc-biblioref">Enders 2022</a>)</span>.</p>
 
 <div class="no-row-height column-margin column-container"><div class="">
-<p>Using the arithmetic mean of the estimates to pool according to Rubin’s Rule <span class="citation" data-cites="Rubin.1987">(<a href="#ref-Rubin.1987" role="doc-biblioref">D. B. Rubin 1987</a>)</span> is only valid for approximately normally distributed quantities, such as means or regression coefficients. To pool other quantities, such as correlation coefficients, requires a transformation (e.g., Fisher’s z transformation) before pooling <span class="citation" data-cites="vonbuuren2018">(<a href="#ref-vonbuuren2018" role="doc-biblioref"><strong>vonbuuren2018?</strong></a>)</span>.</p>
+<p>Using the arithmetic mean of the estimates to pool according to Rubin’s Rule <span class="citation" data-cites="Rubin.1987">(<a href="#ref-Rubin.1987" role="doc-biblioref">Rubin 1987</a>)</span> is only valid for approximately normally distributed quantities, such as means or regression coefficients. To pool other quantities, such as correlation coefficients, requires a transformation (e.g., Fisher’s z transformation) before pooling <span class="citation" data-cites="vanbuuren2018">(<a href="#ref-vanbuuren2018" role="doc-biblioref">van Buuren 2018</a>)</span>.</p>
 </div></div><p><span class="math display"> \bar{\theta} = \frac{1}{m} \sum_{i=1}^{m} \hat{\theta_i} </span></p>
 <p>The variance (i.e., the squared standard error) of the pooled estimate can also be computed. It consists of two components: (1) the within-imputation variance, which represents the average variance estimate across the imputed datasets, and (2) the between-imputation variance, which reflects the variability of the estimates across the imputed datasets and thus captures the uncertainty introduced by imputation <span class="citation" data-cites="enders2022">(<a href="#ref-enders2022" role="doc-biblioref">Enders 2022</a>)</span>. The within-imputation variance can be estimated using the following formula <span class="citation" data-cites="enders2022">(<a href="#ref-enders2022" role="doc-biblioref">Enders 2022</a>)</span><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>:</p>
 <p><span class="math display"> V_W = \frac{1}{m} \sum_{i=1}^{m}\hat{SE_i^2} </span></p>
 <p>The between-imputation variance can be estimated using the following formula <span class="citation" data-cites="enders2022">(<a href="#ref-enders2022" role="doc-biblioref">Enders 2022</a>)</span>:</p>
 <p><span class="math display"> V_B = \frac{1}{m - 1} \sum_{i=1}^{m}( \hat{\theta_i} - \bar{\theta})^2 </span></p>
-<p>The total variance is then obtained by summing the within-imputation variance and (1 + 1/number of imputations) times the between-imputation variance <span class="citation" data-cites="Rubin.1987 enders2022">(<a href="#ref-Rubin.1987" role="doc-biblioref">D. B. Rubin 1987</a>; <a href="#ref-enders2022" role="doc-biblioref">Enders 2022</a>)</span>:</p>
+<p>The total variance is then obtained by summing the within-imputation variance and (1 + 1/number of imputations) times the between-imputation variance <span class="citation" data-cites="Rubin.1987 enders2022">(<a href="#ref-Rubin.1987" role="doc-biblioref">Rubin 1987</a>; <a href="#ref-enders2022" role="doc-biblioref">Enders 2022</a>)</span>:</p>
 <p><span class="math display"> V_t = V_W + V_B + \frac{V_B}{m} </span></p>
 <p>The square-root of the total variance is then the pooled standard error <span class="citation" data-cites="enders2022">(<a href="#ref-enders2022" role="doc-biblioref">Enders 2022</a>)</span>.</p>
 <p><span class="math display"> SE = \sqrt{V_t} </span></p>
 <p><strong>Illustrative Example</strong></p>
-<p>For our example, we impute missing values in the scale variables, including <code>sex</code> and <code>grade</code> as predictors since missingness may depend on them. We use <code>pmm</code> to generate 15 imputed datasets with 10 iterations for the MAR scenario. After imputation, we check whether the model has converged using taceplots and stripplots.</p>
+<p>For our example, we impute missing values in the scale variables, including <code>sex</code> and <code>grade</code> as predictors since missingness may depend on them. We use <code>pmm</code> to generate 15 imputed datasets with 10 iterations for the MAR scenario. After imputation, we check whether the model has converged using traceplots and stripplots.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Conducting multiple imputations</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>multiple_imputations_MAR <span class="ot">&lt;-</span> mice<span class="sc">::</span><span class="fu">mice</span>(Data_MAR,</span>
@@ -690,7 +693,7 @@ $MNAR</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="missing_data_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="02_missing_data_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -716,14 +719,14 @@ $MNAR</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="missing_data_files/figure-html/unnamed-chunk-14-2.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="02_missing_data_files/figure-html/unnamed-chunk-14-2.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Imputed values (red) intermix with observed values (blue)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The trace plots intermix and no trend is visible in the later iterations. This intermix and the absence of a trend indicate convergence, which means that the number of iterations was sufficient. A trend at late iterations would have indicated that the estimate has not yet converged.</p>
-<p>The stripplots show that the imputed values (in red) intermingle with the observed values (in blue). If the imputed and observed values do not intermingle, this can either indicate the absence of MCAR or a bad imputation model <span class="citation" data-cites="vanbuuren2018">(<a href="#ref-vanbuuren2018" role="doc-biblioref">Buuren 2018</a>)</span>.</p>
+<p>The stripplots show that the imputed values (in red) intermingle with the observed values (in blue). If the imputed and observed values do not intermingle, this can either indicate the absence of MCAR or a bad imputation model <span class="citation" data-cites="vanbuuren2018">(<a href="#ref-vanbuuren2018" role="doc-biblioref">van Buuren 2018</a>)</span>.</p>
 <p>As the model has converged, we can now estimate pooled statistics. First, we estimate the pooled mean by fitting a linear model with only an intercept (i.e., no predictors) in each imputed dataset. In such a model, the intercept corresponds to the sample mean of the outcome variable. We then pool these intercept estimates across imputations. Next, we fit a CFA model using <code>lavaan.mi</code> to examine both model fit, the resulting reliability, and the factor loadings. Additionally, we compare the pooled statistics to those of the full sample.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate pooled mean of x1</span></span>
@@ -814,10 +817,10 @@ Test statistic(s) pooled using the D4 pooling method.
 </section>
 <section id="full-information-maximum-likelihood-fiml" class="level3">
 <h3 class="anchored" data-anchor-id="full-information-maximum-likelihood-fiml">Full-Information Maximum Likelihood (FIML)</h3>
-<p>A popular way to handle missing data in factor models, such as confirmatory factor analysis (CFA), is Full Information Maximum Likelihood (<em>FIML</em>). The basic idea of maximum likelihood is to estimate how likely the observed data are, given certain assumptions about the population. For example, if the population IQ has a mean of 100 and variance of 225, how likely is it to observe a score of 95? This probability is called the likelihood, and we usually work with its logarithm (log-likelihood) for convenience. Statistical methods based on maximum likelihood then find the parameter values that maximize the likelihood of the observed data - that is, the values under which the observed data are most probable.</p>
+<p>A popular way to handle missing data in factor models, such as confirmatory factor analysis (CFA), is Full Information Maximum Likelihood (<em>FIML</em>). The basic idea of maximum likelihood is to estimate how likely the observed data are, given certain assumptions about the population. For example, if the population IQ follows a normal distribution with a mean of 100 and a variance of 225, how likely is it to observe a score of 95? This value is called the likelihood, and we usually work with its logarithm (log-likelihood) for convenience. Statistical methods based on maximum likelihood then find the parameter values that maximize the likelihood of the observed data - that is, the values under which the observed data are most probable.</p>
 <p>When we have multiple variables, maximum likelihood considers the combination of all observed scores, taking into account their means, variances, and how the variables relate to each other (covariances). For instance, we can estimate how likely it is to see an IQ of 95 and a well-being score of 65, given the population averages and the correlation between IQ and well-being.</p>
 <p>Missing data complicate this calculation. Simply leaving out cases with missing values can distort the estimates for all variables, not just the ones with missing data. This can lead to biased results, especially if the missingness depends on observed data (MAR).</p>
-<p>FIML solves this by using all the available information. It calculates likelihoods for different subgroups of participants based on their missing data patterns (e.g., people with complete data, people missing an IQ score, people missing a well-being score). Then, it combines these subgroup likelihoods to estimate the overall model parameters. In addition, FIML adjusts the standard errors of the estimates according to how much information is available for each parameter, giving more accurate results than simply ignoring missing data..</p>
+<p>FIML solves this by using all the available information. It calculates likelihoods for different subgroups of participants based on their missing data patterns (e.g., people with complete data, people missing an IQ score, people missing a well-being score). Then, it combines these subgroup likelihoods to estimate the overall model parameters. In addition, FIML adjusts the standard errors of the estimates according to how much information is available for each parameter, giving more accurate results than simply ignoring missing data.</p>
 <p>One advantage of FIML is that dealing with missing values is integrated into the analysis process. The disadvantage of FIML is that it is only applicable in combination with methods using maximum likelihood.</p>
 <p>In the code below, we demonstrate how FIML is specified in a CFA.</p>
 <div class="cell">
@@ -972,7 +975,7 @@ x9  0.000  0.000 0.684</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="missing_data_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="02_missing_data_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1135,7 +1138,7 @@ x9  0.000  0.000 0.684</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="missing_data_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="02_missing_data_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1175,13 +1178,13 @@ x9  0.000  0.000 0.684</code></pre>
 <td style="text-align: right;">0.069</td>
 </tr>
 </tbody><tfoot>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left; padding: 0;"><span style="font-style: italic;">Note.</span></td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left; padding: 0;"><sup></sup> Full Sample SE = 0.067</td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
@@ -1190,17 +1193,15 @@ x9  0.000  0.000 0.684</code></pre>
 </tfoot>
 
 </table>
-
-
 </div>
 </div>
 </section>
 <section id="model-fit" class="level3 page-columns page-full">
 <h3 class="anchored" data-anchor-id="model-fit">Model Fit</h3>
-<p>We estimated bias and standard error (SE) for the CFI of the three-factor model<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>. The plot and the table below display bias and SEs for different strategies under different missing data mechanisms. The plot shows that the CFI of the full sample is recovered well by all strategies under MCAR Under MAR, multiple imputations recover the CFI well. Under MNAR, no strategy can recover the CFI well.</p>
+<p>We estimated bias and standard error (SE) for the CFI of the three-factor model<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>. The plot and the table below display bias and SEs for different strategies under different missing data mechanisms. The plot shows that the CFI of the full sample is recovered well by all strategies under MCAR. Under MAR, multiple imputations recover the CFI well. Under MNAR, no strategy can recover the CFI well.</p>
 
 <div class="no-row-height column-margin column-container"><div class="">
-<p>According to the study of <span class="citation" data-cites="lee2021">Lee and Shi (<a href="#ref-lee2021" role="doc-biblioref">2021</a>)</span>, FIML tends to overestimate the CFI, whereas multiple imputation tends to underestimate the RMSEA. Therefore, they recommend relying on the CFI when using multiple imputation and on the RMSEA when using FIML. When the respective fit indices (CFI or RMSEA) are used, both strategies provide Monte Carlo–unbiased estimates of model fit.</p>
+<p>According to the study of <span class="citation" data-cites="lee2021">Lee and Shi (<a href="#ref-lee2021" role="doc-biblioref">2021</a>)</span>, FIML tends to overestimate the CFI, whereas multiple imputation tends to underestimate the RMSEA. Therefore, they recommend relying on the CFI when using multiple imputation and on the RMSEA when using FIML.</p>
 </div></div><div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -1322,7 +1323,7 @@ x9  0.000  0.000 0.684</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="missing_data_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="02_missing_data_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1363,13 +1364,13 @@ x9  0.000  0.000 0.684</code></pre>
 <td style="text-align: right;">0.008</td>
 </tr>
 </tbody><tfoot>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left; padding: 0;"><span style="font-style: italic;">Note.</span></td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left; padding: 0;"><sup></sup> Full Sample SE = 0.02</td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
@@ -1378,8 +1379,6 @@ x9  0.000  0.000 0.684</code></pre>
 </tfoot>
 
 </table>
-
-
 </div>
 </div>
 </section>
@@ -1445,7 +1444,7 @@ x9  0.000  0.000 0.684</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="missing_data_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="02_missing_data_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1486,13 +1485,13 @@ x9  0.000  0.000 0.684</code></pre>
 <td style="text-align: right;">0.004</td>
 </tr>
 </tbody><tfoot>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left; padding: 0;"><span style="font-style: italic;">Note.</span></td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left; padding: 0;"><sup></sup> Full Sample SE = 0.011</td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
@@ -1501,8 +1500,6 @@ x9  0.000  0.000 0.684</code></pre>
 </tfoot>
 
 </table>
-
-
 </div>
 </div>
 </section>
@@ -1513,7 +1510,7 @@ x9  0.000  0.000 0.684</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="missing_data_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="02_missing_data_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1548,13 +1545,13 @@ x9  0.000  0.000 0.684</code></pre>
 <td style="text-align: right;">0.121</td>
 </tr>
 </tbody><tfoot>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left; padding: 0;"><span style="font-style: italic;">Note.</span></td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left; padding: 0;"><sup></sup> Full Sample SE = 0.081</td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
@@ -1563,34 +1560,33 @@ x9  0.000  0.000 0.684</code></pre>
 </tfoot>
 
 </table>
-
-
 </div>
 </div>
 </section>
+<section id="recap-1" class="level3">
+<h3 class="anchored" data-anchor-id="recap-1">Recap</h3>
+<p>In our small Monte-Carlo simulation, multiple imputation and FIML provided Monte-Carlo unbiased and efficient estimates in psychometric analyses under MCAR and MAR scenarios. For multiple imputations, it is essential to include all relevant variables in the imputation model - otherwise, bias may be introduced. Listwise deletion also yields unbiased estimates under MCAR (and under specific circumstances MAR) but is less efficient. In MNAR scenarios, there is little that can be done to fully account for the missingness. Therefore, FIML and multiple imputation are the preferred strategies for estimating psychometric statistics. It is also crucial that the data are not MNAR, as this severely limits the accuracy of psychometric estimates.</p>
 </section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<p>In summary, in our small Monte-Carlo simulation, especially multiple imputation and FIML provided Monte-Carlo unbiased and efficient estimates in psychometric analyses under MCAR and MAR scenarios. For multiple imputations, it is essential to include all relevant variables in the imputation model - otherwise, bias may be introduced. Listwise deletion also yields unbiased estimates under MCAR (and under specific circumstances MAR) but is less efficient. In MNAR scenarios, there is little that can be done to fully account for the missingness. Therefore, FIML and multiple imputation are the preferred strategies for estimating psychometric statistics. It is also crucial that the data are not MNAR, as this severely limits the accuracy of psychometric estimates.</p>
 </section>
 <section id="conclusion-and-recommendations" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion-and-recommendations">Conclusion and recommendations</h2>
 <p>In this tutorial, we discussed different mechanisms that can generate missing data and strategies for dealing with them. We showed the consequences of ignoring missing data and explained that, depending on the mechanism driving its presence, you might be able to ameliorate its negative impact, either in terms of bias or loss of precision.</p>
 <p>As there are no definitive tests to identify the missing data mechanism (with the exception of tests for data not being MCAR), you should critically reflect on the theoretical process that may have caused the missingness.</p>
 <p>If the data are MCAR, you do not need to worry about bias, though the loss of precision may still be an issue. If the data are MAR, both precision and bias can be problematic. In this case, we recommend using multiple imputation or FIML by default. Data that are MNAR are the most difficult to handle. There are no easy solutions, and the available methods typically require a higher level of statistical modeling proficiency. We did not cover these techniques here, but several approaches are available <span class="citation" data-cites="daniels2008 enders2022">(see, e.g., <a href="#ref-daniels2008" role="doc-biblioref">Daniels and Hogan 2008</a>, Ch. 9; <a href="#ref-enders2022" role="doc-biblioref">Enders 2022</a>, Ch. 9)</span> that you may wish to explore if you encounter this situation.</p>
-
 </section>
 
 
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+
+<div id="quarto-appendix" class="default"><section id="review" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Review</h2><div class="quarto-appendix-contents">
+
+<p>Reviewed by Christian Bruch.</p>
+
+</div></section><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-axenfeld2022" class="csl-entry" role="listitem">
 Axenfeld, Julian B, Christian Bruch, and Christof Wolf. 2022. <span>“General-Purpose Imputation of Planned Missing Data in Social Surveys: Different Strategies and Their Effect on Correlations.”</span> <em>Statistic Surveys</em> 16: 182–209. <a href="https://doi.org/10.1214/22-SS137">https://doi.org/10.1214/22-SS137</a>.
 </div>
 <div id="ref-bartlett2020" class="csl-entry" role="listitem">
 Bartlett, Jonathan W, and Rachael A Hughes. 2020. <span>“Bootstrap Inference for Multiple Imputation Under Uncongeniality and Misspecification.”</span> <em>Statistical Methods in Medical Research</em> 29 (12): 3533–46. <a href="https://doi.org/10.1177/0962280220932189">https://doi.org/10.1177/0962280220932189</a>.
-</div>
-<div id="ref-vanbuuren2018" class="csl-entry" role="listitem">
-Buuren, Stef van. 2018. <em>Flexible Imputation of Missing Data</em>. 2nd ed. New York: Chapman; Hall/CRC.
 </div>
 <div id="ref-Chen.2020" class="csl-entry" role="listitem">
 Chen, Lihan, Victoria Savalei, and Mijke Rhemtulla. 2020. <span>“Two-Stage Maximum Likelihood Approach for Item-Level Missing Data in Regression.”</span> <em>Behavior Research Methods</em> 52 (6): 2306–23. <a href="https://doi.org/10.3758/s13428-020-01355-x">https://doi.org/10.3758/s13428-020-01355-x</a>.
@@ -1631,17 +1627,20 @@ Raykov, Tenko. 2011. <span>“On Testability of Missing Data Mechanisms in Incom
 <div id="ref-rosseel2025" class="csl-entry" role="listitem">
 Rosseel, Yves, Terrence D. Jorgensen, and Luc De Wilde. 2025. <em><span class="nocase">lavaan</span>: Latent Variable Analysis</em>. <a href="https://doi.org/10.32614/CRAN.package.lavaan">https://doi.org/10.32614/CRAN.package.lavaan</a>.
 </div>
-<div id="ref-Rubin.1987" class="csl-entry" role="listitem">
-Rubin, D. B. 1987. <em>Multiple Imputation for Nonresponse in Surveys.</em> <span>John Wiley <span>&amp;</span> Sons</span>.
-</div>
 <div id="ref-rubin1986" class="csl-entry" role="listitem">
 Rubin, Donald B. 1986. <span>“Statistical Matching Using File Concatenation with Adjusted Weights and Multiple Imputation.”</span> <em>Journal of Business &amp; Economic Statistics</em> 4: 87–94. <a href="https://doi.org/10.1080/07350015.1986.10509497">https://doi.org/10.1080/07350015.1986.10509497</a>.
+</div>
+<div id="ref-Rubin.1987" class="csl-entry" role="listitem">
+———. 1987. <em>Multiple Imputation for Nonresponse in Surveys.</em> <span>John Wiley <span>&amp;</span> Sons</span>.
 </div>
 <div id="ref-Thoemmes.2015" class="csl-entry" role="listitem">
 Thoemmes, Felix, and Karthika Mohan. 2015. <span>“Graphical Representation of Missing Data Problems.”</span> <em>Structural Equation Modeling: A Multidisciplinary Journal</em> 22 (4): 631–42. <a href="https://doi.org/10.1080/10705511.2014.937378">https://doi.org/10.1080/10705511.2014.937378</a>.
 </div>
 <div id="ref-vanBuuren.2010" class="csl-entry" role="listitem">
 van Buuren, Stef. 2010. <span>“Item Imputation Without Specifying Scale Structure.”</span> <em>Methodology</em> 6 (1): 31–36. <a href="https://doi.org/10.1027/1614-2241/a000004">https://doi.org/10.1027/1614-2241/a000004</a>.
+</div>
+<div id="ref-vanbuuren2018" class="csl-entry" role="listitem">
+———. 2018. <em>Flexible Imputation of Missing Data</em>. 2nd ed. New York: Chapman; Hall/CRC.
 </div>
 <div id="ref-vanbuuren2011" class="csl-entry" role="listitem">
 van Buuren, Stef, and Karin Groothuis-Oudshoorn. 2011. <span>“<span class="nocase">mice</span>: Multivariate Imputation by Chained Equations in r.”</span> <em>Journal of Statistical Software</em> 45 (3): 1–67. <a href="https://doi.org/10.18637/jss.v045.i03">https://doi.org/10.18637/jss.v045.i03</a>.
@@ -1652,7 +1651,7 @@ White, Ian R., Patrick Royston, and Angela M. Wood. 2011. <span>“Multiple Impu
 </div></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
-<li id="fn1"><p>for an overview on how to implement pmm for unordered categorical variables, see <span class="citation" data-cites="koller2009">Koller-Meinfelder (<a href="#ref-koller2009" role="doc-biblioref">2009</a>)</span><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>For an overview on how to implement pmm for unordered categorical variables, see <span class="citation" data-cites="koller2009">Koller-Meinfelder (<a href="#ref-koller2009" role="doc-biblioref">2009</a>)</span><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>Instead of the displayed formula, bootstraping can be used to estimate the within-imputation variance <span class="citation" data-cites="bartlett2020">(<a href="#ref-bartlett2020" role="doc-biblioref">Bartlett and Hughes 2020</a>)</span><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn3"><p>Because we did not use bootstrapping to estimate the SEs for each sample-based CFI, the SEs simply represent the variance across the sample-based CFIs. However, the samples are not independent, as they are all drawn from the same relatively small population — the full sample. Therefore, the SEs are likely underestimated.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn4"><p>Because we did not use bootstrapping to estimate the SEs for each sample-based reliability, the SEs simply represent the variance across the sample-based reliabilities. However, the samples are not independent, as they are all drawn from the same relatively small population—the full sample. Therefore, the SEs are likely underestimated.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
@@ -1662,250 +1661,254 @@ White, Ian R., Patrick Royston, and Angela M. Wood. 2011. <span>“Multiple Impu
     Franziska},
   publisher = {GESIS – Leibniz Institute for the Social Sciences},
   title = {Missing {Data} in {Scale} {Validation}},
-  date = {2025},
+  date = {2025-12-08},
   url = {https://zis.gesis.org/infotexte/GuidelineMaterials.html},
   langid = {en}
 }
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-urban2025" class="csl-entry quarto-appendix-citeas" role="listitem">
 Urban, Julian, Piotr Koc, Zoe Greer, and Franziska Feldmann. 2025.
-<span>“Missing Data in Scale Validation .”</span> <em>ZIS
-R-Tutorials</em>. GESIS – Leibniz Institute for the Social Sciences. <a href="https://zis.gesis.org/infotexte/GuidelineMaterials.html">https://zis.gesis.org/infotexte/GuidelineMaterials.html</a>.
+<span>“Missing Data in Scale Validation .”</span> <em>R-Tutorials in
+Psychometrics</em>. GESIS – Leibniz Institute for the Social Sciences.
+<a href="https://zis.gesis.org/infotexte/GuidelineMaterials.html">https://zis.gesis.org/infotexte/GuidelineMaterials.html</a>.
 </div></div></section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
-window.document.addEventListener("DOMContentLoaded", function (event) {
-  const toggleBodyColorMode = (bsSheetEl) => {
-    const mode = bsSheetEl.getAttribute("data-mode");
-    const bodyEl = window.document.querySelector("body");
-    if (mode === "dark") {
-      bodyEl.classList.add("quarto-dark");
-      bodyEl.classList.remove("quarto-light");
-    } else {
-      bodyEl.classList.add("quarto-light");
-      bodyEl.classList.remove("quarto-dark");
-    }
-  }
-  const toggleBodyColorPrimary = () => {
-    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-    if (bsSheetEl) {
-      toggleBodyColorMode(bsSheetEl);
-    }
-  }
-  toggleBodyColorPrimary();  
-  const icon = "";
-  const anchorJS = new window.AnchorJS();
-  anchorJS.options = {
-    placement: 'right',
-    icon: icon
-  };
-  anchorJS.add('.anchored');
-  const isCodeAnnotation = (el) => {
-    for (const clz of el.classList) {
-      if (clz.startsWith('code-annotation-')) {                     
-        return true;
-      }
-    }
-    return false;
-  }
-  const onCopySuccess = function(e) {
-    // button target
-    const button = e.trigger;
-    // don't keep focus
-    button.blur();
-    // flash "checked"
-    button.classList.add('code-copy-button-checked');
-    var currentTitle = button.getAttribute("title");
-    button.setAttribute("title", "Copied!");
-    let tooltip;
-    if (window.bootstrap) {
-      button.setAttribute("data-bs-toggle", "tooltip");
-      button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "Copied!");
-      tooltip = new bootstrap.Tooltip(button, 
-        { trigger: "manual", 
-          customClass: "code-copy-button-tooltip",
-          offset: [0, -8]});
-      tooltip.show();    
-    }
-    setTimeout(function() {
-      if (tooltip) {
-        tooltip.hide();
-        button.removeAttribute("data-bs-title");
-        button.removeAttribute("data-bs-toggle");
-        button.removeAttribute("data-bs-placement");
-      }
-      button.setAttribute("title", currentTitle);
-      button.classList.remove('code-copy-button-checked');
-    }, 1000);
-    // clear code selection
-    e.clearSelection();
-  }
-  const getTextToCopy = function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-    text: getTextToCopy
-  });
-  clipboard.on('success', onCopySuccess);
-  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
-    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-      text: getTextToCopy,
-      container: window.document.getElementById('quarto-embedded-source-code-modal')
-    });
-    clipboardModal.on('success', onCopySuccess);
-  }
-    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-    var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
-    var isInternal = (href) => {
-        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
-    }
-    // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-    for (var i=0; i<links.length; i++) {
-      const link = links[i];
-      if (!isInternal(link.href)) {
-        // undo the damage that might have been done by quarto-nav.js in the case of
-        // links that we want to consider external
-        if (link.dataset.originalHref !== undefined) {
-          link.href = link.dataset.originalHref;
-        }
-      }
-    }
-  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-    const config = {
-      allowHTML: true,
-      maxWidth: 500,
-      delay: 100,
-      arrow: false,
-      appendTo: function(el) {
-          return el.parentElement;
-      },
-      interactive: true,
-      interactiveBorder: 10,
-      theme: 'quarto',
-      placement: 'bottom-start',
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
     };
-    if (contentFn) {
-      config.content = contentFn;
-    }
-    if (onTriggerFn) {
-      config.onTrigger = onTriggerFn;
-    }
-    if (onUntriggerFn) {
-      config.onUntrigger = onUntriggerFn;
-    }
-    window.tippy(el, config); 
-  }
-  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-  for (var i=0; i<noterefs.length; i++) {
-    const ref = noterefs[i];
-    tippyHover(ref, function() {
-      // use id or data attribute instead here
-      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-      try { href = new URL(href).hash; } catch {}
-      const id = href.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      if (note) {
-        return note.innerHTML;
-      } else {
-        return "";
-      }
-    });
-  }
-  const xrefs = window.document.querySelectorAll('a.quarto-xref');
-  const processXRef = (id, note) => {
-    // Strip column container classes
-    const stripColumnClz = (el) => {
-      el.classList.remove("page-full", "page-columns");
-      if (el.children) {
-        for (const child of el.children) {
-          stripColumnClz(child);
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
         }
       }
+      return false;
     }
-    stripColumnClz(note)
-    if (id === null || id.startsWith('sec-')) {
-      // Special case sections, only their first couple elements
-      const container = document.createElement("div");
-      if (note.children && note.children.length > 2) {
-        container.appendChild(note.children[0].cloneNode(true));
-        for (let i = 1; i < note.children.length; i++) {
-          const child = note.children[i];
-          if (child.tagName === "P" && child.innerText === "") {
-            continue;
-          } else {
-            container.appendChild(child.cloneNode(true));
-            break;
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
           }
         }
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(container);
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
         }
-        return container.innerHTML
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
       } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
         if (window.Quarto?.typesetMath) {
           window.Quarto.typesetMath(note);
         }
-        return note.innerHTML;
-      }
-    } else {
-      // Remove any anchor links if they are present
-      const anchorLink = note.querySelector('a.anchorjs-link');
-      if (anchorLink) {
-        anchorLink.remove();
-      }
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(note);
-      }
-      // TODO in 1.5, we should make sure this works without a callout special case
-      if (note.classList.contains("callout")) {
-        return note.outerHTML;
-      } else {
-        return note.innerHTML;
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
       }
     }
-  }
-  for (var i=0; i<xrefs.length; i++) {
-    const xref = xrefs[i];
-    tippyHover(xref, undefined, function(instance) {
-      instance.disable();
-      let url = xref.getAttribute('href');
-      let hash = undefined; 
-      if (url.startsWith('#')) {
-        hash = url;
-      } else {
-        try { hash = new URL(url).hash; } catch {}
-      }
-      if (hash) {
-        const id = hash.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note !== null) {
-          try {
-            const html = processXRef(id, note.cloneNode(true));
-            instance.setContent(html);
-          } finally {
-            instance.enable();
-            instance.show();
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
           }
         } else {
-          // See if we can fetch this
-          fetch(url.split('#')[0])
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
           .then(res => res.text())
           .then(html => {
             const parser = new DOMParser();
             const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.getElementById(id);
+            const note = htmlDoc.querySelector('main.content');
             if (note !== null) {
-              const html = processXRef(id, note);
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
               instance.setContent(html);
             } 
           }).finally(() => {
@@ -1913,185 +1916,161 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             instance.show();
           });
         }
-      } else {
-        // See if we can fetch a full url (with no hash to target)
-        // This is a special case and we should probably do some content thinning / targeting
-        fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(html, "text/html");
-          const note = htmlDoc.querySelector('main.content');
-          if (note !== null) {
-            // This should only happen for chapter cross references
-            // (since there is no id in the URL)
-            // remove the first header
-            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-              note.children[0].remove();
-            }
-            const html = processXRef(null, note);
-            instance.setContent(html);
-          } 
-        }).finally(() => {
-          instance.enable();
-          instance.show();
-        });
-      }
-    }, function(instance) {
-    });
-  }
-      let selectedAnnoteEl;
-      const selectorForAnnotation = ( cell, annotation) => {
-        let cellAttr = 'data-code-cell="' + cell + '"';
-        let lineAttr = 'data-code-annotation="' +  annotation + '"';
-        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-        return selector;
-      }
-      const selectCodeLines = (annoteEl) => {
-        const doc = window.document;
-        const targetCell = annoteEl.getAttribute("data-target-cell");
-        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-        const lineIds = lines.map((line) => {
-          return targetCell + "-" + line;
-        })
-        let top = null;
-        let height = null;
-        let parent = null;
-        if (lineIds.length > 0) {
-            //compute the position of the single el (top and bottom and make a div)
-            const el = window.document.getElementById(lineIds[0]);
-            top = el.offsetTop;
-            height = el.offsetHeight;
-            parent = el.parentElement.parentElement;
-          if (lineIds.length > 1) {
-            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-            height = bottom - top;
-          }
-          if (top !== null && height !== null && parent !== null) {
-            // cook up a div (if necessary) and position it 
-            let div = window.document.getElementById("code-annotation-line-highlight");
-            if (div === null) {
-              div = window.document.createElement("div");
-              div.setAttribute("id", "code-annotation-line-highlight");
-              div.style.position = 'absolute';
-              parent.appendChild(div);
-            }
-            div.style.top = top - 2 + "px";
-            div.style.height = height + 4 + "px";
-            div.style.left = 0;
-            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-            if (gutterDiv === null) {
-              gutterDiv = window.document.createElement("div");
-              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-              gutterDiv.style.position = 'absolute';
-              const codeCell = window.document.getElementById(targetCell);
-              const gutter = codeCell.querySelector('.code-annotation-gutter');
-              gutter.appendChild(gutterDiv);
-            }
-            gutterDiv.style.top = top - 2 + "px";
-            gutterDiv.style.height = height + 4 + "px";
-          }
-          selectedAnnoteEl = annoteEl;
-        }
-      };
-      const unselectCodeLines = () => {
-        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-        elementsIds.forEach((elId) => {
-          const div = window.document.getElementById(elId);
-          if (div) {
-            div.remove();
-          }
-        });
-        selectedAnnoteEl = undefined;
-      };
-        // Handle positioning of the toggle
-    window.addEventListener(
-      "resize",
-      throttle(() => {
-        elRect = undefined;
-        if (selectedAnnoteEl) {
-          selectCodeLines(selectedAnnoteEl);
-        }
-      }, 10)
-    );
-    function throttle(fn, ms) {
-    let throttle = false;
-    let timer;
-      return (...args) => {
-        if(!throttle) { // first call gets through
-            fn.apply(this, args);
-            throttle = true;
-        } else { // all the others get throttled
-            if(timer) clearTimeout(timer); // cancel #2
-            timer = setTimeout(() => {
-              fn.apply(this, args);
-              timer = throttle = false;
-            }, ms);
-        }
-      };
-    }
-      // Attach click handler to the DT
-      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-      for (const annoteDlNode of annoteDls) {
-        annoteDlNode.addEventListener('click', (event) => {
-          const clickedEl = event.target;
-          if (clickedEl !== selectedAnnoteEl) {
-            unselectCodeLines();
-            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-            if (activeEl) {
-              activeEl.classList.remove('code-annotation-active');
-            }
-            selectCodeLines(clickedEl);
-            clickedEl.classList.add('code-annotation-active');
-          } else {
-            // Unselect the line
-            unselectCodeLines();
-            clickedEl.classList.remove('code-annotation-active');
-          }
-        });
-      }
-  const findCites = (el) => {
-    const parentEl = el.parentElement;
-    if (parentEl) {
-      const cites = parentEl.dataset.cites;
-      if (cites) {
-        return {
-          el,
-          cites: cites.split(' ')
-        };
-      } else {
-        return findCites(el.parentElement)
-      }
-    } else {
-      return undefined;
-    }
-  };
-  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-  for (var i=0; i<bibliorefs.length; i++) {
-    const ref = bibliorefs[i];
-    const citeInfo = findCites(ref);
-    if (citeInfo) {
-      tippyHover(citeInfo.el, function() {
-        var popup = window.document.createElement('div');
-        citeInfo.cites.forEach(function(cite) {
-          var citeDiv = window.document.createElement('div');
-          citeDiv.classList.add('hanging-indent');
-          citeDiv.classList.add('csl-entry');
-          var biblioDiv = window.document.getElementById('ref-' + cite);
-          if (biblioDiv) {
-            citeDiv.innerHTML = biblioDiv.innerHTML;
-          }
-          popup.appendChild(citeDiv);
-        });
-        return popup.innerHTML;
+      }, function(instance) {
       });
     }
-  }
-});
-</script>
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
 </div> <!-- /content -->
 
 
