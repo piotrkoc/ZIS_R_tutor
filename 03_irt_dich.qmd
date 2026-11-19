@@ -1,12 +1,16 @@
 ---
-title: "A Practical Introduction to Item Response Theory Through the Rasch and 2PL Models"
+title: "A Practical Introduction to Item Response Theory: Models for Dichotomous Data"
 subtitle: "*R-Tutorials in Psychometrics*"
 logo: technical/pics/zis_logo.svg
 picture: technical/pics/kodaqs_icon.png 
 bibliography: 03_irt_dich_files/irt_references.bib
-csl: C:/Users/martinln/Documents/Nützliches/apa.csl
 lang: en-US
 reference-section-title: References
+filters:
+  - diagram
+diagram:
+  cache: true
+  cache-dir: ./tikz-cache
 author:
   - name: Leon Martinez
     affiliations: "GESIS – Leibniz Institute for the Social Sciences; University of Mannheim"
@@ -31,7 +35,7 @@ license: "CC BY 4.0"
 citation: 
     type: "document"
     title: |
-        A practical introduction to item response theory through the Rasch and 2PL models
+        A Practical Introduction to Item Response Theory: Models for Dichotomous Data
     author:
        - name: Leon Martinez
        - name: Piotr Koc
@@ -48,188 +52,62 @@ editor:
 
 ## At a Glance
 
-## IRT Intro & 1PL (Rasch)
+## Introduction
+Developing a high-quality measure of a latent construct requires evidence on how well the measure, a scale or a test, works.
+Applied researchers most often gather this evidence using factor analysis [for a tutorial on how to do this in R, see @xxx].
+Factor analysis answers important questions: whether the items reflect a common latent variable, how well the model reproduces the observed associations among the items, and how strongly each item is related to the latent variable.
 
-### Motivation of IRT and difference to classical test theory
+There is, however, an important aspect of measurement that typical applications of factor analysis do not address: how informative the scale is at different levels of the latent variable, that is, how precisely it measures respondents at these levels, and which items are informative in which range.
+One reason for this is that factor analysis is often applied with a linear model that treats item responses as continuous, which implies that measurement precision is the same at all levels of the latent variable.
+Even when researchers use factor-analytic models for categorical data, which could in principle address it, this aspect is rarely examined.
+Item response theory (IRT), a family of models for categorical item responses, puts it at the center of the analysis.^[The most popular IRT models are closely related to factor-analytic models for categorical data [@takaneRelationshipItemResponse1987]. The difference between the two approaches therefore lies less in the statistical models themselves than in how they are used.]
 
-Before we dive deeper into item response theory (IRT), it’s worth taking a step back and considering what the starting point is and why it makes sense to examine it from an IRT perspective.
+To see why varying informativeness matters, consider a test of mathematical proficiency. Imagine that the test is so difficult that most students score zero and only the scores of the most proficient students vary. The test then provides information only about these students: we can tell how their proficiency differs. About all other students, it provides no information: they all score zero, so we cannot distinguish between them, and they appear to have the same level of proficiency even though their actual proficiency may differ considerably. This is a problem not only for inferences about the distribution of proficiency in the target population but also for estimating associations with other variables: because the scores of a large part of the sample do not vary, they cannot covary with other variables either, which distorts the estimated associations. The issue is not limited to cognitive measures; it applies equally to other kinds of measures, such as attitude scales [@kocConstructingMeasuresSocial2026]. 
 
-In the social sciences, we often face the problem that what we want to measure (e.g., attitudes, personality traits, etc.) cannot be directly observed or measured.
-Therefore, we attempt to operationalize these abstract concepts using tools such as questionnaires.
-This leads to a distinction between two levels.
-On the one hand, we have the latent level.
-This is the level that cannot be directly observed, where the constructs we are interested in are located.
-On the other hand, there is the manifest level.
-This is the observable level where our operationalizations are located—for example, the responses people have given on a questionnaire.
-It is important to note that these two levels are not equivalent and that there is a gap between them.
-This is a problem because we are usually interested in latent person and item characteristics, but we only have data with responses at the manifest level.
-Therefore, we need something that describes how the observed manifest level (e.g., item responses) is related to the unobservable latent construct that we actually want to measure.
-We call this “something” that describes these relationships a *statistical* or *psychometric* *model*.
+Varying informativeness is not the only thing IRT brings into view. Because it places items and respondents on the same scale, a respondent's position on the latent variable can be interpreted in terms of content: which statements they are likely to agree with and which they are not. The same item-level logic extends to further questions that matter in scale development: whether the response categories of items with more than two categories work as intended, whether items function in the same way across groups of respondents (differential item functioning, DIF), and which items to keep when a scale has to be shortened. 
 
-Put simply, a statistical model attempts to predict the observed data based on latent variables.
-For this, we can ask ourselves: "What variables influence the responses to an item?" Intuitively, two influences may come to mind:
+In this tutorial, we introduce IRT from the perspective of measure construction and show how IRT-based reasoning guides the researcher through the process of scale development, from item generation to scale validation. We begin by explaining the motivation for IRT and how it differs from classical test theory.
 
-1.  The characteristics of the person answering the item (this usually refers to the latent trait we want to measure)
 
-2.  The properties of the item being answered
+### Motivation for IRT and differences from classical test theory
 
-That seems reasonable.
-For example, one would expect that the more environmental concern a person has (a latent trait of the person), the more likely they are to agree with an item that advocates for stronger climate protection measures.
-On the other hand, the characteristics of the item also influence how respondents answer it.
-For example, how clearly the item is worded or how difficult it is to agree with the item.
+In the social sciences, the constructs we want to measure, such as attitudes or personality traits, usually cannot be observed directly. We therefore operationalize them using instruments such as scales.
+This creates a gap between two levels: the latent level, at which the constructs of interest are located, and the manifest level, at which we observe responses to items.
+To bridge this gap, we need a description of how the observed responses relate to the latent construct.
+Such a description is called a *psychometric model*.
 
-IRT combines these two approaches by taking into account the influence of both persons (latent constructs) and items.
-This represents a fundamental difference from classical test theory (CTT) [@wilsonConstructingMeasuresItem2023 p. 139] and is a major advantage of IRT over CTT.
-This is evident in several ways.
-First, IRT always models a person’s response to a specific item.
-CTT, by contrast, models the total score and thus completely ignores the characteristics of individual items.
-In IRT, there are model parameters that refer to the person and are constant across all items, but there are also parameters that are item-specific.
-As a result, IRT explicitly addresses the various influencing factors (person + item)—unlike CTT—and represents a multilevel structure, since responses to different items from the same person can be grouped together, meaning that item responses are nested within persons.
-Therefore, IRT models can also be understood as generalized linear mixed models.
-So let's take a closer look at that next.
+Put simply, a psychometric model describes how likely a given response is, depending on quantities that cannot be observed directly.
+To build such a model, we first need to ask what determines how a person responds to an item.
+Two things come to mind:
 
-> Good references: @wilsonConstructingMeasuresItem2023
+1.  The person: their level on the latent variable we want to measure
 
-- Idea of the wright map
+2.  The item: its own properties, which are the same regardless of who answers it
 
-  - make the distinction between the manifest and latent level
+For example, one would expect that the more environmentally concerned a person is (the construct we use as a running example throughout this tutorial), the more likely they are to agree with an item that advocates stronger climate protection measures.
+At the same time, the characteristics of the item also influence how respondents answer it, such as how clearly it is worded or how difficult it is to agree with.
 
-  - we need something to relate the observed/manifest variables with the latent construct we are interested in
+IRT models both of these influences explicitly.
+This is the fundamental difference from classical test theory (CTT) [@wilsonConstructingMeasuresItem2023, p. 139].
+CTT is defined at the level of the total score, which it decomposes into a true score and an error, so the properties of the items do not appear in the model.
+Item statistics such as difficulty (the proportion of endorsed responses) and item-total correlations can be computed, but they are descriptive and not parameters of the model itself.
+IRT, by contrast, models the response of each person to each item.
+The model contains two kinds of parameters: a person parameter, which describes the person's level on the latent variable and is the same for all items the person answers, and item parameters, which describe the properties of an item, such as its difficulty, and are the same for all persons who answer it.
 
-  - This something is a statistical or psychometric model
+This difference has several consequences for scale development [for a detailed discussion, see @embretson_item_2025, pp. 10-41].
+First, CTT assigns a single standard error of measurement, derived from the reliability of the scale in a given population, to all scores, whereas in IRT precision varies across the latent variable, as discussed above.
+Second, a total score in CTT obtains its meaning from a comparison with other respondents, whereas a position on the IRT scale can also be interpreted in relation to the items.
+Third, CTT item statistics depend on the sample: the same item appears easier in a sample with high levels of the latent variable than in a sample with low levels, whereas IRT item parameters are, in principle, comparable across such samples.
+Fourth, total scores can be compared directly only when respondents answered the same items, whereas IRT scores based on different sets of items are comparable as long as the item parameters are known.
+These advantages hold only to the extent that the assumptions of the model are met.
 
-- 
+## Running example: Environmental Concern scale
 
-*In summary: We have observed people's responses to our items (manifest level). This response data is mostly categorical or dichotomous, due to the use of Likert scales. On the other hand, we are interested in individuals’ scores on constructs/traits that are not directly observable (latent level) and would also like to account for the influence of the items. To address this situation, we therefore need a model that can predict the observed responses while using the latent construct and the properties of the items for prediction (Wright map).*
+In this tutorial, we use the *Environmental Concern scale* (ECo scale) developed by @gommHowMeasureEnvironmental2026 as a running example.
+The authors observe that existing measures of environmental concern do not capture high levels of concern well, so that respondents with high levels are measured imprecisely.
+They evaluate the items of three established scales with IRT and combine the best-performing ones into a new scale that measures more precisely at high levels of environmental concern.
 
-## IRT From a Regression Perspective (illustrated for the simplest case: 1PL/Rasch -\> dichotomous items) - written by Piotr
-
-> Good references: @boeckEstimationItemResponse2011 @rijmenNonlinearMixedModel2003
-
-- Intuitively, we can think of IRT as a logistic (or multinomial in the case of polytomous items) regression
-
-  - We want to predict a dichotomous dependent variable (the item responses) based on the characteristics of the persons and on the characteristics of the items
-
-### IRT as Generalized Linear Mixed Models
-
-- More precisely, IRT models can be understood as Generalized linear mixed models
-
-- GLMM components
-
-  - Random component/conditional distribution:
-
-    - We want to predict, if a person answers an Item with 1 or 0. So the AV follows a Bernoulli distribution, where $\pi_{pi}$ gives the probability, that a 1 is drawn from that distribution
-
-  - Linear component:
-
-    - Contains for every person and item pair a linear combination of predictors to predict the item response of this person
-
-    - We assume that the response of a person on an item is influenced by the characteristics of the person (trait) and characteristics of the items
-
-    - Therefore we have one person specific predictor (random effects) and one predictor for every item (fixed effects)
-
-  - Linking component:
-
-    - Problem: linear component can give values from $-\infty$ to $\infty$ but we want to predict a probability which can only takes values from $[0;1]$
-
-    - Solution: We need a function which maps the predictions of the linear component on the interval from \[0:1\] -\> logit-function
-
-- IRT is a family of models that specify the relationship between the latent trait $\theta$ (“theta”) and a link-transformation of probability of $y_{is} = 1$ @hoffmanLectureNotesFactor2024
-
-### IRT as CFA *(see Lesa Hoffman)*
-
-- CFAs are also related to linear regressions, because they have basicly the same form only the parameters are named differently:
-
-  - lineare Regression: $y_{is} = \beta_{0i} + \beta_{1i}x_s + e_{is}$
-
-  - CFA: $y_{is} = \mu_i + \lambda_iF_s + e_{is}$
-
-- We learned that IRT models are Generalized linear mixed models, which can deal with categorical/ordinal data, therefore we can also think about IRT models as CFA models for categorical responses
-
-*After this we have established the formula for the 1PL/Rasch model (Note item difficulty instead of easiness to get* $\theta_p - \beta_i$)
-
-### IRT as Pairwise Comparison {#sec-pair-compa}
-
-This section is based on @betancourtPairwiseComparisonModeling2024.
-([Betancourt is licensed under CC BY-NC 4.0 -\> Does that mean we have to use this license as well?]{.mark}) @betancourtPairwiseComparisonModeling2024 shows that we can think of IRT also in terms of pairwise comparison, where we have a collection of comparable entities from which we can select pairs and compare them with one another.
-More specifically, we can only do bipartite comparisons of our entity pool.
-This means that we cannot compare just any two objects from our pool with each other; instead, we can divide our pool into two groups and make comparisons only between an object from one group and an object from the other group, but we cannot compare objects from the same group with each other.
-In the case of IRT, our pool of comparable entities consists of items and persons and we have bipartite comparisons because we always compare items with persons.
-
-Next, to be able to model a pairwise comparison between an item and a person, we need to give each entity of the comparison a quantitative value, to be able to compare the two entities against each other.
-So let's say entities belonging to the group of items are denoted with $\beta$ and the index $i$ identifies a specific item of this group.
-Let's say further that we call entities belonging to the group of persons $\theta$ whereby the index $n$ identifies a single person of this group.
-Since the two elements of our comparison are now quantifiable, we can investigate if the value of one element is larger than the value of the other.
-
-To ensure a consistent direction of comparison between different pairs and to be able to interpret the values from the comparison consistently, we can specify that the outcome of the comparison, $y_{\theta_n, \beta_i}$, should take on higher values the larger $\theta_n$ is compared to $\beta_i$.
-Conversely, $y_{\theta_n, \beta_i}$ should become smaller the larger $\beta_i$ is compared to $\theta_n$.
-To ensure this, we can say that the outcome of the comparison $y_{\theta_n, \beta_i}$ follows some probability density function.
-For now, let's say that $y_{\theta_n, \beta_i}$ follows a normal distribution.
-Formally, we can express this like this:
-
-$$\begin{align}
-&p(y_{\theta_n, \beta_i}\mid\mu_{\theta_n, \beta_i}, \phi) \quad \text{with} \; y_{\theta_n, \beta_i} \sim N(\mu_{\theta_n, \beta_i}, \phi)
-\end{align}$$
-
-Basically, this only means that the outcome value of our comparison can theoretically take any value between $-\infty$ and $+\infty$ (because a normal distribution has support over the whole continuum) but will most probably take the value of $\mu_{\theta_n, \beta_i}$ (because this is the mean/peak of the distribution and therefore the point of highest probability).
-We can now connect the values of our elements of comparison with the location of the mean of this normal distribution.
-This is because we assume that the comparison between the elements influences where the outcome value of the comparison is most likely located.
-Mathematically, we can therefore define $\mu_{\theta_n, \beta_i}$ as the output of a monotonically increasing function that takes the values of our comparison objects as input.
-Formally:
-
-$$\mu_{\theta_n, \beta_i} = f(\theta_n - \beta_i)$$
-
-Put simply, the higher $\theta_n$ compared to $\beta_i$, the greater the discrepancy $\theta_n - \beta_i$.
-Consequently, the greater this discrepancy, the greater is the output of the function $f(\cdot)$ and correspondingly $\mu_{\theta_n, \beta_i}$.
-The greater $\mu_{\theta_n, \beta_i}$, the more likely the outcome variable $y_{\theta_n, \beta_i}$ is to take higher values, because the probability distribution concentrates around $\mu_{\theta_n, \beta_i}$.
-
-But there is one problem.
-In IRT we want to compare a person with an item to predict which response this person will give to an item.
-In this tutorial we only consider cases where we have dichotomous response formats.
-Therefore, our outcome variable can only take two values, namely 0 or 1.
-However, currently our outcome of comparison can take any value between $-\infty$ and $+\infty$.
-To be able to adapt the outcome of comparison to our problem (which response option will a person choose for a certain item), we have to restrict the possible values $y_{\theta_n, \beta_i}$ can take to 0 or 1 so that $y_{\theta_n, \beta_i} \in \{0,1\}$.
-Earlier we assumed that $y_{\theta_n, \beta_i}$ follows a normal distribution, which allows any real value.
-So we can change our distributional assumption to a distribution that only supports the values 0 and 1.
-One such distribution is for example the Bernoulli distribution.
-So we can define our comparison outcome distribution as follows:
-
-$$\text{Bernoulli}(y_{\theta_n, \beta_i}\mid p_{\theta_n, \beta_i})$$
-
-The parameter $p_{\theta_n, \beta_i}$ defines the probability with which a 1 is sampled from the Bernoulli distribution.
-Like with the $\mu_{\theta_n, \beta_i}$ parameter under the normal distribution, we can link the values of the elements of comparison with this probability.
-However, we have a similar problem as with the outcome metric, if we just use the discrepancy between $\theta_n$ and $\beta_i$ as we did earlier.
-This is because the discrepancy can theoretically take any value between $-\infty$ and $+\infty$.
-But now we want to predict a probability ($p_{\theta_n, \beta_i}$), which can only take values between 0 and 1.
-Therefore, we need again a function which returns values only in the interval of 0 to 1 so that $p_{\theta_n, \beta_i} \in (0, 1)$.
-A function which satisfies this requirement is for example the logistic function.
-Therefore we can define the probability $p_{\theta_n, \beta_i}$:
-
-$$p_{\theta_n, \beta_i} = \text{logistic}(\theta_n-\beta_i)$$
-
-Put simply, we again use the discrepancy between $\theta_n$ and $\beta_i$ but the transformation through the logistic function ensures that the possible values lie between 0 and 1.
-Therefore, the greater $\theta_n$ compared to $\beta_i$, the closer to 1 the output of the logistic function and consequently $p_{\theta_n, \beta_i}$ gets.
-The other way around, the greater $\beta_i$ compared to $\theta_n$, the closer to 0 the output of the logistic function and consequently $p_{\theta_n, \beta_i}$ gets.
-
-To go one step further, we can influence how strongly the discrepancy between $\theta_n$ and $\beta_i$ can influence the outcome of the comparison.
-This can be achieved by adding a new parameter $\alpha$:
-
-$$p_{\theta_n, \beta_i} = \text{logistic}(\alpha \cdot (\theta_n-\beta_i))$$
-
-Note that $\alpha$ influences $p_{\theta_n, \beta_i}$ and $p_{\theta_n, \beta_i}$ influences $\text{Bernoulli}(y_{\theta_n, \beta_i}\mid p_{\theta_n, \beta_i})$; therefore, the greater $\alpha$ gets, the more strongly the comparison outcome is influenced by the discrepancy between $\theta_n$ and $\beta_i$.
-The other way around, as $\alpha$ approaches 0, the less the comparison outcome is influenced by the discrepancy between $\theta_n$ and $\beta_i$.
-If $\alpha = 0$, the values of $\theta_n$ and $\beta_i$ have no influence on the outcome of the comparison at all.
-
-What does all this show us?
-Even though the formula looks a little different, what has just been described is ultimately the same IRT model that we’ll be examining in the rest of the tutorial.
-Accordingly, @betancourtPairwiseComparisonModeling2024 makes it clear that IRT can also be viewed from the perspective of pairwise comparisons.
-
-## A Working Example: Environmental Concern
-
-To illustrate the usefulness of IRT, we will apply what we’ve learned to a real-world example throughout this tutorial.
-To do so, we’ll use data from the paper by @gommHowMeasureEnvironmental2026, in which they developed the *new Environmental Concern scale (ECo scale)* for assessing environmental concerns using IRT.
-
-The [data](https://doi.org/10.7910/DVN/ZMQRIH) from this paper has been made publicly available, so you can download it yourself and follow along with the code examples.
+The [data](https://doi.org/10.7910/DVN/ZMQRIH) from this study are publicly available, so you can download them and follow along with the code examples.
 
 **The ECo scale consists of the following nine items:**
 
@@ -247,14 +125,19 @@ Instruction: *What do you think about the following statements and questions?*
 | 8 | How willing are you to pay much higher taxes to protect the environment? |
 | 9 | How willing would you be to accept cuts in your standard of living in order to protect the environment? |
 
-In the original scale, all items are answered on a five-point Likert scale (Response scale \[statements\]: *Does not apply at all* \[1\] to *Fully applies* \[5\]. Response scale \[questions\]: *Very unwilling* \[1\] to *Very willing* \[5\]).
-Item 3 and Item 5 are reverse coded.
+In the original scale, all items are answered on a five-point response scale, ranging from *Does not apply at all* (1) to *Fully applies* (5) for the statements (Items 1 to 6) and from *Very unwilling* (1) to *Very willing* (5) for the questions (Items 7 to 9).
+Items 3 and 5 are worded in the opposite direction and were reverse coded, so that higher values indicate more concern on all items.
 
-Please note that for this tutorial, the data has been dichotomized.
-This means that responses from participants who somewhat agreed with an item (responses \> 3) were coded as 1.
-Responses from participants who somewhat disagreed with an item (responses \< 3) were coded as 0.
-The responses of participants who answered an item with a 3 were randomly coded as either a 1 or a 0 with a 50% probability.
-This dichotomization is necessary because the models covered in this tutorial only work with dichotomous response formats.
+For this tutorial, we dichotomized the responses.
+Responses above the midpoint (4 or 5) were coded as 1, and responses below the midpoint (1 or 2) were coded as 0.
+Responses at the midpoint (3) were randomly coded as 0 or 1 with equal probability.
+On every item, a response of 1 thus indicates concern.
+We dichotomized the data only because this tutorial covers models for dichotomous responses. In practice, items like these should be analyzed with IRT models for polytomous data, which use all the information in the responses.
+
+
+
+::: {.callout-note appearance="simple"}
+## Let's do it in R
 
 So let's prepare our data:
 
@@ -262,16 +145,19 @@ First, we have to load some packages and the dataset.
 
 ```{r}
 #| message: false
+#| warning: false
+
 
 # load packages
 
 library(dplyr) 
 library(tidyr) 
 library(mirt)
+library(future)
 
 # load data
 
-load("C:/Users/martinln/Documents/IRT_tutorials_alt/Example_data_irt/ECo scale Quoß/envatt_reduced.Rda")
+load("03_irt_dich_files/envatt_reduced.Rda")
 
 ```
 
@@ -307,32 +193,33 @@ dat_eco <- dat_eco %>%                                        # <5>
 
 ```
 
-[Update Code for puplished dataset. Current Code is based on dataset provided by Gommm & Quoß]{.mark}
+<!-- [Update Code for puplished dataset. Current Code is based on dataset provided by Gommm & Quoß]{.mark} -->
 
-1.  First we save the loaded dataset in a new object named "dat_quoß", which is more meaningful than "w7".
-    We can delete the old "w7" object from the environment with `rm().`
+<!-- 1.  First we save the loaded dataset in a new object named "dat_quoß", which is more meaningful than "w7". -->
+<!--     We can delete the old "w7" object from the environment with `rm().` -->
 
-2.  Next, we can reduce the dataset to the variables we actually need (the items of the ECo scale) and save the results in the new object "dat_eco".
-    For this we use the `dplyr` package [@wickhamDplyrGrammarData2026] from the tidyverse, which is a very helpful package to handle data.
-    With the `select()` function we select all variables/columns from our dataset that we want to keep.
+<!-- 2.  Next, we can reduce the dataset to the variables we actually need (the items of the ECo scale) and save the results in the new object "dat_eco". -->
+<!--     For this we use the `dplyr` package [@wickhamDplyrGrammarData2026] from the tidyverse, which is a very helpful package to handle data. -->
+<!--     With the `select()` function we select all variables/columns from our dataset that we want to keep. -->
 
-3.  Here, we drop all rows which contain missing values.
+<!-- 3.  Here, we drop all rows which contain missing values. -->
 
-4.  In our dataset which only contains the ECo scale items (`dat_eco`) we can now also rename our variables/items so that it is easier to see which item is which.
-    For this we use the following logic: the first three letters specify the scale (ECo scale), the next three letters specify the dimension they measure [see @gommHowMeasureEnvironmental2026], and the number at the end gives the number of the item in the scale.
+<!-- 4.  In our dataset which only contains the ECo scale items (`dat_eco`) we can now also rename our variables/items so that it is easier to see which item is which. -->
+<!--     For this we use the following logic: the first three letters specify the scale (ECo scale), the next three letters specify the dimension they measure [see @gommHowMeasureEnvironmental2026], and the number at the end gives the number of the item in the scale. -->
 
-5.  The ECo scale contains two reverse-coded items (Item 3 and 5).
-    To recode the two items, we use the `mutate()` function from the `dplyr` package to create two new variables (columns).
-    On the left side of `=` we name our new variable.
-    On the right side of `=` we define how the new variable is built.
-    Since the Likert scale of the ECo scale has five points, we can invert the responses by subtracting the person's answer from 6.
-    For example, if a person selected the highest response option on the Likert scale (5), then that person should receive the lowest response option (1) on the recoded item.
-    When we apply our “formula,” we see that this is exactly what happens: 6 $-$ 5 = 1.
+<!-- 5.  The ECo scale contains two reverse-coded items (Item 3 and 5). -->
+<!--     To recode the two items, we use the `mutate()` function from the `dplyr` package to create two new variables (columns). -->
+<!--     On the left side of `=` we name our new variable. -->
+<!--     On the right side of `=` we define how the new variable is built. -->
+<!--     Since the Likert scale of the ECo scale has five points, we can invert the responses by subtracting the person's answer from 6. -->
+<!--     For example, if a person selected the highest response option on the Likert scale (5), then that person should receive the lowest response option (1) on the recoded item. -->
+<!--     When we apply our “formula,” we see that this is exactly what happens: 6 $-$ 5 = 1. -->
 
 As described above, we have to dichotomize the responses:
 
 ```{r}
 # build data set with dichotomous responses
+set.seed(2026)
 
 dat_eco_dicho <- dat_eco %>%                                           
   mutate(across(                                                       # <1>
@@ -348,152 +235,360 @@ dat_eco_dicho <- dat_eco %>%
   ))
 ```
 
-1.  This code creates new variables as the `mutate()` function indicates, by applying a self-defined function on every variable/column in our dataset.
+1.  `mutate()` together with `across()` applies the same function to every column of the dataset and stores the results as new variables.
 
-2.  Here we specify the function which should be applied to every column of the dataset.
-    The function takes the values of a column (`x`) and tests for each value in the column wether the value is below 3.
-    If this is the case, the value is recoded as 0.
-    If the value is above 3, it is recoded as 1.
-    If the value is exactly 3, it is recoded as a missing value.
-    In the next step we get the positions of every value in our column which is exactly 3.
-    Next we set new values for all values which are exactly 3 by sampling from a binomial distribution.
-    By sampling from a binomial distribution with `prob = 0.5` we get a 1 with a probability of 50%.
+2.  This is the function applied to each column.
+    It takes the values of a column (`x`) and recodes values below 3 as 0 and values above 3 as 1.
+    Values of exactly 3 are first set to NA.
+    The function then finds their positions and replaces them with random draws from a binomial distribution with a single trial and a probability of 0.5, so that each midpoint response becomes 0 or 1 with equal probability.
 
-3.  Here we define how the newly created variables should be named.
-    For this, the current column name is used ("{.col}") and extended by the suffix "\_dicho".
+3.  This defines the names of the new variables: each keeps the name of the original column (`{.col}`), extended by the suffix `_dicho`.
+:::
+
+
+### The construct map {#sec-construct-map}
+
+IRT-based scale development starts not with data but with a theory of the construct [@wilsonConstructingMeasuresItem2023].
+
+The first step is to define the construct.
+A good definition specifies the ontology of the construct, that is, what kind of thing it is (for example, an attitude, a personality trait, or a behavior), and the level of attribution, that is, the entity to which it is ascribed (for example, individuals, groups, or organizations).
+It also states the conditions that are necessary and sufficient for something to count as an instance of the construct, and it indicates how the target construct differs from neighboring constructs [@sartori_concept_1970; @podsakoff_recommendations_2016].
+
+A definition says what the construct is, but not what distinguishes low levels of it from high levels.
+This is the task of the second step.
+Following @wilsonConstructingMeasuresItem2023, we describe the construct as a continuum along which both respondents and responses to items can be ordered, a description known as a *construct map*.
+A construct map has three components.
+
+1. A set of *waypoints*, qualitatively distinct points that mark the progression from low to high levels of the construct.
+2. A description of the respondents located at each waypoint.
+3. The set of item responses that we expect from respondents who have reached that waypoint.
+
+@fig-construct-map shows a construct map for environmental concern, based on the items of the ECo scale.
+Because Items 3 and 5 are worded in the opposite direction, the map shows the concerned response to them as disagreement with the original statement.
+The map distinguishes four waypoints:
+
+1. *Unconcerned*: respondents see no serious environmental problem.
+2. *Aware and worried*: respondents see a serious problem and worry about it.
+3. *Priority for the environment*: respondents put the environment before the economy.
+4. *Willingness to bear personal costs*: respondents would give up money or comfort for the environment.
+
+::: {#fig-construct-map}
+
+```{.tikz}
+%%| filename: construct-map
+%%| width: 100%
+\begin{tikzpicture}[
+  font=\small,
+  resp/.style={draw=violet!70!black, fill=violet!8, text=violet!50!black,
+    rounded corners=2pt, text width=5.6cm, minimum height=0.8cm,
+    align=center, inner sep=6pt},
+  item/.style={draw=teal!70!black, fill=teal!8, text=teal!40!black,
+    rounded corners=2pt, text width=7.0cm, minimum height=0.8cm,
+    align=center, inner sep=6pt},
+  wp/.style={circle, draw=gray!70!black, fill=white, minimum size=0.6cm,
+    inner sep=0pt, font=\small\bfseries},
+  lead/.style={dashed, gray}
+]
+
+% Axis with arrowheads at both ends
+\draw[<->, >=latex, thick, gray!70!black] (0,0) -- (0,9.1);
+\node[above] at (0,9.1) {Direction of increasing environmental concern};
+\node[below] at (0,0) {Direction of decreasing environmental concern};
+
+% Waypoint 4: willingness to bear personal costs
+\node[wp] (w4) at (0,7.0) {4};
+\node[resp, anchor=east] (r4) at (-0.9,7.0) {Would give up money or comfort\\
+  for the environment};
+\node[item, anchor=west] (i4) at (0.9,7.0) {Agrees: would pay much higher taxes\\
+  Agrees: would pay much higher prices\\
+  Agrees: would accept lower living standard};
+
+% Waypoint 3: priority for the environment
+\node[wp] (w3) at (0,5.1) {3};
+\node[resp, anchor=east] (r3) at (-0.9,5.1) {Put the environment\\
+  before the economy};
+\node[item, anchor=west] (i3) at (0.9,5.1) {Agrees: protect even if jobs are lost\\
+  Disagrees: prices and jobs deserve more worry};
+
+% Waypoint 2: aware and worried
+\node[wp] (w2) at (0,3.1) {2};
+\node[resp, anchor=east] (r2) at (-0.9,3.1) {See a serious problem\\
+  and worry about it};
+\node[item, anchor=west] (i2) at (0.9,3.1) {Agrees: heading toward disaster\\
+  Agrees: worried about future generations\\
+  Agrees: majority not environmentally conscious\\
+  Disagrees: the problem is overstated};
+
+% Waypoint 1: unconcerned
+\node[wp] (w1) at (0,1.2) {1};
+\node[resp, anchor=east] (r1) at (-0.9,1.2) {See no serious environmental problem};
+\node[item, anchor=west] (i1) at (0.9,1.2) {Disagrees: heading toward disaster\\
+  Agrees: the problem is overstated};
+
+% Dashed leader lines from each waypoint to its boxes
+\foreach \w in {1,2,3,4} {
+  \draw[lead] (r\w.east) -- (w\w.west);
+  \draw[lead] (w\w.east) -- (i\w.west);
+}
+
+% Column headers
+\coordinate (hdr) at (0,8.7);
+\coordinate (sub) at (0,8.3);
+\node[font=\small\bfseries] at (r4 |- hdr) {Respondents};
+\node[font=\small\bfseries] at (i4 |- hdr) {Responses to items};
+\node[font=\footnotesize, text=gray!80!black] at (i4 |- sub) {(agree vs.\ disagree)};
+
+\end{tikzpicture}
+```
+
+Construct map for environmental concern. The numbers on the axis mark the waypoints.
+
+:::
+The waypoints are ordered by how demanding it is to express concern.
+Recognizing a problem and worrying about it costs nothing.
+Giving the environment priority over jobs and prices means taking a side in a trade-off, and paying higher taxes or accepting a lower standard of living means a personal sacrifice.
+The lowest waypoint is described by the responses of those who show no concern even on the items that are easiest to agree with.
+
+The map should be read cumulatively: respondents at a given waypoint are expected to give the responses listed at that waypoint and at all waypoints below it, but not those listed above.
+A respondent at waypoint 3, for example, would agree that environmental protection should be enforced even if jobs are lost, but would not be willing to pay much higher taxes.
+
+The construct map also shows which parts of the continuum the items cover.
+A waypoint with few or no items marks a range of the latent variable about which the scale provides little information.
+
+At this stage, the construct map is a hypothesis.
+It states which responses we expect to be easy and which hard to give, before any data are analyzed.
+The IRT model allows us to test this hypothesis, because it places items and respondents on the same scale.
+If the estimated item difficulties follow the order of the waypoints, the data support our theory of the construct.
+If they do not, either the items or the theory need to be revised.
 
 ## The Rasch Model (1PL)
 
-Following this conceptual introduction, let's take a closer look at the first IRT model.
+Following this conceptual introduction, we now turn to the first IRT model.
 
-The Rasch model is a statistical model that links the latent level to the manifest level by predicting the probability that a person will choose response 1 for a given item.
-The Rasch model always assumes dichotomous response formats, in which the responses are typically coded as 0 and 1.
-Generally speaking, 1 represents a success and 0 a failure.
-In our example with the ECo scale, a success can be interpreted as agreement with the item and a failure as disagreement with the item.
-In achievement testing, however, 1 could also mean “Correct” and 0 could mean “Incorrect.”
+The Rasch model links the latent level to the manifest level by predicting the probability that a person gives the response 1 to a given item. The model assumes binary data, with responses coded as 0 and 1. Generally speaking, 1 represents a success (presence of property) and 0 a failure (absence of property). In our example with the ECo scale, a 1 means that the respondent gave the response that indicates concern, and a 0 that they did not. In achievement testing, a 1 would mean a correct answer and a 0 an incorrect one.
 
-### Model Formula
+### The Model Parameters {#sec-mod_par}
 
-The Rasch model is described by the following formula:
+The Rasch model describes each response with two parameters, one for the person and one for the item.
+Before we build the model, let's take a closer look at what they are.
 
-$$\begin{align}
-P(Y_{ni} = 1) = \frac{\exp(\theta_n - \beta_i)}{1 + \exp(\theta_n - \beta_i)}
-\end{align}$$ {#eq-rasch}
+$\theta$ is the **person parameter**: it describes where a person is located on the latent variable we want to measure.
+Because the latent variable is a continuum and each person has their own location on it, $\theta$ carries the index $n$.
+In our example, the latent variable is environmental concern, and $\theta_n$ is the level of environmental concern of person $n$.
 
-Let's take a look at the individual components to better understand the formula:
+$\beta$ is the **item parameter**, also called the item difficulty.
+It carries the index $i$ because items vary in difficulty.
+The term “difficulty” comes from the history of IRT, which was developed primarily for achievement and ability testing.
+In the context of personality assessment or the measurement of attitudes, difficulty can be understood as how hard it is to agree with an item.
+A more neutral term that is also frequently used is “item location” [@wilsonConstructingMeasuresItem2023; @deayalaTheoryPracticeItem2022].
 
-On the left side of the equation is the probability that a person $n$ will answer item $i$ with a 1 ($P(Y_{ni} = 1)$).
-Thus, $Y_{ni}$ denotes the response of person $n$ to item $i$ and can take the values 0 or 1.
-In the framework of regression, this probability $P(Y_{ni} = 1)$ is therefore our dependent variable, which we want to predict.
+The term “location” highlights an important property of IRT models: $\theta$ and $\beta$ lie on the same continuum.
 
-To make this prediction, we need predictors.
-The Rasch model assumes two predictors or parameters:
+::: {#fig-one_continuum}
+```{.tikz}
+%%| width: 100%
+\begin{tikzpicture}[font=\small, >=latex]
 
-- the person parameter $\theta_n$ which represents the latent construct we want to measure
+% Positions in cm, following the original schematic figure (0 = zero point)
+\def\bone{-4.25}      % item 1
+\def\bsix{-0.6}       % item 6
+\def\beight{1.2}      % item 8
+\def\tone{-2.1}       % person 1
+\def\ttwo{-0.6}       % person 2 (same location as item 6)
+\def\tthree{3.3}      % person 3
 
-- the item parameter $\beta_i$ which represents the difficulty of the item
+% The continuum
+\draw[->, thick] (-6.1,0) -- (4.4,0);
+\node[below left, text=gray!60!black] at (4.4,-0.7) {Environmental concern};
 
-The rest is the logistic function $f(x) = \frac{e^x}{1 + e^x}$, which we use as the inverse of the logit link function $g(\cdot)$ to predict a probability (see IRT as logistic regression) [implement crossreference here]{.mark}.
-We then simply set $x = \theta_n - \beta_i$.
+% Zero point
+\draw[thick] (0,0.12) -- (0,-0.12);
+\node[below] at (0,-0.15) {$0$};
+
+% Items: tick marks below the axis
+\foreach \x/\i in {\bone/1, \bsix/6, \beight/8} {
+  \draw[thick, teal!50!black] (\x,0.12) -- (\x,-0.12);
+  \node[below, text=teal!40!black] at (\x,-0.15) {$\beta_{\i}$};
+}
+
+% Persons: dashed lines above the axis
+\foreach \x/\n in {\tone/1, \ttwo/2, \tthree/3} {
+  \draw[dashed, violet!60!black] (\x,0) -- (\x,1.6);
+  \node[above, text=violet!50!black] at (\x,1.6) {$\theta_{\n}$};
+}
+
+\end{tikzpicture}
+```
+Persons and items located on the same continuum
+:::
+
+As @fig-one_continuum shows, we can compare individuals by their person parameters and see, for example, that Person 1 ($\theta_1$) has the lowest level of environmental concern of the three individuals.
+In the same way, we can compare the items with one another.
+For example, Item 1 ($\beta_1$) is an “easy” item, since it requires only a low level of environmental concern to agree with it, while Item 8 is a “difficult” item, since one must have a fairly high level of environmental concern to agree with it.
+This also makes intuitive sense when we look at the content of the two items.
+Item 1 states: “I am worried when thinking about the environmental conditions in which our children and grandchildren are likely to live.”
+That's a statement most people can probably agree with.
+In contrast, Item 8 asks: “How willing are you to pay much higher taxes to protect the environment?”
+This is something that probably far fewer people are willing to do.
+Therefore, Item 8 is more “difficult” to agree with and has a higher $\beta$ than Item 1.
+
+Because $\theta$ and $\beta$ are on the same continuum, we can also compare persons with items.
+For example, we would expect Person 1 to agree with Item 1, because Person 1's level of environmental concern is higher than the location of Item 1.
+At the same time, we would expect Person 1 to be more likely to disagree with Item 8, because Person 1's level of environmental concern is lower than the location of Item 8.
+
+So far, these are only rough expectations.
+To state precisely how likely a response is, we need a model that turns the positions of a person and an item into a probability.
+
+### Model Formula {#sec-rasch-formula}
+
+The Rasch model consists of two parts.
+
+The first part is the distribution of the responses.
+Let $Y_{ni}$ denote the response of person $n$ to item $i$.
+Because the response can only be 0 or 1, it follows a Bernoulli distribution, which has a single parameter, the probability of observing a 1:
+
+$$
+Y_{ni} \sim \text{Bernoulli}(p_{ni}), \quad \text{where } p_{ni} = P(Y_{ni} = 1)
+$$ {#eq-rasch-bernoulli}
+
+This distribution is the likelihood of the model: it states how probable each observed response is for a given value of $p_{ni}$.
+
+The second part relates this probability to the person and the item, using the two parameters introduced above: the person parameter $\theta_n$ and the item parameter $\beta_i$. As we saw, what matters is how the two compare: the further a person's level exceeds the difficulty of an item, the more likely the person should be to respond with 1. Put differently, the probability of responding with 1 should increase with the person's level on the latent variable and decrease with the difficulty of the item. The model expresses this comparison as the difference $\theta_n - \beta_i$, which behaves in exactly this way. The simplest idea would be to let the probability equal this difference. This does not work, however, because the two are on different scales: the probability always lies between 0 and 1, whereas the difference can be any real number, positive or negative (@fig-two-scales).
+
+::: {#fig-two-scales}
+```{.tikz}
+%%| width: 100%
+\begin{tikzpicture}[
+  font=\small,
+  diff/.style={violet!60!black},
+  prob/.style={teal!50!black},
+  map/.style={gray!70, thin}
+]
+
+% Positions: difference d is drawn at x = 1.1*d on the upper scale,
+% probability p at x = 9*(p - 0.5) on the lower scale
+\def\ytop{2.6}
+\def\ybot{0}
+
+% Mapping lines: each difference d is connected to its probability
+\foreach \d in {-4,...,4} {
+  \pgfmathsetmacro{\p}{1/(1+exp(-\d))}
+  \draw[map] ({1.1*\d},\ytop) -- ({9*(\p-0.5)},\ybot);
+  \fill[prob] ({9*(\p-0.5)},\ybot) circle (1.3pt);
+}
+% Highlight the midpoint: a difference of 0 corresponds to a probability of 0.5
+\draw[gray!40!black, semithick] (0,\ytop) -- (0,\ybot);
+
+% Upper scale: the difference, unbounded in both directions
+\draw[diff, thick, <->, >=latex] (-6,\ytop) -- (6,\ytop);
+\foreach \d in {-4,...,4} {
+  \draw[diff, thick] ({1.1*\d},\ytop-0.08) -- ({1.1*\d},\ytop+0.08);
+  \node[diff, above] at ({1.1*\d},\ytop+0.08) {$\d$};
+}
+\node[diff, above] at (0,\ytop+0.6) {Difference $\theta_n - \beta_i$: any real number};
+
+% Lower scale: the probability, bounded at 0 and 1
+\draw[prob, thick] (-4.5,\ybot) -- (4.5,\ybot);
+\foreach \p/\lab in {0/0, 0.25/0.25, 0.5/0.5, 0.75/0.75, 1/1} {
+  \draw[prob, thick] ({9*(\p-0.5)},\ybot-0.1) -- ({9*(\p-0.5)},\ybot+0.1);
+  \node[prob, below] at ({9*(\p-0.5)},\ybot-0.1) {$\lab$};
+}
+\node[prob, below] at (0,\ybot-0.65) {Probability $p_{ni}$: between 0 and 1};
+
+% The two directions of the transformation
+\draw[->, >=latex, gray!40!black] (-6.1,\ybot+0.3) -- (-6.1,\ytop-0.3)
+  node[midway, left] {$\mathrm{logit}$};
+\draw[->, >=latex, gray!40!black] (6.1,\ytop-0.3) -- (6.1,\ybot+0.3)
+  node[midway, right] {$\mathrm{logit}^{-1}$};
+
+\end{tikzpicture}
+```
+The difference between the person and item parameters can be any real number, whereas the probability lies between 0 and 1. The lines show which difference corresponds to which probability.
+:::
+
+So we have to bring the two onto the same scale by transforming one of them. There are two equivalent ways of doing this, which correspond to the two arrows in @fig-two-scales.
+
+The first transforms the probability into a quantity that can also be any real number, the log-odds. The odds are the probability of a 1 divided by the probability of a 0, $p_{ni} / (1 - p_{ni})$, and the log-odds, also called the *logit*, are the logarithm of the odds ^[The logit is not the only transformation that can do this. Any function with two properties will work. First, it must have an inverse: the function transforms every probability into exactly one real number, and its inverse transforms every real number back into exactly one probability. Second, it must preserve order: a higher probability must always be transformed into a larger number. The logit, for example, transforms a probability of 0.6 into about 0.4 and a probability of 0.9 into about 2.2. The most common alternative is the *probit*, which is based on the cumulative distribution function of the standard normal distribution and leads to the so-called normal-ogive model. After a simple rescaling, the two give nearly identical probabilities.]. For example, a probability of 0.5 corresponds to odds of 1 and log-odds of 0, a probability of 0.9 to odds of 9 and log-odds of about 2.2, and a probability of 0.1 to log-odds of about −2.2. The Rasch model states that the log-odds are equal to the difference between the person and item parameters, exactly as in logistic regression ^[For a treatment of IRT models as regression models, see @boeckEstimationItemResponse2011 and @rijmenNonlinearMixedModel2003]:
+
+$$
+\text{logit}(p_{ni}) = \log\left(\frac{p_{ni}}{1 - p_{ni}}\right) = \theta_n - \beta_i
+$$ {#eq-rasch-logit}
+
+The second transforms the difference instead, so that it lies between 0 and 1.
+Applying the inverse of the logit function, written $\text{logit}^{-1}$ and also known as the logistic function, to the difference gives the probability directly:
+
+$$
+p_{ni} = \text{logit}^{-1}(\theta_n - \beta_i) = \frac{\exp(\theta_n - \beta_i)}{1 + \exp(\theta_n - \beta_i)}
+$$ {#eq-rasch}
+
+Both equations describe the same model: solving @eq-rasch-logit for $p_{ni}$ gives @eq-rasch.
+The regression literature usually uses the first form, whereas the IRT literature typically uses the second, with the probability written out in full.
+
+### Calculating Response Probabilities
+
+Using the Rasch formula, we can calculate the probability of a response precisely, rather than just estimating it visually from @fig-one_continuum.
+Suppose that $\beta_1 = -1.343$ and $\theta_1 = -0.5$.
+Plugging these values into @eq-rasch gives the probability that Person 1 answers Item 1 with a 1 (i.e., agrees with the item):
+
+$$P(Y_{11} = 1) = \frac{\exp(\theta_1 - \beta_1)}{1 + \exp(\theta_1 - \beta_1)} = \frac{\exp(-0.5 - (-1.343))}{1 + \exp(-0.5 - (-1.343))} = 0.70$$
+
+The Rasch model thus predicts a probability of 70% that Person 1 will answer Item 1 with a 1.
+
+We can do the same for Item 8.
+Suppose that $\beta_8 = 0.347$.
+Then the probability that Person 1 answers Item 8 with a 1 is:
+
+$$P(Y_{18} = 1) = \frac{\exp(\theta_1 - \beta_8)}{1 + \exp(\theta_1 - \beta_8)} = \frac{\exp(-0.5 - 0.347)}{1 + \exp(-0.5 - 0.347)} = 0.30$$
+
+Here, the Rasch model predicts a probability of 30%.
+
+As a last example, suppose that $\beta_6 = -0.5$ for Item 6.
+Then the probability that Person 1 answers Item 6 with a 1 is:
+
+$$P(Y_{16} = 1) = \frac{\exp(\theta_1 - \beta_6)}{1 + \exp(\theta_1 - \beta_6)} = \frac{\exp(-0.5 - (-0.5))}{1 + \exp(-0.5 - (-0.5))} = 0.50$$
+
+The probability that Person 1 will respond to Item 6 with a 1 is exactly 50%.
+This illustrates a general property: if a person's $\theta_n$ equals the difficulty of an item ($\theta_n = \beta_i$), the probability of responding to this item with a 1 is 50%.
+In fact, this is the definition of item difficulty: it is the point on the continuum at which a person is equally likely to respond with a 1 and with a 0.
+
+The examples also show that only the difference between $\theta_n$ and $\beta_i$ matters for the probability that a person will agree with an item ^[This makes the Rasch model a model of pairwise comparisons [@betancourtPairwiseComparisonModeling2024]: each response is the outcome of a comparison between a person and an item. The Rasch model has the same form as the Bradley-Terry model for competitions between two players, except that persons are only ever compared with items, never with each other. This view makes three properties of the model easy to see. First, because the data inform only differences, the parameters have no meaning in isolation, and the origin of the scale has to be fixed by convention, for example by setting the mean of the person parameters or of the item difficulties to zero. Second, parameters can be compared only if they are connected by observed responses: persons who answered different sets of items can be placed on the same scale only if these sets share common items. Third, comparisons that always end the same way carry limited information: for a person who agrees with all items, or with none, the data show only that the person's level lies above all item difficulties, or below all of them, but not how far.].
+The rest of the formula serves only to restrict the result to the range between 0 and 1, so that it can be interpreted as a probability (see @sec-rasch-formula).
+The further $\theta_n$ lies above $\beta_i$, the higher the probability that the person will agree with the item, and the further it lies below, the lower that probability.
+In other words, the larger the difference between the two in either direction, the further the probability moves away from 50%.
 
 ### 1PL
 
-Before we take a closer look at what the model parameters actually mean, it is worth noting that the Rasch model is sometimes referred to as the 1PL model.
-The 1PL stands for One-Parameter Logistic Model.
-The "One" refers to the number of item-specific parameters.
-As we can see in the equation, there is only one parameter that has an index $i$ and can therefore vary for each item: the item difficulty $\beta_i$.
-Later on, however, we'll also learn about IRT models with more item-specific parameters.
+It is worth noting that the Rasch model is sometimes referred to as the 1PL model. 1PL stands for one-parameter logistic model. The “one” refers to the number of item-specific parameters. As we can see in @eq-rasch, there is only one parameter that has an index $i$ and can therefore vary for each item: the item difficulty $\beta_i$. Later on, we will also learn about IRT models with more item-specific parameters.
 
-Strictly speaking, however, the Rasch model is a special case of a 1PL model.
-This is because the 1PL model is defined as follows:
+Strictly speaking, however, the Rasch model is a special case of the 1PL model, which is defined as follows:
 
 $$P(Y_{ni} = 1) = \frac{\exp(\alpha(\theta_n - \beta_i))}{1 + \exp(\alpha(\theta_n - \beta_i))}$$ {#eq-1PL}
 
-As we can see, this formula looks almost identical to the Rasch model, except that a new parameter, $\alpha$, has been added.
-This is the discrimination parameter, which we will examine in more detail later.
-What we can see now, however, is that we only refer to a Rasch model when $\alpha = 1$.
+This formula is almost identical to the Rasch model, except for a new parameter, $\alpha$. This is the discrimination parameter, which we will examine in more detail later. Note that $\alpha$ has no index $i$: it is the same for all items, so $\beta_i$ remains the only parameter that differs from item to item. The Rasch model is the special case in which $\alpha = 1$.
 
-Even though this may seem like a minor difference—and 1PL models with different $\alpha$ are mathematically equivalent—there are different philosophical perspectives underlying it [@deayalaTheoryPracticeItem2022, p. 20].
-Compared to the Rasch model, the 1PL model is designed to optimize the fit of the model to the data.
-This is because the 1PL model is more flexible than the Rasch model; the $\alpha$ parameter does not have to be 1, so the model can "try out" different $\alpha$ values to determine which $\alpha$ yields the best fit to the data.
-The Rasch model does not allow for this kind of flexibility, since $\alpha$ must equal 1 in this model.
-However, this restriction ensures a consistent scaling that allows for comparability across different Rasch models.
+Because the same $\alpha$ applies to all items, it does not change how well the model describes the data: it only stretches or compresses the scale on which $\theta$ and $\beta$ are expressed.
+To see this, note that $\alpha$ can be multiplied into the difference:
 
-\[Is this to technical for a beginner tutorial?
-To early in the tutorial?
-Especially because the discrimination parameter is introduced properly in the 2PL part\]{./mark}
+$$
+\alpha(\theta_n - \beta_i) = \alpha\theta_n - \alpha\beta_i
+$$
 
-### Interpretation of Model Parameters {#sec-mod_par}
+The right-hand side is again a difference between a person value and an item value, just as in the Rasch model, only with both values multiplied by $\alpha$.
+For example, a 1PL model with $\alpha = 2$, $\theta_n = 0.5$, and $\beta_i = -0.25$ gives $2 \times (0.5 - (-0.25)) = 1.5$.
+A Rasch model in which both values are doubled, $\theta_n = 1$ and $\beta_i = -0.5$, gives $1 - (-0.5) = 1.5$ as well, and therefore exactly the same probability.
+The Rasch model and the 1PL model are therefore mathematically equivalent.
+The difference between them is one of perspective [@deayalaTheoryPracticeItem2022, p. 20].
+In the 1PL tradition, a model is a description of the data: if it does not fit, it is replaced by a more flexible one, for example a model with more item parameters.
+In the Rasch tradition, the model is a standard for good measurement: if the data do not fit, it is the items that are revised or removed, not the model.
 
-Let’s take a closer look at the two model parameters and how we can interpret them.
 
-$\theta$ refers to the **person parameter** — that is, the latent construct we want to measure.
-Since the latent construct represents a continuum, the $\theta$ parameter requires the index $n$, because each person is located at a different point on the continuum.
-In our example, $\theta$ would be “environmental concerns,” and $\theta_n$ would be the level of environmental concerns of person $n$.
-
-$\beta$ is the **item parameter** but is also called item difficulty.
-The $\beta$ parameter has the index $i$ because items vary in difficulty.
-The term “difficulty” stems from the historical background of IRT, which was developed primarily for achievement and ability applications.
-In the context of personality assessment or the measurement of attitudes, difficulty can be understood as how easy it is for individuals to agree with or disagree with an item.
-A more neutral term, which is therefore also frequently used to refer to item difficulty, is “item location” [@wilsonConstructingMeasuresItem2023; @deayalaTheoryPracticeItem2022].
-
-The term “location” highlights an important property of IRT models.
-Specifically, $\theta$ and $\beta$ lie on the same continuum or scale.
-
-![](03_irt_dich_files/figure-html/Rasch-Kontinuum.png){#fig-one_continuum}
-
-In our example, the continuum represents environmental concerns.
-We can now compare individuals by their person parameters with one another and see, for example, that Person 1 ($\theta_1$) has the lowest level of environmental concerns compared to the other two individuals.
-Conversely, we can also compare the items with one another.
-For example, Item 1 ($\beta_1$) is an “easy” item, since it requires only a low level of environmental concerns to agree with it, while Item 8 is a “difficult” item, since one must have a fairly high level of environmental concerns to agree with it.
-This also makes intuitive sense when we look at what Item 1 and Item 8 of the ECo scale ask.
-Item 1 asks: "I am worried when thinking about the environmental conditions in which our children and grandchildren are likely to live." That's a statement most people can probably agree with.
-In contrast, Item 8 asks "Are you willing to pay much higher taxes to protect the environment?" This is something that probably far fewer people are willing to do.
-Therefore, Item 8 is more "difficult" to agree with and has a higher $\beta$ than Item 1.
-
-However, since $\theta$ and $\beta$ are now on the same continuum, we can also compare $\theta$ with $\beta$.
-For example, we might expect Person 1 ($\theta_1$) to agree with Item 1 because Person 1 has higher environmental concerns than the location associated with Item 1.
-At the same time, one would expect Person 1 to be more likely to disagree with Item 8, since Person 1 has much lower environmental concerns than the point at which Item 8 is located.
-
-Using the formula from the Rasch model, we can actually calculate the probability of the responses precisely, rather than just estimating it visually: Let's say $\beta_1 = -1.343$ and $\theta_1 = -0.5$, then we can simply plug the values into the Rasch formula to calculate the probability that Person $n = 1$ answers item $i = 1$ with 1 (i.e., agrees with the item statement):
-
-$$P(Y_{11} = 1) = \frac{\exp(\theta_1 - \beta_1)}{1 + \exp(\theta_1 - \beta_1)} = \frac{\exp(-0.5- (-1.343))}{1 + \exp(-0.5 - (-1.343))} = 0.70$$
-
-In this case, the Rasch model predicts that the probability that Person 1 will answer Item 1 with a 1 is 70%.
-
-We can do this again for Item 8.
-Let's assume that $\beta_8 = 0.347$.
-Then we can calculate the probability that Person $n = 1$ answers item $i = 8$ with 1 (i.e., agrees with the item statement):
-
-$$P(Y_{18} = 1) = \frac{\exp(\theta_1 - \beta_8)}{1 + \exp(\theta_1 - \beta_8)} = \frac{\exp(-0.5- 0.347)}{1 + \exp(-0.5 - 0.347)} = 0.30$$ Here, the Rasch model predicts that the probability that Person 1 will answer Item 8 with a 1 is 30%.
-
-Let's work through one last example.
-Let's assume $\beta_6 = -0.5$ for Item 6.
-Then we can calculate the probability that Person $n = 1$ answers item $i = 6$ with 1 (i.e., agrees with the item statement):
-
-$$P(Y_{16} = 1) = \frac{\exp(\theta_1 - \beta_6)}{1 + \exp(\theta_1 - \beta_6)} = \frac{\exp(-0.5- (-0.5))}{1 + \exp(-0.5 - (-0.5))} = 0.50$$
-
-As we can see, the probability that Person 1 will respond to Item 6 with a 1 is exactly 50%.
-Here we can observe something interesting: namely, that if a person's $\theta_n$ matches the item's difficulty (i.e., $\beta_i = \theta_n$), then the probability of responding to this item with a 1 is 50%.
-In fact, this is the definition of item difficulty: The item difficulty is the point on the latent construct continuum at which the probability that the person will choose a 1 as response to the item is exactly the same as the probability that the person will respond with a 0.
-
-This shows us that, ultimately, only the discrepancy between $\theta_n$ and $\beta_i$ is relevant to the probability that a person will agree with an item (i.e., respond with a 1; see also @sec-pair-compa).
-The rest of the formula serves only to restrict the result to a range between 0 and 1, so that we can interpret the results as probabilities (link-function) [implement crossreference here]{.mark}.
-
-This means that the higher $\theta_n$ (e.g., the higher the environmental concerns of a person are) is compared to $\beta_i$ (i.e., amount of environmental concerns required to have a probability to agree with the item of 50%), the higher is the probability that a person will agree with an item.
-
-Conversely, the higher $\beta_i$ (e.g., the level of environmental concern required to achieve a 50% probability of agreement) is compared to $\theta_n$ (e.g., the greater a person’s environmental concern), the lower the probability that a person will agree with an item.
-
-In other words, the greater the discrepancy between $\theta_n$ and $\beta_i$, the more the probability that a person will agree with the item deviates from 50%.
 
 ::: {.callout-note appearance="simple"}
 ## Let's do it in R
 
-Now that we understand the logic behind the Rasch model, the question arises: How do we actually know the $\theta$ and $\beta$ values for the individuals and items, respectively?
-Although the exact mathematical background and various estimation procedures are beyond the scope of this tutorial, in simple terms, the parameters of the Rasch model can be estimated based on a dataset containing the respondents’ item responses.
-This involves using a search algorithm that attempts to determine the $\theta$ and $\beta$ values for each person and each item in such a way that the model can predict the data as accurately as possible.
-For practitioners, this is very easy to implement thanks to statistical software.
-In this tutorial, we’ll use the statistical programming language R [@rcoreteamLanguageEnvironmentStatistical2026] and the `mirt` package [@chalmersMirtMultidimensionalItem2012] for this purpose.
+So far, we have treated the values of $\theta$ and $\beta$ as known. In practice, they have to be estimated from the data, that is, from the responses of all persons to all items. The estimation builds on the likelihood introduced in @eq-rasch-bernoulli: it searches for the parameter values under which the observed responses are most probable. The details of the estimation procedures are beyond the scope of this tutorial; we refer interested readers to @deayalaTheoryPracticeItem2022 for an accessible introduction and to Section III of @van_der_linden_handbook_2017 for a comprehensive technical treatment. Here, we focus instead on how to estimate the model in practice and how to interpret the results. We use the statistical programming language R [@rcoreteamLanguageEnvironmentStatistical2026] and the `mirt` package [@chalmersMirtMultidimensionalItem2012]. 
+
+We begin by loading the package: 
 
 ```{r}
 #| message: false
@@ -516,18 +611,22 @@ eco_rasch <- mirt(data = dat_eco_dicho[12:20], # <1>
                   SE = TRUE)                   # <4>
 ```
 
-1.  `data` = Here, we pass our dataset, which contains the responses of all participants to the items on our scale.
+1.  `data`: Here, we pass our dataset, which contains the responses of all participants to the items of the ECo scale.
+    It should contain only the item responses, since `mirt()` treats every column as an item.
 
-2.  `model` = This argument affects the dimensionality of the model.
-    A number indicates how many latent constructs our measurement instrument measures.
-    Since the ECo scale measures a single latent trait (i.e., environmental concerns), we can leave the default value (= 1) as is.
+2.  `model`: This argument specifies the latent structure of the model.
+    In its simplest form, it is a number indicating how many latent variables the items measure.
+    Since the ECo scale measures a single latent variable (environmental concern), we can keep the default value of 1.
+    `model` also accepts a more detailed specification in `mirt`'s own syntax, created with the `mirt.model()` function.
+    With it, we can specify, for example, which items measure which latent variable in a multidimensional model, or constrain parameters to be equal across items.
+    For our unidimensional Rasch model, this is not necessary.
 
-3.  `itemtype` = As we'll see later, `mirt` is capable of fitting a wide variety of IRT models.
-    Using `itemtype`, we therefore tell `mirt` which IRT model we want to fit to the data.
-    Since we want to fit a Rasch model, we pass the string “Rasch” to the argument here.
+3.  `itemtype`: As we'll see later, `mirt` can fit a wide variety of IRT models.
+    With `itemtype`, we tell `mirt` which model to fit to the items.
+    Since we want to fit a Rasch model, we pass the string `"Rasch"`.
 
-4.  `SE` = If this argument is set to `TRUE`, standard errors for the model's parameters will also be included in the output.
-    If we don't want that, we can simply set the argument to `FALSE` or omit it.
+4.  `SE`: If this argument is set to `TRUE`, `mirt()` also computes standard errors for the model's parameters.
+    If we do not need them, we can set the argument to `FALSE` or omit it, since `FALSE` is the default.
 
 ```{r}
 #| lst-label: lst-print-rasch
@@ -536,24 +635,20 @@ eco_rasch <- mirt(data = dat_eco_dicho[12:20], # <1>
 print(eco_rasch)
 ```
 
-When we use `print()` to output our mirt object, we first see a summary with general information about our model.
-The first block contains information about the estimation method that `mirt()` used to estimate the model.
-The lower block contains fit criteria regarding the model fit.
+When we print the fitted model with `print()`, we first see a summary with general information about the model.
+The upper block describes how `mirt()` estimated the model.
+The lower block reports the log-likelihood and information criteria such as the AIC and BIC, which can be used to compare different models with each other.
 
-Let's have a look at the first block regarding the estimation procedure.
-The exact estimation algorithm is beyond the scope of this tutorial.
-To put it simply, however, the model parameters are estimated by first substituting random values for all $\theta_n$ and $\beta_i$ and then checking how likely it is to observe the data we have collected given these values.
-In the next step, new values for $\theta_n$ and $\beta_i$ are substituted, and it is checked whether these values are more likely to produce the data pattern we have collected than the values from the iteration before.
-This process is repeated many times until the parameter values that most likely fit our observed data are found.
-Since this process can theoretically take an extremely long time, the algorithm must be given termination rules.
-There are two options here, which we can also see in the output.
+Let's start with the upper block.
+`mirt()` estimates the model parameters iteratively: starting from initial values, the algorithm repeatedly updates the item parameters so that the observed data become more probable under the model, until further updates barely change the estimates.
+Because this process could in principle continue for a very long time, the algorithm needs rules for when to stop.
+There are two such rules, and both appear in the output.
 
-First, there is the *tolerance*.
-This specifies how small the change in the probability of the data must be, given the model parameters, for the algorithm to terminate.
-The reasoning behind this is that if, under the new parameters, the data is only, say, 0.0001% more likely than under the parameter values from the previous iteration, then it no longer makes sense to continue optimizing the parameters, since the increase in probability is so small that it is practically irrelevant.
-As we can see in the documentation of `mirt,` the default tolerance of `mirt` is 0.0001 (= 1e-04).
-This makes `mirt` more lenient than other statistical software, where the tolerance is often set to 0.00001 (= 1e-05).
-However, you can also set the algorithm’s tolerance manually by adding the `TOL` argument to the `mirt()` function:
+The first is the *tolerance*.
+It specifies how small the changes in the parameter estimates between two iterations must become for the algorithm to stop.
+Once the estimates barely change from one iteration to the next, further iterations would no longer improve them in any practically relevant way.
+The default tolerance in `mirt` is 0.0001 (`1e-04`), and the output reports whether the algorithm converged within this tolerance and after how many iterations.
+The tolerance can be changed with the `TOL` argument of `mirt()`:
 
 ```{r}
 #| eval: false
@@ -567,14 +662,14 @@ mirt(data = dat_eco_dicho[12:20],
      TOL = 1e-5) # set custmm tolerance level
 ```
 
-Second, you can define a *maximum number of iterations* after which the algorithm terminates, regardless of whether a unique solution for the parameters has been found.
+Second, there is a *maximum number of iterations*, after which the algorithm stops even if the estimates have not converged, that is, even if the changes between iterations are still larger than the tolerance.
 By default, `mirt` allows a maximum of 500 iterations.
-In the output, we can see that only 25 iterations were needed for our Rasch model.
-However, more complex models may well require more iterations.
-Sometimes, the model may reach the maximum possible number of iterations without converging to a unique solution.
-When this happens, the parameter estimates are unstable and should not be interpreted [@debelakIntroductionRaschModel2022, p. 148].
-`mirt` will then display a message stating that `EM cycles terminated after 500 iterations`.
-Therefore, you can set your own maximum number of iterations using the argument `technical = list(NCYCLES = 1000)`[@debelakIntroductionRaschModel2022, p. 148]:
+In the output, we can see that our Rasch model needed only 25 iterations.
+More complex models may well require more.
+If a model reaches the maximum without converging, the parameter estimates are not trustworthy and should not be interpreted [@debelakIntroductionRaschModel2022, p. 148].
+In this case, `mirt` displays the message `EM cycles terminated after 500 iterations`.
+The maximum number of iterations can then be increased with the argument `technical = list(NCYCLES = 1000)` [@debelakIntroductionRaschModel2022, p. 148].
+If the model still does not converge, this usually points to a problem with the model or the data rather than with the number of iterations:
 
 ```{r}
 #| eval: false
@@ -590,8 +685,12 @@ mirt(data = dat_eco_dicho[12:20],
      )
 ```
 
-We can also quickly check whether our estimation algorithm has found a solution, or, put differently, whether it was able to successfully estimate the model.
-To do this, we can check whether `converged` and `secondordertest` in our Rasch model object are `TRUE`.
+We can also check directly whether the estimation was successful.
+Two pieces of information are relevant, and both can be extracted from the fitted model with the `extract.mirt()` function.
+`converged` indicates whether the algorithm stopped because the changes between iterations fell below the tolerance, rather than because it reached the maximum number of iterations.
+`secondordertest` indicates whether the estimates are indeed a maximum of the likelihood, that is, whether the parameter values found make the observed data more probable than any nearby values.
+This test is based on the information matrix, which `mirt` computes when `SE = TRUE`.
+If both values are `TRUE`, the estimation was successful.
 
 ```{r}
 # has the estimation algorithm converged?
@@ -601,14 +700,14 @@ eco_rasch@OptimInfo$converged
 eco_rasch@OptimInfo$secondordertest
 ```
 
-Although we have estimated a Rasch model with the `mirt()`function, we initially see only a summary of how the model was estimated and how well it fits the data overall, when we use `print()` to display the model—but we don't see any $\theta$ or $\beta$ values.
-This is because `mirt` provides us with a large amount of information about our model and stores it in the `eco_rasch` object.
-We can see this, for example, by clicking the blue arrow next to `eco_rasch`in the Environment pane or by running `str(eco_rasch)`.
-When we do this, we see that the `eco_rasch` object is quite large and nested, and contains far too much information to display all at once.
-Therefore, we need to specifically retrieve the information we’re interested in from the object.
+Although we have estimated a Rasch model with the `mirt()` function, printing the model shows only how it was estimated and the information criteria, but no $\theta$ or $\beta$ values.
+The fitted model object, `eco_rasch`, contains much more information than `print()` displays.
+We can see this by running `str(eco_rasch)` or, in RStudio, by expanding `eco_rasch` in the Environment pane.
+The object is large and nested, so we retrieve the information we are interested in with specific functions.
+The item parameters are stored in the object and can be extracted with `coef()`.
+The person parameters, by contrast, are not part of the object---they are estimated in a separate step with `fscores()`, which we turn to later.
 
-For example, to access the item parameters ($\beta_i$), we can use the `coef()` function.
-The `coef()` function expects the following arguments, among others:
+To extract the item parameters ($\beta_i$), we use the `coef()` function with the following arguments:
 
 ```{r}
 
@@ -619,17 +718,16 @@ item_par_eco_rasch <- coef(eco_rasch,       # <1>
                            simplify=TRUE)   # <3>
 ```
 
-1.  An object that contains the estimated model—in our example, `eco_rasch`
+1.  `object` = The fitted model, in our example `eco_rasch`.
 
-2.  `IRTpars` = This argument determines whether the item location is specified as item difficulty or item ease.
-    If we set the argument to `TRUE`, we obtain the $\beta$ values as item difficulties (as introduced earlier).
-    If the argument is omitted or set to `FALSE`, the item easiness is output instead.
-    This means that the higher the item ease, the lower the $\theta$ value required for the probability of answering the item with a 1 to reach 50%.
+2.  `IRTpars` = This argument determines whether the item locations are reported as item difficulties or as item easiness.
+    If we set the argument to `TRUE`, we obtain the $\beta$ values as item difficulties, as introduced earlier.
+    If the argument is omitted or set to `FALSE`, `mirt` reports the item easiness instead.
+    For the Rasch model, the easiness is simply the difficulty with the opposite sign: the higher the easiness of an item, the lower the $\theta$ value at which the probability of responding to the item with a 1 reaches 50%.
 
-3.  `simplify` = If this argument is set to `TRUE`, the output is simplified and presented in a clearer format.
-    However, if you also want to obtain the confidence intervals for the item parameters, you can set `simplify` to `FALSE` or omit it.
-
-Let's take a look at the output of our new `coef` object.
+3.  `simplify` = If this argument is set to `TRUE`, the item parameters are returned as a single table with one row per item, instead of a separate list element for each item.
+    If you also want the confidence intervals of the item parameters, set `simplify` to `FALSE` or omit it.
+    The confidence intervals are only available if the model was estimated with `SE = TRUE`.
 
 ```{r}
 #| lst-label: lst-rasch-item-param
@@ -640,21 +738,22 @@ item_par_eco_rasch
 
 The output consists of three sections:
 
-1.  `$items`: Here we find all item-specific model parameters.
-    The items are listed in the rows.
-    As we have learned, the Rasch model has only one item-specific parameter, namely the item difficulty $\beta_i$.
-    This is shown in column `b`.
-    The other columns represent additional item-specific model parameters that also play a role in other IRT models, but which we can ignore in the case of a Rasch model.
+1.  `$items`: Here we find the item parameters, with one row per item.
+    As we have learned, the Rasch model has only one item-specific parameter, the item difficulty $\beta_i$, which is shown in column `b`.
+    The other columns contain parameters that play a role in other IRT models but are fixed in the Rasch model: the discrimination `a` at 1 (see the 1PL section), and the parameters `g` and `u` at 0 and 1, respectively.
 
-2.  `$means`: This contains the latent means of all latent factors assumed by our model.
-    Since we assume only one latent factor (i.e., environmental concerns) in our model, the output shows only this latent factor (labeled `F1`).
-    Here, the latent mean is 0.
-    This means that individuals with a $\theta_n = 0$ have an average level of environmental concerns.
+2.  `$means`: This contains the mean of each latent variable in the model.
+    Since our model has only one latent variable, environmental concern, the output shows a single value, labeled `F1`.
+    The mean is 0, but it is not an estimate: `mirt` fixes it at 0 to give the scale an origin.
+    A person with $\theta_n = 0$ thus has an average level of environmental concern, and positive and negative values indicate above- and below-average levels.
 
-3.  `$cov`: Here we find a variance-covariance matrix for our latent factors.
-    However, since we assume only one latent factor in our model, we see only a 1 $\times$ 1 matrix—that is, the covariance of the latent factor with itself—which simply corresponds to the variance of the latent factor.
+3.  `$cov`: Here we find the variance-covariance matrix of the latent variables.
+    Since our model has only one latent variable, this is a 1 $\times$ 1 matrix containing the variance of environmental concern.
+    Unlike the mean, the variance is estimated.
+    This is because the Rasch model fixes the discrimination at 1 for all items, so the spread of the latent variable has to be estimated instead (for details, see @sec-identi-Rasch).
 
-If we want to extract the person parameters ($\theta_n$) from our Rasch model/`mirt` object (`eco_rasch`), we can use the `fscores()` function.
+Because `mirt` estimates the model by marginal maximum likelihood by default, the person parameters are not estimated together with the item parameters.
+To obtain them, we use the `fscores()` function, which estimates the person parameters ($\theta_n$) in a second step, based on the item parameters stored in `eco_rasch`.
 
 ```{r}
 # extract the person-specific parameters from our Rasch model
@@ -663,51 +762,51 @@ person_par_eco_rasch <- fscores(eco_rasch)
 head(person_par_eco_rasch)
 ```
 
-Note that our dataset consists of 7,932 individuals.
-Therefore, when we use fscores(), we also get 7,932 different $\theta_n$ values (one per person $n$).
-To keep the output concise, we used head() to display only the first six $\theta_n$ values out of the 7,932 $\theta_n$ values we have stored in `person_par_eco_rasch`.
+Our dataset contains the responses of 7,932 persons, so `fscores()` returns 7,932 $\theta_n$ values, one for each person $n$.
+To keep the output short, we use `head()` to display only the first six of the values stored in `person_par_eco_rasch`.
+Many of these values are identical.
+In the Rasch model, the total score contains all the information the data provide about a person's $\theta_n$, so persons who answered the same items and reached the same total score receive the same estimate.
+With nine items, persons who answered all items can therefore have at most ten different values, one for each possible total score from 0 to 9.
 :::
 
 ### Visualizations of the Rasch Model
 
 #### Item Characteristic Curve
 
-We can also visualize these relationships between $\theta_n$ and $\beta_i$.
-To do so, we can conduct a small thought experiment: Imagine we select an item for which we know the item difficulty.
-Now we calculate the probability that a person will answer with a 1—but no longer for a specific person, rather for every possible $\theta_n$ value.
-If we then create a plot where the x-axis represents $\theta$ and the y-axis represents the probability that the item will be answered with a 1, we can see for every possible person/person parameter how high their probability is that they will agree with the item.
+The relationship between $\theta$ and $\beta$ can also be visualized.
+Take a single item with a known difficulty and calculate the probability of responding to it with 1, not for a particular person, but for every possible value of $\theta$.
+Plotting these probabilities against $\theta$, with $\theta$ on the x-axis and the probability on the y-axis, shows how likely persons at any level of environmental concern are to agree with the item.
 Such a plot is called an *item characteristic curve* (ICC) or *item response function* (IRF).
 
-As an example, the ICC for Item 6 of the ECo scale is shown in @fig-ICC6_Rasch:
+@fig-ICC6_Rasch shows the ICC for Item 6 of the ECo scale.
 
 ![](03_irt_dich_files/figure-html/Example_ICC_I6.png){#fig-ICC6_Rasch}
 
-In the case of the Rasch model, we have the distinctive feature that the item difficulty always lies at the inflection point of the ICC.
-In our example, Item 6 has an item difficulty of $\beta_6 = -0.018$.
-If we go to the corresponding point on the x-axis in @fig-ICC6_Rasch and look at the corresponding point on the y-axis, we see that at the $\theta$ point of -0.018, the probability of answering the item with a 1 is 50%, and visually we can see here that the curve also changes the curvature at this point (= definition of the inflection point), because left of the item difficulty, the slope of the probability increases steadily, and right of the item difficulty, the slope of the probability decreases steadily.
+In the Rasch model, the item difficulty always lies at the inflection point of the ICC.
+For Item 6, the estimated difficulty is $\beta_6 = -0.018$.
+At $\theta = -0.018$ in @fig-ICC6_Rasch, the probability of responding with 1 is exactly 50%.
+This is also the point at which the curve changes its curvature, which defines an inflection point: to the left of it, the curve becomes steeper and steeper, and to the right of it, flatter and flatter.
+The ICC is therefore steepest at the item difficulty, where the item distinguishes best between persons with slightly lower and slightly higher levels of environmental concern.
 
-We can now conduct our thought experiment not only for a single item, but also for all items on the scale, so that we can calculate an ICC for each item:
+We can do the same for all items of the scale, which gives one ICC per item:
 
 ![](03_irt_dich_files/figure-html/Example_ICC_ECo.png){#fig-ICCEco_Rasch}
 
-When we consider multiple items or ICCs simultaneously, we see in @fig-ICCEco_Rasch that the varying item difficulties result in a shift of the ICCs along the x-axis.
-This makes sense, since a more difficult item lies further to the right on the $\theta$ continuum.
-Accordingly, the point where the ICCs intersect a 50% probability—or their inflection point—must also lie further to the right.
-This shifts the entire curve to the right.
+@fig-ICCEco_Rasch shows that the ICCs of different items are shifted along the x-axis according to their difficulties.
+A more difficult item lies further to the right on the $\theta$ continuum, so the point at which its ICC reaches 50%, its inflection point, lies further to the right as well, and with it the entire curve.
 
-It is important to note that, under the Rasch model, the ICCs are all parallel to one another, meaning that the curves never cross.
-As a result, the probability that an item will be answered with a 1 is always lower for a more difficult item than for an easier item, for all values of $\theta$.
-We can see this because the ICCs further to the right (= more difficult items) are always lower than the ICCs to the left (= easier items), regardless of where on the $\theta$ scale the items are compared.
+In the Rasch model, all ICCs have the same shape and differ only in this shift, so they run in parallel and never cross.
+As a result, at every value of $\theta$, a more difficult item is less likely to be answered with a 1 than an easier item: in the figure, the curves further to the right always lie below those further to the left.
+The order of the items by difficulty is therefore the same for all persons, a property known as *invariant item ordering*.
+It is the probabilistic counterpart of the cumulative reading of the construct map (@fig-construct-map): whatever a person's level of environmental concern, easier items are more likely to be agreed with than harder ones.
 
-Conversely, however, we can also see that individuals with higher $\theta$ scores are more likely on all items to answer the item with a 1 than individuals with lower $\theta$ scores.
-We can see this in the ICC plot as well.
-For example, the y-values of the ICCs at $\theta = 2$ are higher for each item than at $\theta = -2$.
+In the same way, persons with higher $\theta$ values are more likely to respond with 1 than persons with lower $\theta$ values, and this holds for every item.
+In the figure, every ICC is higher at $\theta = 2$ than at $\theta = -2$.
 
 ::: {.callout-note appearance="simple"}
 ## Let's do it in R
 
-To plot the ICC for a single item from our ECo scale, we can use the `itemplot()` function.
-This function expects the following arguments, among others:
+To plot the ICC of a single item, we can use the `itemplot()` function from `mirt` with the following arguments:
 
 ```{r}
 # plotting an ICC of a specific item
@@ -737,7 +836,7 @@ plot(eco_rasch,          # <1>
      facet = FALSE)      # <4>
 ```
 
-1.  `object`: Here, we pass in the IRT model that we estimated using the `mirt()` function (here: `eco_rasch`).
+1.  `object`
 
 2.  `type` = Here we can specify what should be plotted.
     To obtain the ICC, select “trace.”
@@ -748,7 +847,7 @@ plot(eco_rasch,          # <1>
 4.  `facet`: If we set this argument to `FALSE`, all ICCs are plotted in a single frame.
     If we set the argument to `TRUE` or omit it, we get a grid of plots, with the ICC for each item plotted in its own cell.
 
-Here's another example of what happens when you set `facet = TRUE`:
+Here's an example of what happens when you set `facet = TRUE`:
 
 ```{r}
 plot(eco_rasch, type="trace", theta_lim=c(-5,5), facet = TRUE)
@@ -757,65 +856,54 @@ plot(eco_rasch, type="trace", theta_lim=c(-5,5), facet = TRUE)
 
 #### Wright Map {#sec-wright-map}
 
-The more items our scale consists of, the more confusing the ICC plots can become [@wilsonConstructingMeasuresItem2023].
-Another useful visualization from which we can also learn a lot of information is the so-called *Wright map*, also known as the *Person Item map*.
-To do this, we take advantage of the fact that, in the Rasch model, the probability that a person will answer “1” for an item actually depends on only two parameters ($\theta$ and $\beta$), and we can place both parameters on the same latent scale [@wilsonConstructingMeasuresItem2023, p. 142].
-We're already familiar with this idea from the section where we looked at the meaning of the model parameters ([see Section @sec-mod_par]) , and in fact, we had already worked there with a kind of Wright map in the form of @fig-one_continuum .
+The more items a scale has, the harder ICC plots become to read [@wilsonConstructingMeasuresItem2023].
+A more compact visualization is the *Wright map*, also known as the *person-item map*.
+It makes use of the fact that, in the Rasch model, the probability of responding with 1 depends only on the difference between $\theta$ and $\beta$, so that both parameters can be placed on the same scale [@wilsonConstructingMeasuresItem2023, p. 142].
+We already used this idea when interpreting the model parameters (see @sec-mod_par), and @fig-one_continuum is in fact a simple Wright map.
 
-Nevertheless, let's now take a closer look at the Wright map using a fictional example shown in @fig-wright_map_example .
-The axis on the right side labeled “Logits” represents our latent continuum, on which we can locate our individuals and items.
-The x-axis represents the different items.
-Accordingly, the points on the graph represent the item difficulties $\beta_i$.
-For example, we can go to the point labeled “Item 3” on the x-axis, read the corresponding y-value for the point $\beta_3$, and see that this item has a $\beta_3$ of approximately -1.8.
-On the left, labeled “Respondents,” we see a histogram that extends along the “Logits” scale.
-Here we find our person parameters $\theta_n$.
-Since we often have large samples (e.g., $N = 500$ individuals are simulated here), it would be very confusing to plot every single $\theta_n$ value.
-Therefore, a histogram is provided here.
-We see that, in our example, this follows a normal distribution, with most individuals in our sample having a $\theta$ value centered around 0.
-Very large or very small $\theta$ values, on the other hand, are very rare.
-For further illustration, three individuals with different $\theta$ values were selected from this distribution and marked with colored dashed lines.
+Before we look at the Wright map for the ECo scale, we use a fictional example, based on the scenario from @fig-one_continuum, to show how to read it.
+The vertical axis on the right, labeled “Logits,” represents the latent continuum on which both persons and items are located.
+Its unit is the logit, because the model sets the difference between $\theta$ and $\beta$ equal to the log-odds of responding with 1 (see @eq-rasch-logit): a person whose level lies one logit above the difficulty of an item responds to it with 1 with a probability of about 73%.
+The items are shown along the x-axis, and each point marks the difficulty $\beta_i$ of an item.
+For example, reading off the y-value of the point for Item 3 shows that its difficulty is about −1.8.
+On the left, labeled “Respondents,” a histogram shows the distribution of the person parameters $\theta_n$ along the same scale.
+With large samples, such as the 500 simulated persons here, plotting every $\theta_n$ individually would be unreadable, so their distribution is shown instead.
+In this example, it is approximately normal: most persons have values around 0, and very high or very low values are rare.
+For illustration, three persons with different $\theta$ values are marked with colored dashed lines.
 
 ![](03_irt_dich_files/figure-html/wright_map_sim2.png){#fig-wright_map_example}
 
-The core idea behind the Wright map is that it allows us to compare items and individuals very effectively and thus assess how well our test fits the sample we are using for measurement.
-Let's take Person 1, for example, who has a very low score on the construct (see $\theta_1 = -2.5$); this could be a person with very low environmental concerns, in the case of the ECo scale.
-We can see that virtually all items except Item 1 lie considerably above Person 1’s trait score (above the dashed red line).
-If we now recall that the item difficulty $\beta_i$ corresponds to the $\theta$ score at which the probability of answering the item with a 1 is 50%, we can see here—even without looking at the exact ICC—that Person 1’s probability of answering the item with 1 for most items is well below 50%, meaning they will answer most items with a 0.
-To put it simply, you could say that the scale is too difficult for Person 1.
+The core idea behind the Wright map is that it allows us to compare items and persons directly and thus assess how well our scale matches the sample we are measuring.
+Take Person 1, who has a very low level on the latent variable ($\theta_1 = -2.5$); for the ECo scale, this would be a person with very little environmental concern.
+Virtually all items except Item 1 lie considerably above Person 1's level, that is, above the red dashed line.
+Recall that the item difficulty $\beta_i$ is the value of $\theta$ at which the probability of responding with 1 is 50%.
+Even without looking at the ICCs, we can therefore see that Person 1's probability of responding with 1 is well below 50% for most items, so they will likely respond with 0 to most of them.
+Put simply, the scale is too difficult for Person 1.
 
-For Person 3, it’s exactly the opposite.
-This person has such a high construct score ($\theta_3 = 2.5$) that they score above all item difficulties except for Item 2.
-Accordingly, Person 3 has a probability of greater than 50% for answering an item with a 1 for most items.
-This means that Person 3 is highly likely to answer most items with a 1.
-Simply put, the scale is too easy for Person 3.
+For Person 3, it is exactly the opposite.
+This person's level is so high ($\theta_3 = 2.5$) that it lies above the difficulties of all items except Item 2.
+Person 3's probability of responding with 1 is therefore greater than 50% for most items.
+Put simply, the scale is too easy for Person 3.
 
-Person 2 is in the middle between the other two people and has a moderate construct score ($\theta_2 = 0$).
-Here we see that some items lie below the blue line, meaning Person 2 has a greater than 50% probability of answering the item with a 1 (e.g., Item 3); some items lie above the blue line, meaning Person 2 has a less than 50% probability of answering the item with a 1 (e.g., Item 8); and some items lie very close to the blue line, in which case Person 2 has roughly a 50% probability of answering the item with a 1 (e.g., Item 9).
-We can therefore see that this person will likely agree with some items but disagree with others.
+Person 2 lies between the other two persons, with a moderate level ($\theta_2 = 0$).
+Some items lie below the blue line, so Person 2's probability of responding to them with 1 is greater than 50% (e.g., Item 3); some lie above it, so this probability is less than 50% (e.g., Item 8); and some lie very close to it, so the probability is about 50% (e.g., Item 9).
+This person will therefore likely agree with some items and disagree with others.
+For another illustrative example and an intuitive introduction to the Wright map, see @wilsonConstructingMeasuresItem2023.
 
-For another illustrative example and intuitive introduction to the Wright map, see also @wilsonConstructingMeasuresItem2023.
+To measure a person's level accurately, it is best if the difficulties of the items ($\beta_i$) are close to that level ($\theta_n$); we will see why in @sec-Information.
+It follows that the item difficulties should cover the entire range of the latent variable we want to measure [@debelakIntroductionRaschModel2022].
+The Wright map makes this easy to check [e.g., @debelakIntroductionRaschModel2022, Figure 4.1; @chenMakingSenseGraphical2026].
+In our example, the items are spread across the entire length of the histogram.
+There are items located at the center of the $\theta$ distribution (e.g., Item 9) as well as items located at its edges (e.g., Items 3 and 8), so the scale covers the levels of the latent variable that occur in the sample.
 
-To measure a construct accurately for an individual, it is best if the difficulty of an item ($\beta_i$) corresponds to that individual’s level on the construct ($\theta_n$).
-We’ll take a closer look at why this is the case later on ([see Section @sec-Information]).
-It follows, then, that the item difficulties should cover the entire range of the construct we wish to measure [@debelakIntroductionRaschModel2022].
-We can now check this very easily using the Wright map [e.g., @debelakIntroductionRaschModel2022 Figure 4.1; @chenMakingSenseGraphical2026].
-In our example, we see that the items are distributed across the entire length of the histogram.
-This means we have items that not only measure exactly at the center of the $\theta$ distribution (e.g., Item 9) but also items that can measure exactly at the edges of the distribution (e.g., Item 3 and Item 8); thus, our scale covers the various construct levels that occur in our sample.
-
-Another very useful application of the Wright map is that it allows us to link the construct map with the Wright map [@wilsonConstructingMeasuresItem2023].
-As a quick reminder, the construct map defines different waypoints that map out the different levels of the construct we want to measure [(haben wir die construct map davor überhaupt schon eingeführt?)]{.mark}.
-This can, for example, be used during item construction to create items that target different levels of the construct.
-For instance, to develop a construct map for the construct of environmental concern, we have to ask ourselves what different levels of environmental concern look like.
-The nice thing about IRT is that we model our construct as a latent variable.
-Therefore, our item and person parameters ($\beta$ and $\theta$) can be placed on the same continuum as the waypoints of the construct map.
-This allows us to check whether our newly created items really target the area of the continuum they were designed for (based on the waypoints of the construct map), or whether they are off for some reason.
-Thus, we can use the Wright map to inspect the match between our theory-based intention (construct map) and the empirical evidence (item and person parameters based on the observed data) [@wilsonConstructingMeasuresItem2023, p. 148].
-If the theoretical concept and the empirical evidence match, this is, of course, an indication that our measurement instrument is working as intended (though this does not replace a full-scale validation).
-However, as @wilsonConstructingMeasuresItem2023 describes, discrepancies can also be very helpful in the process of developing the measurement instrument.
-For example, if an item that was created to tap into the lower levels of the construct continuum has a much higher item difficulty $\beta_i$, placing it closer to a mid-level waypoint, we become aware that something is off.
-Either we have to revise the item because it is not working as intended, or our conceptualization of the construct (i.e., the construct map) is wrong and we have to rethink our waypoints.
-In this way, the Wright map can help us identify friction points early in the development process.
-For further discussion of this point and some illustrative examples, see @wilsonConstructingMeasuresItem2023.
+The Wright map also allows us to link the estimated parameters to the construct map [@wilsonConstructingMeasuresItem2023].
+In @sec-construct-map, we formulated the construct map as a hypothesis about which responses should be easy and which hard to give.
+Because the waypoints describe positions on the same continuum as $\theta$ and $\beta$, we can place them on the Wright map and check whether each item is located near the waypoint it was meant to indicate [@wilsonConstructingMeasuresItem2023, p. 148].
+If theory and data agree, this indicates that the instrument works as intended, although it does not replace a full validation.
+Discrepancies are informative as well [@wilsonConstructingMeasuresItem2023].
+If, for example, an item intended to indicate a low waypoint turns out to be located near a mid-level waypoint, either the item does not work as intended and has to be revised, or the construct map is wrong and its waypoints need to be reconsidered.
+In this way, the Wright map helps to identify such problems early in the development of an instrument.
+For further discussion and examples, see @wilsonConstructingMeasuresItem2023.
 
 ::: {.callout-note appearance="simple"}
 ## Let's do it in R
@@ -836,22 +924,22 @@ beta <- coef(eco_rasch, IRTpars = TRUE, simplify = TRUE)$items[, "b"]       # <3
 
 ```
 
-1.  First we have to load the package, so that we can use it in our R session.
-    If you haven't installed the package yet, you can use this code: `install.packages("WrightMap")`
+1.  First, we load the package so that we can use it in our R session.
+    If you have not installed it yet, you can do so with `install.packages("WrightMap")`.
 
-2.  Next we save the estimated person parameters ($\theta_n$) in an object we call `theta`.
-    We should already be familiar with this code from earlier, so it won't be explained in detail here.
-    The only new element is the `[,1]` at the end of the syntax.
-    Basically, this tells R to just take all rows but only column 1 from the `fscores()` object, because we are only interested in the values and not the person IDs.
+2.  Next, we store the estimated person parameters ($\theta_n$) in an object called `theta`.
+    The code should be familiar from earlier, so we will not explain it in detail here.
+    The only new element is `[, 1]` at the end.
+    `fscores()` returns a matrix with one column per latent variable, and since our model has only one, `[, 1]` selects this column (all rows, first column), which gives us a simple vector of $\theta_n$ values.
 
-3.  Here we save the item difficulties ($\beta_i$) in an object we call `beta`.
-    Again, this code should be familiar.
-    If you recall from above, `coef()` gives three sections in its output.
-    We are only interested in the item parameters, therefore, we extract them by adding \$items to the code.
-    In the case of the Rasch model we are only interested in the item difficulties, so we can ignore the other item-specific parameters.
-    To only extract the $\beta_i$ we add `[, "b"]` ("extract all rows but only the `b` column").
+3.  Here, we store the item difficulties ($\beta_i$) in an object called `beta`.
+    This code should be familiar as well.
+    As we saw above, the output of `coef()` has three sections.
+    We only need the item parameters, so we extract them by adding `$items` to the code.
+    Of these, the Rasch model only requires the item difficulties, which we select with `[, "b"]` (all rows, only the `b` column).
+    This column exists because we set `IRTpars = TRUE`, as before.
 
-Now we can create the plot by using the `wrightMap()` function.
+Now we can create the plot with the `wrightMap()` function.
 
 ```{r}
 #| results: hide
@@ -865,116 +953,164 @@ wm <- wrightMap(theta,                                    # <1>
                 main.title  = "Wright Map")               # <6>
 ```
 
-1.  Here we pass in our person locations, or $\theta_n$
+1.  Here, we pass the person locations, $\theta_n$.
 
-2.  Here we pass in our item locations or item difficulties, or $\beta_i$
+2.  Here, we pass the item locations, that is, the item difficulties $\beta_i$.
 
-3.  This is where the item names are defined.
-    Since the names of our items in the ECo scale data are quite long, and to keep the plot clear, we'll use new item names here by simply numbering the items.
-    However, you can also easily use the item names from the data by replacing `paste()` with `rownames(beta)`
+3.  Here, we define the item names shown in the plot.
+    Since the variable names in the ECo data are quite long, we simply number the items to keep the plot clear.
+    To use the variable names from the data instead, replace `paste()` with `names(beta)`.
 
-4.  This argument is relevant for more complex IRT models and can be ignored in the case of the Rasch model; therefore, it is set to `FALSE` here.
+4.  This argument controls whether the thresholds of each item are labeled.
+    In models for items with more than two response categories, each item has several thresholds, which then need labels to tell them apart.
+    In the Rasch model, each item has only one, its difficulty, so we turn the labels off.
 
-5.  Here we can specify the plot's design.
-    For the different themes available, see the function's documentation.
+5.  Here, we specify how the item side of the map is drawn.
+    `itemModern` shows each item as a point at its difficulty, with the items arranged along the x-axis.
+    Alternatives include `itemClassic`, which lists the items as text next to the scale, and `itemHist`, which shows the distribution of the item difficulties as a histogram.
+    For all options, see the function's documentation (`?wrightMap`).
 
-6.  Here we can give our plot a title.
+6.  Here, we give the plot a title.
+
+
+Let us now compare the Wright map for the ECo scale with the construct map from @sec-construct-map.
+The construct map led us to expect three groups of items: Items 1, 2, 4, and 5 at waypoint 2 (aware and worried), Items 3 and 6 at waypoint 3 (priority for the environment), and Items 7, 8, and 9 at waypoint 4 (willingness to bear personal costs).
+
+The estimated item difficulties confirm this order only partly.
+As expected, Items 1 and 2 are the easiest items, Items 4 and 5 are also located at the lower end, and Item 8, on paying much higher taxes, is the hardest.
+The two upper waypoints, however, are not separated as expected: Item 6 is harder than two of the three items of waypoint 4, while Item 3 is located among the items of waypoint 2.
+Most strikingly, Item 9, on accepting cuts in the standard of living, is one of the easiest items, although we placed it at the highest waypoint.
+Waypoint 2 is thus well supported, whereas the distinction between waypoints 3 and 4 is not supported in the form we formulated it.
+As discussed in @sec-construct-map, such discrepancies indicate that either the items or the construct map need to be reconsidered.
+
+The person side shows where the respondents are located relative to the items.
+Most respondents lie between about 0 and 2 logits, above most items, so they are likely to agree with nearly all of them.
+For a large share of the sample, even the hardest item lies below their level, so the scale cannot distinguish among these respondents.
+Doing so would require items located higher on the continuum: either better items for the highest waypoint, which Item 9 in particular fails to reach, or items for an additional waypoint above it.
+
+We have to keep in mind, however, that this Wright map refers to the dichotomized items.
+By combining the two highest response categories into a single category of agreement, we discarded the distinction between agreeing with an item and fully agreeing with it, which is exactly what separates high from very high concern.
+The pattern visible here is therefore largely a consequence of our dichotomization and should not be read as an evaluation of the ECo scale itself.
 :::
 
 ### Assumptions and Properties of the Rasch Model
 
 #### Unidimensionality
 
-So far, we have always assumed that there is exactly one parameter on the person side that influences the probability that an item will be answered with a 1.
-We can see this in the formula as well, since there is only one parameter, which has the individual-specific index $n$.
-This implies that only the construct we refer to as $\theta$ (in our example, “environmental concerns”) influences the persons' answers to the items.
+So far, we have assumed that the probability of responding to an item with 1 depends on only one person parameter.
+The formula shows this as well: $\theta_n$ is the only parameter with the person index $n$.
+In other words, the model assumes that a single latent variable accounts for the differences between persons in their responses to all items.
 This is called the *unidimensionality assumption*.
-
-#### Local Independence
-
-Another assumption, which is also closely related to the assumption of unidimensionality, is *local independence*, also sometimes called *conditional independence*.
-Local independence assumes that the responses a person gives to the various items are independent of one another, conditional on the value of $\theta_n$.
-This means that the only source of similarities between the responses of a person to different items can be the person-specific construct $\theta_n$.
-This goes back to the assumption of unidimensionality, since we assume that there is only one person-specific construct that influences a person's responses to the items.
-We can illustrate this using the ECo scale as an example.
-We assume that the probability of a person agreeing with items designed to measure environmental concern depends solely on the level of that person’s environmental concern.
-Accordingly, it makes sense that the responses a person gives to different items on the scale are correlated, since all items are designed to capture environmental concerns.
-For example, a person with high levels of environmental concern will agree with most items, while a person with low levels of environmental concern will disagree with most items.
-Consequently, a person’s responses to the items are correlated because they are all based on the same level of environmental concern.
-However, if you account for this source of commonality among a person’s item responses, then that person’s responses to the items should be independent—that is, random.
-
-::: {.callout-tip appearance="simple"}
-## Mathematical Background
-
-Mathematically, this can be expressed as follows [@lordApplicationsItemResponse1980, p. 19]:
-
-$$\begin{align}
-P(Y_{ni} = 1 \mid \theta_n) = P(Y_{ni} = 1\mid\theta_n, Y_{nj}, Y_{nk}, ...) \quad (i \neq j, k, ...)
-\end{align}$$ {#eq-local_indi_1}
-
-This means that the probability that person $n$ answers item $i$ with a 1, given $\theta_n$, is the same as the probability that person $n$ answers item $i$ with a 1, given $\theta_n$ and given person $n$’s answers to items $j$, $k$, and all other items that are not $i$.
-Put simply, this means that the information about what the person said on the other items does not influence the answer to item $i$.
-
-Another possible way to write this is [@lordApplicationsItemResponse1980, p. 19]:
-
-$$\begin{align}
-&P(Y_{ni} = 1, Y_{nj} = 1, Y_{nk} = 1\mid \theta_n) \\ &=P(Y_{ni} = 1\mid \theta_n) \cdot P(Y_{nj} = 1\mid\theta_n) \cdot P(Y_{nk} = 1\mid \theta_n)
-\end{align}$$ {#eq-local_indi_2}
-
-This expression states that the probability that a person answers all three items $i$, $j$, and $k$ with a 1, given $\theta_n$, is equal to the product of the individual probabilities of answering an item with a 1.
-:::
-
-If the assumption of local independence is violated, this means that, in addition to the construct $\theta$ that we wish to measure, there are one or more other sources of systematic variance that influence individuals' response behavior.
-This could be, for example, other latent constructs that also affect the response process.
-For instance, in addition to environmental concerns, the political ideology might also influence item responses [e.g., @cruzRelationshipsPoliticalIdeology2017].
-However, since we assume only a unidimensional structure, this additional construct is not represented in our model (please note that there are also multidimensional IRT models; however, this topic is beyond the scope of this tutorial).
-It is, however, important to note that local stochastic independence should not be considered equivalent to the assumption of unidimensionality [@deayalaTheoryPracticeItem2022, p. 22].
-There may also be other sources of systematic variance, for example, item order effects.
-For instance, the response to a previous item could influence how one responds to a subsequent item.
-This, too, would violate the assumption of local stochastic independence.
-For an overview of other sources of local dependence, see @yenScalingPerformanceAssessments1993.
-
-We can test whether the assumption of local stochastic independence holds for our model by using *Yen's*$Q_3$ [@yenEffectsLocalItem1984].
-This approach takes advantage of the fact that, under local stochastic independence, the only source of shared variance between items must be the latent trait, which we quantify with our $\theta$.
-The idea, therefore, is that the residual of an item—that is, the portion of variance in our response data that cannot be explained by our Rasch model—is specific to that item.
-This is because if the residuals of different items are correlated, this suggests that there is a source of shared variance that has not been captured by our Rasch model.
-That's what $Q_3$ does.
-It calculates the residuals for all individuals on all items and correlates them for all possible item pairs.
-
-::: {.callout-tip appearance="simple"}
-## Mathematical Background
-
-In mathematical terms, this can also be expressed as follows [@yenEffectsLocalItem1984; see also @christensenCriticalValuesYens2017]:
-
-The residual for the response of a person $n$ to item $i$ can be calculated as: $$d_{ni} = Y_{ni} - \hat{P}(Y_{ni} = 1 \mid \hat{\theta}_n)$$ Here, $Y_{ni}$ is the actual response that person $n$ gave to item $i$ (0 or 1).
-$\hat{P}(Y_{ni} = 1\mid \hat{\theta}_n)$ is the probability predicted by our Rasch model that person $n$ will choose response 1 for item $i$.
-The hat symbol indicates that these are estimated model parameters based on the observed data.
-We thus calculate the discrepancy between the person’s actual response and our model’s prediction.
-The larger this discrepancy, the more our model has mispredicted, and the greater the proportion of variance in the participants’ responses that we cannot explain.
-Consequently, we can then calculate the residual for person $n$ on item $j$ in the same way: $$d_{nj} = Y_{nj} - \hat{P}(Y_{nj} = 1\mid \hat{\theta}_n)$$This allows us to calculate the residuals for each person on each item.
-We can then use these residuals to calculate the correlation between the residuals of two items, resulting in $Q_3$.
-For example, we can calculate the correlation between the residuals of all persons on item $i$ (= $d_i$) and the residuals of all persons on item $j$ (= $d_j$) as follows: $$Q_{3,ij} = r_{d_i,d_j}$$
-:::
-
-So if local stochastic independence holds, we would expect the residual correlations of all possible item pairs to be close to 0.
-Conversely, the larger the residual correlation becomes, the more shared variance there is between two items that cannot be explained by our Rasch model.
-This raises the question of what level of residual correlations — or $Q_3$ — we should use as the criterion for concluding that local stochastic independence has been violated.
-A common value often found in the literature is .20 [@nasonAnotherLookYens2025].
-This means that if $Q_3$ values are greater than .20, we would assume a violation of local stochastic independence.
 
 ::: {.callout-important appearance="simple"}
 ## Be Careful
 
-A rule of thumb is that when residual correlations are greater than .20, local stochastic independence is violated.
-However, this is only a rule of thumb and not a 100% guarantee or proof that local stochastic independence holds if values are below .20 [e.g., @nasonAnotherLookYens2025].
-For a more in-depth discussion of this topic, see @christensenCriticalValuesYens2017.
+Note that the latent variable $\theta$ is not the same as the construct we want to measure.
+$\theta$ is a quantity in a statistical model.
+That it captures environmental concern is an assumption we make based on the construct definition, the construct map, and the content of the items, and it has to be supported by evidence of validity.
+
+The same caution applies to unidimensionality.
+When a model with a single $\theta$ fits well, we learn that one latent variable is enough to describe how these persons responded to these items [@vandermaasCognitivePsychologyMeets2011, p. 353].
+This does not imply that the construct has only one facet.
+Environmental concern is defined by cognitive, affective, and conative components, and yet the responses to the ECo items can be described by a single latent variable [@gommHowMeasureEnvironmental2026].
+The number of dimensions is thus a property of the responses, and what it means for the construct has to be judged against the construct definition.
 :::
+
+#### Local Independence
+
+A further assumption, closely tied to unidimensionality, is *local independence*, sometimes called *conditional independence* [@bollen_latent_2002].
+It states that a person's responses to the items are independent of one another once we condition on $\theta_n$.
+In other words, $\theta_n$ is the only thing the responses to different items have in common.
+The link to unidimensionality is direct: if a single latent variable accounts for the responses, nothing else is left to connect them.
+Take the ECo scale.
+Across the whole sample, the responses to the items are correlated, because persons with a high $\theta_n$ tend to agree with most items and persons with a low $\theta_n$ tend to disagree with most of them.
+Local independence says that this is the whole reason for the correlation.
+Among persons with the same $\theta_n$, the correlation disappears: knowing how such a person answered one item tells us nothing about how they answered another.
+
+::: {.callout-tip appearance="simple"}
+## Mathematical Background
+
+Local independence can be written as follows [@lordApplicationsItemResponse1980, p. 19]:
+
+$$\begin{align}
+P(Y_{ni} = 1 \mid \theta_n) = P(Y_{ni} = 1 \mid \theta_n, Y_{nj}, Y_{nk}, \dots) \quad (i \neq j, k, \dots)
+\end{align}$$ {#eq-local_indi_1}
+
+On the left is the probability that person $n$ answers item $i$ with a 1, given $\theta_n$.
+On the right is the same probability, given $\theta_n$ and the person's answers to all other items.
+The two are equal: once we know $\theta_n$, the answers to the other items tell us nothing more about the answer to item $i$.
+
+An equivalent way to write this is [@lordApplicationsItemResponse1980, p. 19]:
+
+$$\begin{align}
+&P(Y_{ni} = 1, Y_{nj} = 1, Y_{nk} = 1 \mid \theta_n) \\
+&= P(Y_{ni} = 1 \mid \theta_n) \cdot P(Y_{nj} = 1 \mid \theta_n) \cdot P(Y_{nk} = 1 \mid \theta_n)
+\end{align}$$ {#eq-local_indi_2}
+
+The probability that person $n$ answers all three items $i$, $j$, and $k$ with a 1, given $\theta_n$, is the product of the three separate probabilities.
+The same holds for any other combination of answers and for any number of items.
+:::
+
+If local independence is violated, something other than $\theta_n$ connects a person's responses.
+One possibility is a second latent variable.
+Political ideology, for example, might affect the responses to some ECo items over and above environmental concern [e.g., @cruzRelationshipsPoliticalIdeology2017].
+Our model has a single $\theta$ and cannot represent this.^[Multidimensional IRT models can, but they are beyond the scope of this tutorial.]
+Another possibility has nothing to do with a further "substantive" trait.
+With item order effects, for example, the answer to one item shapes the answer to the next.
+The two cases are conceptually different.
+Local independence is therefore not the same assumption as unidimensionality [@deayalaTheoryPracticeItem2022, p. 22].
+In the data, however, the two cases look alike: if responses remain associated after conditioning on $\theta_n$, we can describe this as local dependence between items or as an additional latent variable, and the data generally cannot tell us which description applies [@ip2010].
+For an overview of sources of local dependence, see @yenScalingPerformanceAssessments1993.
+
+We can check local independence with Yen's $Q_3$ [@yenEffectsLocalItem1984].
+For every person and every item, we compute a residual: the difference between the observed response and the response the Rasch model expects given the person's estimated $\theta_n$.
+If local independence holds, the model has already accounted for everything the items have in common, so the residuals of two different items should be essentially uncorrelated.
+A correlation between the residuals of two items suggests that they share something the model has not captured.
+$Q_3$ is exactly this correlation, computed for every pair of items.
+
+::: {.callout-tip appearance="simple"}
+## Mathematical Background
+
+$Q_3$ is computed in two steps [@yenEffectsLocalItem1984; see also @christensenCriticalValuesYens2017].
+
+First, we compute the residual for the response of person $n$ to item $i$:
+
+$$d_{ni} = Y_{ni} - \hat{P}(Y_{ni} = 1 \mid \hat{\theta}_n)$$
+
+$Y_{ni}$ is the response that person $n$ gave to item $i$ (0 or 1).
+$\hat{P}(Y_{ni} = 1 \mid \hat{\theta}_n)$ is the probability of a 1 that the Rasch model predicts for this person on this item.
+The hats indicate that the probability and $\theta_n$ are estimated from the data.
+The residual is thus the difference between what the person answered and what the model expected.
+We compute it for every person on every item.
+
+Second, we correlate the residuals of two items across all persons:
+
+$$Q_{3,ij} = r_{d_i,d_j}$$
+
+Here $d_i$ stands for the residuals of all persons on item $i$, and $d_j$ for the residuals of all persons on item $j$.
+:::
+
+If local independence holds, we expect the $Q_3$ values of all item pairs to be close to zero.
+The larger the $Q_3$ value of a pair, the more the two items have in common that the Rasch model does not explain.
+This leaves the question of how large $Q_3$ must be before we conclude that local independence is violated.
+A value often used in the literature is .20 [@nasonAnotherLookYens2025]: item pairs with $Q_3$ above .20 are treated as locally dependent.
+
+This cut-off, however, is only a rule of thumb.
+A $Q_3$ value above .20 does not guarantee that local independence is violated, and values below .20 do not guarantee that it holds [e.g., @nasonAnotherLookYens2025].
+$Q_3$ values are also slightly negative on average even when local independence holds, so a value should be judged by how far it lies above the average $Q_3$, not by its distance from zero [@yenEffectsLocalItem1984; @christensenCriticalValuesYens2017].
+
+Beyond that, two questions have to be kept apart.
+The first is whether a value is larger than chance alone would produce.
+No fixed cut-off can answer this, because how large $Q_3$ gets by chance depends on the number of items, the sample size, and the number of response categories.
+A parametric bootstrap can: we simulate many data sets from the fitted Rasch model, in which local independence holds by construction, and see how large $Q_3$ gets there.^[A parametric bootstrap treats the fitted model as if it were true. We use the estimated item parameters and the estimated distribution of $\theta$ to generate new responses for as many persons as there are in our data. In these simulated data sets, $\theta$ is the only thing the items have in common, so local independence holds. We then analyse every simulated data set exactly like the real one: we fit the Rasch model and compute $Q_3$ for all item pairs. Repeating this many times shows which $Q_3$ values occur when the model is true, and we can compare the values from our data with them. The bootstrap is called parametric because the new data are generated from the parameters of the model and not by resampling persons from the observed data.]
+The second question is how strong the dependence is, and this is what the size of the value tells us.
+The two answers can differ: with many respondents, a small dependence can be clearly more than chance, and with few respondents, a large value can still be chance.
+We show how to answer both questions in the R section below.
 
 ::: {.callout-note appearance="simple"}
 ## Let's do it in R
 
-We can test whether the assumption of local stochastic independence holds for our model.
-To do so, we use the $Q_3$ approach proposed by @yenEffectsLocalItem1984.
+We can check local independence for our model with Yen's $Q_3$ [@yenEffectsLocalItem1984].
 
 ```{r}
 #| output: false
@@ -983,7 +1119,7 @@ To do so, we use the $Q_3$ approach proposed by @yenEffectsLocalItem1984.
 eco_rasch_Q3 <- mirt::residuals(eco_rasch, type = "Q3")
 ```
 
-To make the output clearer, we'll rename the row and column labels of the resulting matrix.
+To make the output easier to read, we rename the rows and columns of the resulting matrix.
 
 ```{r}
 
@@ -994,37 +1130,103 @@ eco_rasch_Q3
 
 ```
 
-We can check whether the cutoff of .20 is exceeded in our matrix:
+The matrix contains every item pair twice, once above and once below the diagonal.
+The diagonal itself holds the correlation of each item with itself, which is always 1.
+`upper.tri()` selects the cells above the diagonal, so each pair is counted once and the diagonal is left out.
+We can then check whether any item pair exceeds the cut-off of .20:
 
 ```{r}
-# test if any residual correlation exceeds 0.2
-any(eco_rasch_Q3 > 0.2 & eco_rasch_Q3 != 1)  # if TRUE local independence does not hold
+# each item pair once: the cells above the diagonal
+eco_Q3_pairs <- eco_rasch_Q3[upper.tri(eco_rasch_Q3)]
+
+# does any item pair exceed .20?
+any(eco_Q3_pairs > 0.2)  # TRUE if at least one item pair exceeds .20
 ```
 
-It is important to note that the correlation matrix containing the residual correlations also includes the correlations of the items with themselves (variance).
-Logically, this value is always 1 in a correlation matrix, since an item is perfectly correlated with itself.
-Since we are interested in comparing pairs of different items, the .20 criterion does not apply to the variances.
-Accordingly, we must exclude these from the comparison; otherwise, all item variances would be flagged because they exceed .20.
-We achieve this by adding the second logical condition `eco_rasch_Q3 !=1`.
-This filters out all residual correlations that are greater than .20 but less than 1, since the `&` operator ensures that both logical statements must be true simultaneously for the result to be `TRUE`.
-
-If the residual correlation of at least one item pair exceeds .20, we can filter for all item pairs that violate the .20 cutoff.
+If at least one item pair exceeds .20, we can find out which pairs these are.
 
 ```{r}
 # which item pairs are affected?
-which(eco_rasch_Q3 > 0.2 & eco_rasch_Q3 != 1)
+which(eco_rasch_Q3 > 0.2 & upper.tri(eco_rasch_Q3), arr.ind = TRUE)
 ```
 
-Note that in this case the output gives us `integer(0)` because no item pair violates the cutoff.
-However, if any residual correlations exceed .20, the output consists of the positions of the correlations in the `eco_rasch_Q3` object.
-If the output is, for example, 10, this means that the tenth residual correlation exceeds .20.
-This corresponds to the item pair consisting of Item 1 and Item 2.
-If the number of items is not too large, the results can also be presented as a matrix, making it easier to identify the item pairs:
+With `arr.ind = TRUE`, `which()` returns the row and the column of each flagged value.
+Here the output is empty, because no item pair exceeds the cut-off.
+
+We can also judge the values relative to the average $Q_3$ (see the box above), flagging item pairs that lie more than .20 above it.
 
 ```{r}
-# overview in a matrix:
-eco_rasch_Q3 > 0.2 & eco_rasch_Q3 != 1
+# average Q3 across all item pairs
+mean(eco_Q3_pairs)
+
+# which item pairs lie more than .20 above the average?
+which(eco_rasch_Q3 - mean(eco_Q3_pairs) > 0.2 & upper.tri(eco_rasch_Q3), arr.ind = TRUE)
 ```
+
+The average $Q_3$ is −.10, and two item pairs lie more than .20 above it, Items 1 and 2 and Items 7 and 8, although no pair exceeded the fixed .20.
+
+##### Bootstrap
+Both checks so far concern the size of the $Q_3$ values.
+To find out which values are larger than chance alone would produce, we use a parametric bootstrap, as explained above.
+We simulate 1,000 data sets from our fitted Rasch model, fit the Rasch model to each of them, and store the largest and the average $Q_3$ value.
+
+```{r}
+#| cache: true
+#| warning: false
+
+future::plan(future::multisession, workers = 8)   # use 8 cores
+
+set.seed(666)    # makes the simulation reproducible
+n_boot <- 1000   # number of simulated data sets
+
+boot_Q3 <- future.apply::future_replicate(n_boot, {
+  # simulate a data set from the fitted Rasch model (local independence holds)
+  sim_data  <- mirt::simdata(model = eco_rasch)
+  # fit the Rasch model to the simulated data and compute Q3
+  sim_rasch <- mirt::mirt(sim_data, model = 1, itemtype = "Rasch", verbose = FALSE)
+  sim_Q3    <- mirt::residuals(sim_rasch, type = "Q3", verbose = FALSE)
+  # keep each item pair once, then return the largest and the average value
+  sim_Q3    <- sim_Q3[upper.tri(sim_Q3)]
+  c(max = max(sim_Q3), mean = mean(sim_Q3))
+})
+
+future::plan(future::sequential)     # switch parallel computing off again
+
+boot_max  <- boot_Q3["max", ]
+boot_mean <- boot_Q3["mean", ]
+```
+
+Each simulated data set gives us one value: how far its largest $Q_3$ lies above its average $Q_3$.
+Since local independence holds in the simulated data sets, these 1,000 values show how large this difference gets by chance alone.
+We use their 95th percentile as the cut-off, that is, the value that 95% of the simulated data sets stay below.
+We then compute the same difference in our data.
+
+```{r}
+# cut-off: 95th percentile of (largest Q3 - average Q3) across the simulated data sets
+cutoff <- quantile(boot_max - boot_mean, probs = 0.95)
+cutoff
+
+# the same difference in our data
+eco_Q3_pairs <- eco_rasch_Q3[upper.tri(eco_rasch_Q3)]
+max(eco_Q3_pairs) - mean(eco_Q3_pairs)
+```
+
+The cut-off is .04: in 95% of the simulated data sets, the largest value lies no more than .04 above the average.
+In our data, it lies .27 above the average.
+We can see which pairs lie above this cut-off:
+
+```{r}
+# which item pairs lie above the bootstrap cut-off?
+which(eco_rasch_Q3 - mean(eco_Q3_pairs) > cutoff & upper.tri(eco_rasch_Q3), arr.ind = TRUE)
+```
+
+Seven of the 36 item pairs lie above the bootstrap cut-off.
+The three criteria thus give three different answers: the fixed .20 flags no pair, .20 above the average flags two, and the bootstrap flags seven.
+With many respondents, even small dependencies exceed what chance alone would produce.
+The size of the dependence is a separate question: only two of the seven pairs, Items 1 and 2 and Items 7 and 8, lie more than .20 above the average.
+
+The flagged pairs are not scattered across the scale. Items 7, 8, and 9 are all more strongly related to one another than the Rasch model predicts, and so are Items 1, 2, and 5. The remaining pair, Items 3 and 5, consists of the two negatively worded items. Such groups suggest that these items share something beyond $\theta$. As discussed above, the data cannot tell us whether to call this local dependence or an additional latent variable; to decide what the groups mean, we have to look at the content of the items.
+
 :::
 
 #### Sufficient Statistic
