@@ -523,21 +523,25 @@ $$ {#eq-rasch}
 
 Both equations describe the same model: solving @eq-rasch-logit for $p_{ni}$ gives @eq-rasch.
 
-Readers who are familiar with regression will recognize this structure.
-With these two parts, the Rasch model has the same form as a logistic regression, which is a generalized linear model.^[In the terminology of generalized linear models, the distribution is the random (or stochastic) component and the linear predictor is the systematic component [e.g., kingUnifyingPoliticalMethodology1998]. For a treatment of IRT models as regression models, see @boeckEstimationItemResponse2011 and @rijmenNonlinearMixedModel2003.]
-The first part is a distribution for the response (@eq-rasch-bernoulli).
-The second part connects the parameter of this distribution to a linear term, the *linear predictor*, by means of a function, the *link function* (@eq-rasch-logit).
-In the Rasch model, the link function is the logit (@eq-rasch-logit), and @eq-rasch uses the inverse link function.
-An ordinary logistic regression with one observed variable $X_n$ has the form:
+#### The Rasch model as a regression model
+Readers who are familiar with regression will recognize the structure of the Rasch model.
+With its two parts, it has the same form as a logistic regression.^[For a treatment of IRT models as regression models, see @boeckEstimationItemResponse2011 and @rijmenNonlinearMixedModel2003.]
+Following @kingUnifyingPoliticalMethodology1998, we call the first part, the distribution of the response (@eq-rasch-bernoulli), the *stochastic component*, because it describes the response as random: even if we knew the probability $p_{ni}$ exactly, we could not say for certain which response we will observe.
+The second part, which relates the parameter of this distribution to the person and item parameters (@eq-rasch-logit), is called the *systematic component*, because this relation contains no randomness: once $\theta_n$ and $\beta_i$ are given, the probability is fixed.
+Within the systematic component, the function that connects the probability to the person and item parameters, here the logit, is called the *link function*, and @eq-rasch uses the inverse link function.
+An ordinary logistic regression with one observed predictor variable $X_n$ consists of the same two parts:
 
 $$
-\underbrace{\text{logit}}_{\text{link function}}(p_n) = \underbrace{\text{intercept} + \text{slope} \cdot X_n}_{\text{linear predictor}}
+\begin{aligned}
+Y_n &\sim \text{Bernoulli}(p_n) && {\scriptstyle\text{[ stochastic component ]}}\\[1ex]
+\underbrace{\text{logit}}_{\text{link function}}(p_n) &= \text{intercept} + \text{slope} \cdot X_n && {\scriptstyle\text{[ systematic component ]}}
+\end{aligned}
 $$
 
-The Rasch model in @eq-rasch-logit is a special case of this form: its linear predictor is $\theta_n - \beta_i$, where $\theta_n$ takes the place of $X_n$, the slope is fixed at 1, and the intercept is $-\beta_i$, which is not a single constant but differs from item to item.
+The Rasch model in @eq-rasch-logit is a special case of this form: $\theta_n$ takes the place of $X_n$, the slope is fixed at 1, and the intercept is $-\beta_i$, which is not a single constant but differs from item to item.
 The minus sign appears because the difficulty is subtracted: we can write $\theta_n - \beta_i$ as $-\beta_i + 1 \cdot \theta_n$, so a more difficult item has a lower intercept.
 The intercept is therefore also called the item easiness.
-One thing distinguishes the Rasch model from an ordinary logistic regression: $\theta_n$ is not an observed variable but a latent one.
+One thing distinguishes the Rasch model from an ordinary logistic regression is that $\theta_n$ is not an observed variable but a latent one.
 We will return to this view several times, because it makes later extensions of the model easier to understand.
 
 ### Calculating Response Probabilities
@@ -577,26 +581,22 @@ In other words, the larger the difference between the two in either direction, t
 
 We do not have to type the formula by hand.
 The right-hand side of @eq-rasch is the inverse logit, which is built into R as `plogis()`.
+It accepts several values at once, so we can compute all three probabilities in one step.
 
 ```{r}
 theta_1 <- -0.5
+beta    <- c(-1.343, 0.347, -0.5)   # Items 1, 8, and 6
 
-plogis(theta_1 - (-1.343))   # Item 1
-plogis(theta_1 - 0.347)      # Item 8
-plogis(theta_1 - (-0.5))     # Item 6
+
+p <- plogis(theta_1 - beta)
+round(p, 2)
 ```
 
 We get the same three probabilities as above: 0.70, 0.30, and 0.50.
-Since `plogis()` accepts several values at once, we can also compute them in one step.
-Its counterpart, the logit, is `qlogis()`; it takes us back from the probabilities to the differences $\theta_n - \beta_i$.
+The counterpart of `plogis()` is the logit, `qlogis()`, which takes us back from the probabilities to the log-odds, that is, to the differences $\theta_n - \beta_i$.
 
 ```{r}
-beta <- c(-1.343, 0.347, -0.5)   # Items 1, 8, and 6
-
-p <- plogis(theta_1 - beta)
-p
-
-qlogis(p)   # back to the differences: 0.843, -0.847, 0
+qlogis(p)   
 ```
 :::
 ### 1PL
@@ -619,7 +619,7 @@ $$
 The right-hand side is again a difference between a person value and an item value, just as in the Rasch model, only with both values multiplied by $\alpha$.
 For example, a 1PL model with $\alpha = 2$, $\theta_n = 0.5$, and $\beta_i = -0.25$ gives $2 \times (0.5 - (-0.25)) = 1.5$.
 A Rasch model in which both values are doubled, $\theta_n = 1$ and $\beta_i = -0.5$, gives $1 - (-0.5) = 1.5$ as well, and therefore exactly the same probability.
-The Rasch model and the 1PL model are therefore mathematically equivalent.
+Hence, the Rasch model and the 1PL model are mathematically equivalent.
 The difference between them is one of perspective [@deayalaTheoryPracticeItem2022, p. 20].
 In the 1PL tradition, a model is a description of the data: if it does not fit, it is replaced by a more flexible one, for example a model with more item parameters.
 In the Rasch tradition, the model is a standard for good measurement: if the data do not fit, it is the items that are revised or removed, not the model.
@@ -702,7 +702,7 @@ mirt(data = dat_eco_dicho[12:20],
      model = 1, 
      itemtype = "Rasch", 
      SE = TRUE, 
-     TOL = 1e-5) # set custmm tolerance level
+     TOL = 1e-5) # set custom tolerance level
 ```
 
 Second, there is a *maximum number of iterations*, after which the algorithm stops even if the estimates have not converged, that is, even if the changes between iterations are still larger than the tolerance.
@@ -1037,6 +1037,7 @@ The pattern visible here is therefore largely a consequence of our dichotomizati
 :::
 
 ### Assumptions and Properties of the Rasch Model
+In this section, we will briefly discuss the two most important assumptions of the Rasch model: unidiemnsionality and conditional idnepcence togher with its two important properties total scroes as suffcient statics and specifc objectivity. The two  
 
 #### Unidimensionality
 
